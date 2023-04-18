@@ -8,7 +8,7 @@ namespace Snowdrama.Transition
     public class SceneController
     {
         public static List<string> loadedScenes;
-        public const string REQUIRED_COMPONENT_SCENE_NAME = "TransitionScene";
+        public const string TRANSITION_SCENE = "TransitionScene";
         public static List<string> sceneNotToUnload;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -27,16 +27,40 @@ namespace Snowdrama.Transition
                 }
             }
 
-            if (!loadedScenes.Contains(REQUIRED_COMPONENT_SCENE_NAME))
+
+            var requredSceneListObject = Resources.Load<RequiredSceneListObject>("RequiredSceneList");
+            if(requredSceneListObject != null)
+            {
+                for (int i = 0; i < requredSceneListObject.listOfRequiredSceneNames.Count; i++)
+                {
+                    var requiredScene = requredSceneListObject.listOfRequiredSceneNames[i];
+
+                    if (loadedScenes.Contains(requiredScene.sceneName))
+                    {
+                        SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
+                        if (requiredScene.dontDestroyOnLoad)
+                        {
+                            sceneNotToUnload.Add(requiredScene.sceneName);
+                        }
+                        else
+                        {
+                            loadedScenes.Add(requiredScene.sceneName);
+                        }
+                    }
+                }
+            }
+
+
+            if (!loadedScenes.Contains(TRANSITION_SCENE))
             {
                 //load the required component scene
-                SceneManager.LoadSceneAsync(REQUIRED_COMPONENT_SCENE_NAME, LoadSceneMode.Additive).completed += RequiredComponentsLoaded;
+                SceneManager.LoadSceneAsync(TRANSITION_SCENE, LoadSceneMode.Additive).completed += RequiredComponentsLoaded;
             }
             else
             {
                 //we don't want it in the list of scenes to remove
-                loadedScenes.Remove(REQUIRED_COMPONENT_SCENE_NAME);
-                sceneNotToUnload.Add(REQUIRED_COMPONENT_SCENE_NAME);
+                loadedScenes.Remove(TRANSITION_SCENE);
+                sceneNotToUnload.Add(TRANSITION_SCENE);
             }
         }
 
@@ -60,7 +84,7 @@ namespace Snowdrama.Transition
 
         private static void RequiredComponentsLoaded(AsyncOperation obj)
         {
-            sceneNotToUnload.Add(REQUIRED_COMPONENT_SCENE_NAME);
+            sceneNotToUnload.Add(TRANSITION_SCENE);
         }
 
 

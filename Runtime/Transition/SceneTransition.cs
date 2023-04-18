@@ -2,7 +2,8 @@
 
 namespace Snowdrama.Transition
 {
-    [CreateAssetMenu]
+    [System.Serializable]
+    [CreateAssetMenu(fileName = "SceneTransition", menuName = "Snowdrama/Transitions/Scene Transition")]
     public class SceneTransition : ScriptableObject
     {
         public string sceneName;
