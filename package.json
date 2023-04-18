@@ -1,0 +1,21 @@
+{
+  "name": "com.snowdrama.transitions",
+  "version": "0.1.4",
+  "description": "A package of tools for transitions",
+  "displayName": "Snowdrama Transition Tools",
+  "unity": "2019.1",
+  "author": {
+    "name": "John 'Snowdrama' Close",
+    "email": "SnowdramaGames@gmail.com",
+    "url": "http://www.snowdrama.net"
+  },
+  "dependencies": {},
+  "type": "utility",
+  "samples": [
+    {
+      "displayName": "Transition Example",
+      "description": "Contains an example with a basic fade transition",
+      "path": "Samples~/TransitionExample"
+    }
+  ]
+}
