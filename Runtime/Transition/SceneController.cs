@@ -49,19 +49,6 @@ namespace Snowdrama.Transition
                     }
                 }
             }
-
-
-            if (!loadedScenes.Contains(TRANSITION_SCENE))
-            {
-                //load the required component scene
-                SceneManager.LoadSceneAsync(TRANSITION_SCENE, LoadSceneMode.Additive).completed += RequiredComponentsLoaded;
-            }
-            else
-            {
-                //we don't want it in the list of scenes to remove
-                loadedScenes.Remove(TRANSITION_SCENE);
-                sceneNotToUnload.Add(TRANSITION_SCENE);
-            }
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
