@@ -14,19 +14,16 @@ namespace Snowdrama.Transition
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Bootstrap()
         {
-            Debug.Log($"Scene Controller Bootstrapping");
             loadedScenes = new List<string>();
             sceneNotToUnload = new List<string>();
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                Debug.Log($"Checking Scene {scene.name}");
                 if (!loadedScenes.Contains(scene.name))
                 {
                     loadedScenes.Add(scene.name);
                 }
             }
-
 
             var requredSceneListObject = Resources.Load<RequiredSceneListObject>("RequiredSceneList");
             if(requredSceneListObject != null)
@@ -35,14 +32,17 @@ namespace Snowdrama.Transition
                 {
                     var requiredScene = requredSceneListObject.listOfRequiredSceneNames[i];
 
-                    if (loadedScenes.Contains(requiredScene.sceneName))
+                    SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
+                    if (requiredScene.dontDestroyOnLoad)
                     {
-                        SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
-                        if (requiredScene.dontDestroyOnLoad)
+                        if (!sceneNotToUnload.Contains(requiredScene.sceneName))
                         {
                             sceneNotToUnload.Add(requiredScene.sceneName);
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (!loadedScenes.Contains(requiredScene.sceneName))
                         {
                             loadedScenes.Add(requiredScene.sceneName);
                         }
