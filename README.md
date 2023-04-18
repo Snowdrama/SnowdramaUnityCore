@@ -1,4 +1,4 @@
-# Snowdrama Unity Timer Tools
+# Snowdrama Unity Transition Tools
 A package of the transitions I use in unity
 
 # Requirements & Disclaimer
