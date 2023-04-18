@@ -72,10 +72,13 @@ namespace Snowdrama.Transition
             foreach (var scene in loadedScenes)
             {
                 Debug.Log($"Unloading Scene: {scene}");
-                SceneManager.UnloadSceneAsync(scene).completed += LoadSceneInstructionComplete;
                 loadSceneInstructionCount++;
+                SceneManager.UnloadSceneAsync(scene).completed += LoadSceneInstructionComplete;
             }
+            loadedScenes.Clear();
+            loadSceneInstructionCount++;
             SceneManager.LoadSceneAsync(newSceneName, LoadSceneMode.Additive).completed += LoadSceneInstructionComplete;
+            loadedScenes.Add(newSceneName);
         }
 
         private static void LoadSceneInstructionComplete(AsyncOperation obj)
