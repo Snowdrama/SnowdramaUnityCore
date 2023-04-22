@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.LowLevel;
 using UnityEngine.SceneManagement;
+using UnityEngine.PlayerLoop;
+
 
 namespace Snowdrama.Transition
 {
+    public enum TransitionState
+    {
+        None,
+        Start,
+        HidingScene,
+        SceneHidden,
+        WaitingForLoad,
+        RevealingScene,
+        End,
+    }
     public class SceneController
     {
         public static List<string> loadedScenes;
-        public const string TRANSITION_SCENE = "TransitionScene";
         public static List<string> sceneNotToUnload;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -49,6 +64,87 @@ namespace Snowdrama.Transition
                     }
                 }
             }
+
+
+            var loopInserter = UnityPlayerLoopInserter.GetCurrent();
+            loopInserter.InsertInto(typeof(Update), typeof(SceneController), UpdateTransition);
+            loopInserter.Flush();
+        }
+
+        public static string targetScene;
+        public static float transitionValue;
+        public static float transitionDuration;
+        public static float transitionSpeed;
+        public static bool transitioning;
+        public static TransitionState transitionState;
+        public static Action completeCallback;
+        public static void UpdateTransition()
+        {
+            switch (transitionState)
+            {
+                case TransitionState.None:
+                    break;
+
+                case TransitionState.Start:
+                    transitionState = TransitionState.HidingScene;
+                    break;
+
+                case TransitionState.HidingScene:
+                    transitionSpeed = 1.0f / transitionDuration;
+                    transitionValue += Time.deltaTime;
+                    if (transitionValue >= 1.0f)
+                    {
+                        transitionState = TransitionState.SceneHidden;
+                    }
+                    break;
+
+                case TransitionState.SceneHidden:
+
+                    SceneManager.LoadSceneAsync(targetScene, LoadSceneMode.Additive).completed += LoadSceneComplete;
+                    transitionState = TransitionState.WaitingForLoad;
+                    break;
+
+                case TransitionState.WaitingForLoad:
+                    break;
+
+                case TransitionState.RevealingScene:
+                    transitionSpeed = 1.0f / transitionDuration;
+                    transitionValue -= Time.deltaTime;
+                    if (transitionValue <= 0.0f)
+                    {
+                        transitionState = TransitionState.End;
+                        completeCallback?.Invoke();
+                    }
+                    break;
+
+                case TransitionState.End:
+                    transitionState = TransitionState.None;
+                    break;
+            }
+        }
+
+        private static void LoadSceneComplete(AsyncOperation obj)
+        {
+            if (loadedScenes.Count > 0)
+            {
+                //unload each scene except scene index 0
+                for (int i = 0; i < loadedScenes.Count; i++)
+                {
+                    SceneManager.UnloadSceneAsync(loadedScenes[i]);
+                }
+            }
+            loadedScenes.Clear();
+            loadedScenes.Add(targetScene);
+            transitionState = TransitionState.RevealingScene;
+        }
+
+        public static void StartTransition(string setTargetScene, float setDuration, Action setCompleteCallback)
+        {
+            transitionValue = 0;
+            transitionDuration = setDuration;
+            targetScene = setTargetScene;
+            completeCallback = setCompleteCallback;
+            transitionState = TransitionState.Start;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -65,40 +161,6 @@ namespace Snowdrama.Transition
                         SceneManager.UnloadSceneAsync(loadedScenes[i]);
                     }
                 }
-            }
-        }
-
-
-        private static void RequiredComponentsLoaded(AsyncOperation obj)
-        {
-            sceneNotToUnload.Add(TRANSITION_SCENE);
-        }
-
-
-        public static int loadSceneInstructionCount = 0;
-        public static Action completeCallback;
-        public static void LoadScene(string newSceneName, Action setCompleteCallback)
-        {
-            completeCallback = setCompleteCallback;
-            foreach (var scene in loadedScenes)
-            {
-                Debug.Log($"Unloading Scene: {scene}");
-                loadSceneInstructionCount++;
-                SceneManager.UnloadSceneAsync(scene).completed += LoadSceneInstructionComplete;
-            }
-            loadedScenes.Clear();
-            loadSceneInstructionCount++;
-            SceneManager.LoadSceneAsync(newSceneName, LoadSceneMode.Additive).completed += LoadSceneInstructionComplete;
-            loadedScenes.Add(newSceneName);
-        }
-
-        private static void LoadSceneInstructionComplete(AsyncOperation obj)
-        {
-            loadSceneInstructionCount--;
-            if (loadSceneInstructionCount <= 0)
-            {
-                completeCallback?.Invoke();
-                completeCallback = null;
             }
         }
     }

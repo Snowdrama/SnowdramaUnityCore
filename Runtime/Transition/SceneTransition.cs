@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Snowdrama.Transition
 {
@@ -11,7 +12,7 @@ namespace Snowdrama.Transition
         public void TransitionToThis()
         {
             Debug.Log("Going To Scene");
-            TransitionController.GoToScene(sceneName);
+            SceneController.StartTransition(sceneName, 1.0f, null);
         }
     }
 }

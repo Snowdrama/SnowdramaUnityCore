@@ -10,13 +10,24 @@ namespace Snowdrama.Transition
         private List<string> openScenes;
         [SerializeField]
         private List<string> scenesNotToUnload;
-        [SerializeField]
-        private int loadSceneInstructionCount = 0;
+
+        public string targetScene;
+        public float transitionValue;
+        public float transitionDuration;
+        public float transitionSpeed;
+        public bool transitioning;
+        public TransitionState transitionState;
         void Update()
         {
             openScenes = SceneController.loadedScenes;
             scenesNotToUnload = SceneController.sceneNotToUnload;
-            loadSceneInstructionCount = SceneController.loadSceneInstructionCount;
+            targetScene = SceneController.targetScene;
+            transitionValue = SceneController.transitionValue;
+            transitionDuration = SceneController.transitionDuration;
+            transitionSpeed = SceneController.transitionSpeed;
+            transitioning = SceneController.transitioning;
+            transitionState = SceneController.transitionState;
+
         }
     }
 }
