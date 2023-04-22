@@ -50,6 +50,11 @@ namespace Snowdrama.Transition
                     SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
                     if (requiredScene.dontDestroyOnLoad)
                     {
+                        //we don't want the don't destroy scene in the regular loaded scenes list
+                        if (loadedScenes.Contains(requiredScene.sceneName))
+                        {
+                            loadedScenes.Remove(requiredScene.sceneName);
+                        }
                         if (!sceneNotToUnload.Contains(requiredScene.sceneName))
                         {
                             sceneNotToUnload.Add(requiredScene.sceneName);
