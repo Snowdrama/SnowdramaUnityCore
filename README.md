@@ -1,5 +1,5 @@
-# Snowdrama Unity Transition Tools
-A package of the transitions I use in unity
+# Snowdrama Unity Core
+The core of some tools I use shared among other packages
 
 # Requirements & Disclaimer
 In theory it works with earlier versions but I have tested against 2020.3.19f1(current LTS version) but I have it set to work with 2019.1
