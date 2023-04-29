@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.LowLevel;
 
-namespace Snowdrama.Transition
+namespace Snowdrama.Core
 {
-    internal ref struct UnityPlayerLoopInserter
+    public ref struct UnityPlayerLoopInserter
     {
         private PlayerLoopSystem _currentPlayerLoop;
 

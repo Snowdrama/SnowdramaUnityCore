@@ -1,8 +1,8 @@
 {
-  "name": "com.snowdrama.transitions",
+  "name": "com.snowdrama.core",
   "version": "0.1.4",
-  "description": "A package of tools for transitions",
-  "displayName": "Snowdrama Transition Tools",
+  "description": "A package of utilities I use",
+  "displayName": "Snowdrama Core Tools",
   "unity": "2019.1",
   "author": {
     "name": "John 'Snowdrama' Close",
@@ -13,9 +13,9 @@
   "type": "utility",
   "samples": [
     {
-      "displayName": "Transition Example",
-      "description": "Contains an example with a basic fade transition",
-      "path": "Samples~/TransitionExample"
+      "displayName": "Core Example",
+      "description": "Contains Examples of some of the Core features",
+      "path": "Samples~/CoreExamples"
     }
   ]
 }

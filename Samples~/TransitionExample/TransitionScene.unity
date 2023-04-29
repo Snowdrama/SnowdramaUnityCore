@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -212,7 +212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee43940ca6e6dfb41bd98a0f7e10d4c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  transisionValue: 0
   hideTransitionSpeed: 1
   showTransitionSpeed: 1
   transitionImage: {fileID: 433444832}
@@ -231,7 +230,7 @@ GameObject:
   - component: {fileID: 1385379788}
   - component: {fileID: 1385379787}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: TransitionCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -249,8 +248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc19cb274d2675840be8d52f06142222, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transitionList: []
   currentTransition: {fileID: 433444835}
-  transitionState: 0
 --- !u!114 &1385379788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +309,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 9999
   m_TargetDisplay: 0
 --- !u!224 &1385379791
 RectTransform:
@@ -326,13 +325,65 @@ RectTransform:
   m_Children:
   - {fileID: 433444834}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1785579567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1785579569}
+  - component: {fileID: 1785579568}
+  m_Layer: 0
+  m_Name: TransitionDebug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1785579568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785579567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9ffc2c686d7164cbac4cfbf4d99ffe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  openScenes: []
+  scenesNotToUnload: []
+  targetScene: 
+  transitionValue: 0
+  transitionDuration: 0
+  transitionSpeed: 0
+  transitioning: 0
+  transitionState: 0
+--- !u!4 &1785579569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785579567}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 594, y: 338.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2087538477
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,5 +449,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
