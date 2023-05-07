@@ -1,6 +1,6 @@
 {
-    "name": "Snowdrama.Core",
-    "rootNamespace": "Snowdrama.Core",
+    "name": "Snowdrama.Core.Extensions",
+    "rootNamespace": "Snowdrama.Core.Extensions",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
