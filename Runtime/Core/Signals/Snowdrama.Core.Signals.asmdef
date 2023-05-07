@@ -1,0 +1,14 @@
+{
+    "name": "Snowdrama.Core.Signals",
+    "rootNamespace": "Snowdrama.Core.Signals",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

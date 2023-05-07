@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Snowdrama.GameData
+namespace Snowdrama.Core.GameData
 {
     [CreateAssetMenu(menuName = "Snowdrama/Data Objects/String Int Dictionary")]
     public class StringIntDictionaryObject : ScriptableObject

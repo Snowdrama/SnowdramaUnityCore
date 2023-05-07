@@ -1,4 +1,4 @@
-﻿namespace Snowdrama.GameData
+﻿namespace Snowdrama.Core.GameData
 {
     [System.Serializable]
     public class StringStringDictionary : UnitySerializedDictionary<string, string>

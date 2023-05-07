@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Snowdrama.GameData
+namespace Snowdrama.Core.GameData
 {
     [System.Serializable]
     public class StringVector3Dictionary : UnitySerializedDictionary<string, Vector3>

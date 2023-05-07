@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Snowdrama.GameData
+namespace Snowdrama.Core.GameData
 {
     [System.Serializable]
     public class StringIntDictionary : UnitySerializedDictionary<string, int>

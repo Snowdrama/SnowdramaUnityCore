@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Snowdrama.GameData
+namespace Snowdrama.Core.GameData
 {
     [System.Serializable]
     public class StringVector2IntDictionary : UnitySerializedDictionary<string, Vector2Int>
