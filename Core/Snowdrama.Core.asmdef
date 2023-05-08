@@ -1,7 +1,9 @@
 {
     "name": "Snowdrama.Core",
     "rootNamespace": "Snowdrama.Core",
-    "references": [],
+    "references": [
+        "GUID:08575f6861cf030449c4ea9a609166fb"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
