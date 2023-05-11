@@ -10,6 +10,7 @@ using UnityEditorInternal;
 
 namespace Snowdrama.UI
 {
+#if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(UnityEvent), true)]
     public class UnityEventDrawer : PropertyDrawer
     {
@@ -588,4 +589,5 @@ namespace Snowdrama.UI
             }
         }
     }
+#endif
 }

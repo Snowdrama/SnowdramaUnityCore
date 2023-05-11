@@ -1,0 +1,16 @@
+{
+    "name": "Snowdrama.Core.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b998718984e591841a0cb1e9c54f2e6e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
