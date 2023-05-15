@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ColorExtension
+public static class ColorExtensions
 {
+
     public static Color ParseStringAsColor(this string hexString, Color fallback = default)
     {
         Color color = fallback;

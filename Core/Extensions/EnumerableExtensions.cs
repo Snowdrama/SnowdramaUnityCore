@@ -24,4 +24,12 @@ public static class EnumerableExtensions
         foreach (var t in queue)
             yield return t;
     }
+
+    public static T GetRandom<T>(this List<T> source)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
+
+        return source[UnityEngine.Random.Range(0, source.Count)];
+    }
 }
