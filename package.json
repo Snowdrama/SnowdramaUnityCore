@@ -1,6 +1,6 @@
 {
   "name": "com.snowdrama.core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The core of some tools I use shared among other packages",
   "displayName": "Snowdrama Core Tools",
   "unity": "2019.1",
