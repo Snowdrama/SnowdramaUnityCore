@@ -14,14 +14,21 @@ public class MusicFadeShuffle : MonoBehaviour
     [Header("Debug")]
     public float timePercentRemaining;
 
-    // Start is called before the first frame update
     void Start()
     {
+        if (currentSource == null)
+        {
+            currentSource = GetComponent<AudioSource>();
+
+            if (currentSource == null)
+            {
+                Debug.LogError("MusicShuffle doesn't have audio source set", this.gameObject);
+            }
+        }
         currentSource.clip = songs[Random.Range(0, songs.Count)];
         currentSource.Play();
     }
 
-    // Update is called once per frame
     void Update()
     {
         timePercentRemaining = 1f - currentSource.time / currentSource.clip.length;

@@ -1,370 +1,759 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
+using UnityEngine;
 
-//Originally taken from https://github.com/jmickle66666666/JazzBox/blob/master/Scripts/CellGen.cs
-
-public class CellularAutomata : MonoBehaviour
+namespace Snowdrama.Core
 {
-    public bool[,] tiles;
-    public int width = 256;
-    public int height = 256;
-    public int seed;
-    public bool randomizeSeed = false;
-    [Range(0,1)]public float initialDensity = 0.5f;
-
-    public string[] methods;
-    public static string[] methodNames;
-
-    System.Func<int, int, bool>[] posRules;
-    System.Func<bool[,]>[] passRules;
-    
-    public Texture2D outputTexture;
-    public float genTime;
-
-    void InitData()
+    public enum CellularAutomataProcessType
     {
-        if (methods == null) methods = new string[0];
-        if (posRules == null) posRules = new System.Func<int, int, bool>[] {
-            Smooth, Square, Invert, Decay, Feed, Circle
-        };
-        if (passRules == null) passRules = new System.Func<bool[,]>[] {
-            Contiguous
-        };
-        if (methodNames == null) {
-            methodNames = new string[posRules.Length + passRules.Length];
-
-            for (int i = 0; i < posRules.Length; i++) {
-                methodNames[i] = posRules[i].Method.Name;
-            }
-
-            for (int i = 0; i < passRules.Length; i++) {
-                methodNames[posRules.Length + i] = passRules[i].Method.Name;
-            }
-        }
+        Grow,
+        Decay,
+        Smooth,
+        Contiguous,
+        Sharpen,
+        Shape_Circle,
+        Shape_Cross,
+        Invert,
+        Life,
+        Edge,
+        MinSize,
+        DrunkenWalk_Rad1,
+        DrunkenWalk_Rad2,
+        DrunkenWalk_Rad3,
     }
-
-    void OnValidate()
+    [ExecuteAlways]
+    public class CellularAutomata : MonoBehaviour
     {
-        InitData();   
+        [Header("Settings Object")]
+        [Expandable]
+        public CellularAutomataSettings processSettingsObject;
 
-        if (width < 1) width = 1;
-        if (height < 1) height = 1;
+        [Button(nameof(LoadSettings))]
+        public bool loadSettings;
+        [Button(nameof(SaveSettings))]
+        public bool saveSettings;
 
-        Generate();
-    }
+        [Header("RNG")]
+        [SerializeField] private int seed;
+        private System.Random random;
+        private int rngSequenceIndex;
+        [Header("Size")]
+        [SerializeField] private int width = 128;
+        [SerializeField] private int height = 128;
+        [Header("Threshold")]
+        [SerializeField, Range(0,1)] private float threshold = 0.5f;
+        [Tooltip("When dealing with the walls of space does it " +
+            "count as walls when factoring in neighbors" +
+            "(try smoothing with this on and off)")]
+        [SerializeField] private bool gridWallsCountAsSolid = true;
+        [SerializeField] private List<CellularAutomataProcessType> processes;
 
-    public void Generate()
-    {
-        var timer = System.Diagnostics.Stopwatch.StartNew();
 
-        tiles = new bool[width, height];
-        if (randomizeSeed) {
-            seed = Mathf.FloorToInt(Mathf.Sin(System.DateTime.Now.Millisecond * 12356.13246f) * 2346.3567f);
-        }
-        Random.InitState(seed);
+        private bool[,] tileData;
+        private Texture2D outputTexture;
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                tiles[i, j] = Random.value < initialDensity;
-            }
-        }
+        [Button(nameof(Generate))]
+        public bool generate;
 
-        foreach (var m in methods) {
-            foreach (var r in posRules) {
-                if (r.Method.Name == m) {
-                    tiles = Pass(r);
-                }
-            }
-
-            foreach (var r in passRules) {
-                if (r.Method.Name == m) {
-                    tiles = Pass(r);
-                }
-            }
-        }
-
-        outputTexture = new Texture2D(width, height);
-        outputTexture.filterMode = FilterMode.Point;
-        Color32[] colors = new Color32[width * height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                colors[(j * width) + i] = tiles[i, j]?Color.black:Color.white;
-            }
-        }
-        outputTexture.SetPixels32(colors);
-        outputTexture.Apply();
-
-        timer.Stop();
-        genTime = (float) timer.Elapsed.TotalMilliseconds;
-    }
-
-    bool[,] Pass(System.Func<int, int, bool> rule)
-    {
-        bool[,] output = new bool[tiles.GetLength(0),tiles.GetLength(1)];
-        for (int i = 0; i < tiles.GetLength(0); i++) {
-            for (int j = 0; j < tiles.GetLength(1); j++) {
-                output[i, j] = rule.Invoke(i, j);
-            }
-        }
-        return output;
-    }
-
-    bool[,] Pass(System.Func<bool[,]> rule)
-    {
-        return rule.Invoke();
-    }
-
-    bool[,] Contiguous()
-    {
-        int[,] data = new int[width, height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (IsWall(i, j)) {
-                    data[i, j] = -1;
-                } else {
-                    data[i, j] = 0;
-                }
-            }
-        }
-
-        void FloodTile(int x, int y, int id)
+        public void LoadSettings()
         {
-            if (x < 0) return;
-            if (y < 0) return;
-            if (x >= width) return;
-            if (y >= height) return;
-            if (data[x, y] != 0) return;
-
-            data[x, y] = id;
-
-            FloodTile(x + 1, y, id);
-            FloodTile(x - 1, y, id);
-            FloodTile(x, y + 1, id);
-            FloodTile(x, y - 1, id);
+            if (processSettingsObject != null)
+            {
+                width = processSettingsObject.width;
+                height = processSettingsObject.height;
+                gridWallsCountAsSolid = processSettingsObject.gridWallsCountAsSolid;
+                threshold = processSettingsObject.threshold;
+                processes = new List<CellularAutomataProcessType>(processSettingsObject.processes);
+            }
         }
+        public void SaveSettings()
+        {
+            if (processSettingsObject != null)
+            {
+                 processSettingsObject.width = width;
+                 processSettingsObject.height = height;
+                 processSettingsObject.gridWallsCountAsSolid = gridWallsCountAsSolid;
+                 processSettingsObject.threshold = threshold;
+                 processSettingsObject.processes = new List<CellularAutomataProcessType>(processes); ;
+            }
+        }
+        public void Update()
+        {
+            if (processSettingsObject != null)
+            {
+                if (width != processSettingsObject.width ||
+                    height != processSettingsObject.height ||
+                    gridWallsCountAsSolid != processSettingsObject.gridWallsCountAsSolid ||
+                    threshold != processSettingsObject.threshold ||
+                    processes != processSettingsObject.processes)
+                {
 
-        int index = 1;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (data[i, j] == 0) {
-                    FloodTile(i, j, index);
-                    index += 1;
+                    Generate();
                 }
             }
         }
-
-        int[] counts = new int[index];
-
-        for (int i = 0; i < index; i++) {
-            counts[i] = 0;
+        private void OnValidate()
+        {
+            Generate();
         }
+        public void Generate()
+        {
+            rngSequenceIndex = 0;
+            tileData = GenerateRandomNoise(width, height, threshold);
 
-        int maxCount = 0;
-        int maxIndex = 0;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (data[i, j] > 0) {
-                    counts[data[i, j]] += 1;
-                    if (counts[data[i, j]] > maxCount) {
-                        maxCount = counts[data[i, j]];
-                        maxIndex = data[i, j];
-                    } 
+            foreach (var process in processes)
+            {
+                switch (process)
+                {
+                    case CellularAutomataProcessType.Smooth:
+                        tileData = Smooth(tileData, 4, 5);
+                        break;
+                    case CellularAutomataProcessType.Sharpen:
+                        tileData = Sharpen(tileData);
+                        break;
+                    case CellularAutomataProcessType.Contiguous:
+                        tileData = Contiguous(tileData);
+                        break;
+                    case CellularAutomataProcessType.Shape_Circle:
+                        tileData = ShapeCircle(tileData);
+                        break;
+                    case CellularAutomataProcessType.Shape_Cross:
+                        tileData = ShapeCross(tileData, width / 3, height / 3);
+                        break;
+                    case CellularAutomataProcessType.Grow:
+                        tileData = Grow(tileData);
+                        break;
+                    case CellularAutomataProcessType.Decay:
+                        tileData = Decay(tileData);
+                        break;
+                    case CellularAutomataProcessType.Invert:
+                        tileData = Invert(tileData);
+                        break;
+                    case CellularAutomataProcessType.Life:
+                        tileData = Life(tileData);
+                        break;
+                    case CellularAutomataProcessType.Edge:
+                        tileData = Edge(tileData);
+                        break;
+                    case CellularAutomataProcessType.DrunkenWalk_Rad1:
+                        tileData = DrunkenWalkCore(tileData, 1);
+                        break;
+                    case CellularAutomataProcessType.DrunkenWalk_Rad2:
+                        tileData = DrunkenWalkCore(tileData, 2);
+                        break;
+                    case CellularAutomataProcessType.DrunkenWalk_Rad3:
+                        tileData = DrunkenWalkCore(tileData, 3);
+                        break;
                 }
             }
+            outputTexture = GenerateTexture(tileData);
         }
 
-        bool[,] output = new bool[width, height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                output[i, j] = data[i, j] != maxIndex;
-            }
-        }
-
-        return output;
-    }
-
-    bool Smooth(int x, int y)
-    {
-        int count = Get8Count(x, y);
-        if (IsWall(x, y)) return count >= 4; else return count >= 5;
-    }
-
-    bool Square(int x, int y)
-    {
-        int count = Get4Count(x, y);
-        if (IsWall(x, y)) return count >= 3; else return count >= 4;
-    }
-
-    bool Invert(int x, int y)
-    {
-        return !IsWall(x, y);
-    }
-
-    bool Decay(int x, int y)
-    {
-        if (!IsWall(x, y)) return false;
-        int count = Get8Count(x, y);
-        if (count < 6) return Random.value < 0.5f;
-        return IsWall(x, y);
-    }
-
-    bool Feed(int x, int y)
-    {
-        if (IsWall(x, y)) return true;
-        int count = Get8Count(x, y);
-        if (count > 2) return Random.value < 0.5f;
-        return IsWall(x, y);
-    }
-
-    bool Circle(int x, int y)
-    {
-        int halfWidth = tiles.GetLength(0)/2;
-        int halfHeight = tiles.GetLength(1)/2;
-        if ((Mathf.Pow(x - halfWidth, 2) + Mathf.Pow(y - halfHeight,2)) < halfWidth*halfWidth) return IsWall(x, y);
-        return true;
-    }
-
-    int Get8Count(int x, int y)
-    {
-        int count = 0;
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0) continue;
-                if (IsWall(x + i, y + j, true)) {
-                    count += 1;
+        bool[,] Invert(bool[,] data)
+        {
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    data[x, y] = !data[x, y];
                 }
             }
+            return data;
         }
-        return count;
-    }
 
-    int Get4Count(int x, int y)
-    {
-        int count = 0;
-        if (IsWall(x-1, y)) count += 1;
-        if (IsWall(x+1, y)) count += 1;
-        if (IsWall(x, y-1)) count += 1;
-        if (IsWall(x, y+1)) count += 1;
-        return count;
-    }
+        bool[,] DrunkenWalkCore(bool[,] data, int carveRadius)
+        {
+            int randomX = Noise.Squirrel3Range(0, width, rngSequenceIndex, (uint)seed);
+            rngSequenceIndex++;
+            int randomY = Noise.Squirrel3Range(0, height, rngSequenceIndex, (uint)seed);
+            rngSequenceIndex++;
+            int walkLength = Noise.Squirrel3Range(100, 1000, rngSequenceIndex, (uint)seed);
+            rngSequenceIndex++;
 
-    bool IsWall(int x, int y, bool offCanvas = false)
-    {
-        if (x < 0 || y < 0 || x >= width || y >= height) return offCanvas;
-        return tiles[x, y];
+            int x = randomX;
+            int y = randomY;
+            int direction = 0;
+
+            for (int i = 0; i < walkLength; i++)
+            {
+                uint rotateDirection = Noise.Squirrel3(rngSequenceIndex, (uint)seed);
+                rngSequenceIndex++;
+                //pick a random direction
+                switch (rotateDirection % 2)
+                {
+                    case 0: 
+                        direction += 1;
+                        direction %= 4;
+                        break;
+                    case 1: //E
+                        direction += 3;
+                        direction %= 4;
+                        break;
+                }
+
+                //try to move in that direction 
+                int nextX;
+                int nextY;
+                do
+                {
+                    nextX = x;
+                    nextY = y;
+                    switch (direction)
+                    {
+                        case 0:
+                            nextY++;
+                            break;
+                        case 1:
+                            nextX++;
+                            break;
+                        case 2:
+                            nextY--;
+                            break;
+                        case 3:
+                            nextX--;
+                            break;
+                    }
+
+                    //if the new location is off grid, we need to turn and try again
+                    if (OffGrid(data, nextX, nextY))
+                    {
+                        //turn right
+                        direction++;
+                        direction %= 4;
+                    }
+                } while (OffGrid(data, nextX, nextY)); 
+                
+                x = nextX;
+                y = nextY;
+
+                for (int carveY = -carveRadius; carveY < carveRadius; carveY++)
+                {
+                    for (int carveX = -carveRadius; carveX < carveRadius; carveX++)
+                    {
+                        if (carveX + carveY < carveRadius)
+                        {
+                            int carveTestX = x + carveX;
+                            int carveTestY = y + carveY;
+
+                            if (!OffGrid(data, carveTestX, carveTestY))
+                            {
+                                data[carveTestX, carveTestY] = false;
+                            }
+                        }
+                    }
+                }
+
+            }
+            return data;
+        }
+
+
+        bool[,] Contiguous(bool[,] data)
+        {
+            int[,] sections = new int[data.GetLength(0), data.GetLength(1)];
+            int currentIndex = 0;
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    sections = FloodFill(data, sections, x, y, currentIndex);
+                    currentIndex++;
+                }
+            }
+
+            //if there's 0 sections found, or only 1 it's already contigous
+            if (currentIndex == 0 || currentIndex == 1) return data;
+
+            int[] sectionCount = new int[currentIndex + 1];
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    var sectionIndex = sections[x, y];
+                    if (sectionIndex >= 0)
+                    {
+                        sectionCount[sectionIndex]++;
+                    }
+                }
+            }
+            //if there's no sections then... I guess it's already contiguous
+            if (sectionCount.Length == 0) return data;
+
+            int largestSectionIndex = 1;
+
+            //we ignore section 0 since that's empty space
+            for (int i = 1; i < sectionCount.Length; i++)
+            {
+                if (sectionCount[largestSectionIndex] < sectionCount[i])
+                {
+                    largestSectionIndex = i;
+                }
+            }
+
+            //NOW we finally modify the data
+
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    if (sections[x, y] == largestSectionIndex)
+                    {
+                        data[x, y] = data[x, y];
+                    }
+                    else
+                    {
+                        data[x, y] = false;
+                    }
+                }
+            }
+
+            return data;
+        }
+
+        int[,] FloodFill(bool[,] data, int[,] sections, int x, int y, int index)
+        {
+            Queue<Vector2Int> stack = new Queue<Vector2Int>();
+
+            if (!OffGrid(data, x, y) && data[x, y] && sections[x, y] == 0)
+            {
+                stack.Enqueue(new Vector2Int(x, y));
+            }
+
+            int hardExit = 0;
+            while (stack.Count > 0 && hardExit <= data.GetLength(0) * data.GetLength(1))
+            {
+                hardExit++;
+                var pos = stack.Dequeue();
+
+                sections[pos.x, pos.y] = index;
+
+                var north = pos + new Vector2Int(0, 1);
+                var south = pos + new Vector2Int(0, -1);
+                var east = pos + new Vector2Int(1, 0);
+                var west = pos + new Vector2Int(-1, 0);
+
+                if (!stack.Contains(north) && !OffGrid(data, north.x, north.y) && data[north.x, north.y] && sections[north.x, north.y] == 0)
+                {
+                    stack.Enqueue(north);
+                }
+                if (!stack.Contains(south) && !OffGrid(data, south.x, south.y) && data[south.x, south.y] && sections[south.x, south.y] == 0)
+                {
+                    stack.Enqueue(south);
+                }
+                if (!stack.Contains(east) && !OffGrid(data, east.x, east.y) && data[east.x, east.y] && sections[east.x, east.y] == 0)
+                {
+                    stack.Enqueue(east);
+                }
+                if (!stack.Contains(west) && !OffGrid(data, west.x, west.y) && data[west.x, west.y] && sections[west.x, west.y] == 0)
+                {
+                    stack.Enqueue(west);
+                }
+            }
+            return sections;
+        }
+
+        void DebugSections(int[,] sections)
+        {
+            //have we vistied this cell yet?
+            string debug = "";
+            for (int debugY = 0; debugY < sections.GetLength(1); debugY++)
+            {
+                for (int debugX = 0; debugX < sections.GetLength(0); debugX++)
+                {
+                    debug += $"{sections[debugX, debugY]}";
+                }
+                debug += "\n";
+            }
+
+            Debug.Log(debug);
+        }
+
+        bool[,] Edge(bool[,] data)
+        {
+            int width = data.GetLength(0);
+            int height = data.GetLength(1);
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    if (x < 5 || y < 5 || x > width - 5 || y > height - 5)
+                    {
+                        data[x, y] = true;
+                    }
+                    else
+                    {
+                        data[x, y] = data[x, y];
+                    }
+                }
+            }
+            return data;
+        }
+
+
+        bool[,] GenerateRandomNoise(int width, int height, float threshold)
+        {
+            bool[,] newNoise = new bool[width, height];
+
+            for (int y = 0; y < newNoise.GetLength(1); y++)
+            {
+                for (int x = 0; x < newNoise.GetLength(0); x++)
+                {
+                    float value = Noise.NormalizedSquirrel3(rngSequenceIndex, (uint)seed);
+                    rngSequenceIndex++;
+                    if (value > threshold)
+                    {
+                        newNoise[x, y] = true;
+                    }
+                    else
+                    {
+                        newNoise[x, y] = false;
+                    }
+                }
+            }
+
+            
+            return newNoise;
+        }
+
+        bool[,] Life(bool[,] data)
+        {
+            bool[,] newData = CopyValues(data);
+
+            for (int y = 0; y < newData.GetLength(1); y++)
+            {
+                for (int x = 0; x < newData.GetLength(0); x++)
+                {
+                    int count = NeighborCount8Way(data, x, y);
+                    if(data[x, y])
+                    {
+                        //if it's alive
+                        if (count < 2)
+                        {
+                            //Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+                            newData[x, y] = false;
+                        }
+                        else if (count == 2 || count == 3)
+                        {
+                            //Any live cell with two or three live neighbours lives on to the next generation.
+                            newData[x, y] = true;
+                        }
+                        else if(count > 3)
+                        {
+                            //Any live cell with more than three live neighbours dies, as if by overpopulation.
+                            newData[x, y] = false;
+                        }
+                    }
+                    else 
+                    {
+                        //space is empty
+                        //Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+                        if (count == 3)
+                        {
+                            newData[x, y] = true;
+                        }
+                    }
+                }
+            }
+            return newData;
+        }
+        bool[,] Smooth(bool[,] data, int neighborsForLivingCells, int neighborsForDeadCells)
+        {
+            bool[,] newData = CopyValues(data);
+            //for every tile in the data
+            for (int y = 0; y < newData.GetLength(1); y++)
+            {
+                for (int x = 0; x < newData.GetLength(0); x++)
+                {
+                    //get how many neighbors
+                    int count = NeighborCount8Way(data, x, y);
+                    if (newData[x, y])
+                    {
+                        //if the tile is currently true
+                        //set the tile only if the neighbor count is 4 or greater
+                        if (count >= neighborsForLivingCells)
+                        {
+                            newData[x, y] = true;
+                        }
+                        else
+                        {
+                            newData[x, y] = false;
+                        }
+                    }
+                    else
+                    {
+                        //if the current tile is not already true
+                        //make it true if the value is 5 or greater
+                        if (count >= neighborsForDeadCells)
+                        {
+                            newData[x, y] = true;
+                        }
+                        else
+                        {
+                            newData[x, y] = false;
+                        }
+
+                    }
+                }
+            }
+            return newData;
+        }
+
+        bool[,] Sharpen(bool[,] data)
+        {
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    int count = NeighborCount4Way(data, x, y);
+                    if (data[x, y])
+                    {
+                        //if this is a space and count is > 3
+                        if (count >= 3)
+                        {
+                            data[x, y] = false;
+                        }
+                    }
+                    else
+                    {
+                        //if this is not a space and count is greater than 4
+                        if (count >= 4)
+                        {
+                            data[x, y] = true;
+                        }
+                    }
+                }
+            }
+            return data;
+        }
+
+        bool[,] Decay(bool[,] data)
+        {
+            bool[,] newData = CopyValues(data);
+            for (int y = 0; y < newData.GetLength(1); y++)
+            {
+                for (int x = 0; x < newData.GetLength(0); x++)
+                {
+                    //we do this first for RNG consistency
+                    float value = Noise.NormalizedSquirrel3(rngSequenceIndex, (uint)seed);
+                    rngSequenceIndex++;
+
+                    //if it's not a space return we only decay spaces that are full
+                    if (!newData[x, y]) continue;
+
+                    //count the number of neighbors
+                    int count = NeighborCount8Way(data, x, y);
+                    if (count < 6)
+                    {
+                        if (value < 0.5f)
+                        {
+                            newData[x, y] = false ;
+                        }
+                    }
+                }
+            }
+            return newData;
+        }
+
+        bool[,] Grow(bool[,] data)
+        {
+            bool[,] newData = CopyValues(data);
+            for (int y = 0; y < newData.GetLength(1); y++)
+            {
+                for (int x = 0; x < newData.GetLength(0); x++)
+                {
+                    //we do this first for RNG consistency
+                    float value = Noise.NormalizedSquirrel3(rngSequenceIndex, (uint)seed);
+                    rngSequenceIndex++;
+
+                    //if it's already full then we don't need to check this
+                    if (newData[x, y]) continue;
+
+                    //count the number of neighbors
+                    int count = NeighborCount8Way(data, x, y);
+
+                    if (count > 1) {
+                        if(value < 0.5f)
+                        {
+                            newData[x, y] = true;
+                        }
+                    }
+                }
+            }
+            return newData;
+        }
+
+        bool[,] ShapeCircle(bool[,] data)
+        {
+            //for every tile in the data
+            int halfWidth = data.GetLength(0) / 2;
+            int halfHeight = data.GetLength(1) / 2;
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    //check if it's inside the circle
+                    if ((Mathf.Pow(x - halfWidth, 2) + Mathf.Pow(y - halfHeight, 2)) > halfWidth * halfWidth)
+                    {
+                        data[x, y] = false;
+                    }
+                }
+            }
+            return data;
+        }
+        bool[,] ShapeCross(bool[,] data, int sizeX, int sizeY)
+        {
+            int width = data.GetLength(0);
+            int height = data.GetLength(1);
+            //for every tile in the data
+            for (int y = 0; y < data.GetLength(1); y++)
+            {
+                for (int x = 0; x < data.GetLength(0); x++)
+                {
+                    if(x > sizeX && x < width - sizeX)
+                    {
+                        data[x, y] = data[x, y];
+                    }
+                    else if(y > sizeY && y < height - sizeY)
+                    {
+                        data[x, y] = data[x, y];
+                    }
+                    else
+                    {
+                        data[x, y] = false;                        
+                    }
+                }
+            }
+            return data;
+        }
+        bool[,] CopyValues(bool[,] data)
+        {
+            bool[,] newData = new bool[data.GetLength(0), data.GetLength(1)];
+            //for every tile in the data
+            for (int y = 0; y < newData.GetLength(1); y++)
+            {
+                for (int x = 0; x < newData.GetLength(0); x++)
+                {
+                    newData[x, y] = data[x, y];
+                }
+            }
+            return newData;
+        }
+
+        private int NeighborCount8Way(bool[,] data, int x, int y)
+        {
+            int count = 0;
+            for (int yOff = -1; yOff <= 1; yOff++)
+            {
+                for (int xOff = -1; xOff <= 1; xOff++)
+                {
+                    if (yOff == 0 && xOff == 0) continue;
+
+                    //bounds check
+
+                    if (IsWall(data, x + xOff, y + yOff, gridWallsCountAsSolid))
+                    {
+                        count += 1;
+                    }
+                }
+            }
+            return count;
+        }
+        private int NeighborCount4Way(bool[,] data, int x, int y)
+        {
+            int count = 0;
+            if (IsWall(data, x - 1, y, gridWallsCountAsSolid)) count += 1;
+            if (IsWall(data, x + 1, y, gridWallsCountAsSolid)) count += 1;
+            if (IsWall(data, x, y - 1, gridWallsCountAsSolid)) count += 1;
+            if (IsWall(data, x, y + 1, gridWallsCountAsSolid)) count += 1;
+            return count;
+        }
+
+
+        private bool IsWall(bool[,] data, int x, int y, bool offGrid = false)
+        {
+            //if the value is off the grid, return the flag
+            //if the flag is true then we count pixels off the grid
+            //as being a solid block
+            if (x < 0) return offGrid;
+            if (x >= data.GetLength(0)) return offGrid;
+            if (y < 0) return offGrid; ;
+            if (y >= data.GetLength(1)) return offGrid;
+
+            return data[x, y];
+        }
+
+        private bool OffGrid(bool[,] data, int x, int y)
+        {
+            if (x < 0) return true;
+            if (x >= data.GetLength(0)) return true;
+            if (y < 0) return true; ;
+            if (y >= data.GetLength(1)) return true;
+
+            return false;
+        }
+        public bool[,] GetTileData()
+        {
+            return tileData;
+        }
+        public Texture2D GetOutputTexture()
+        {
+            return outputTexture;
+        }
+
+
+        public Texture2D GenerateTexture(bool[,] data)
+        {
+            int width = data.GetLength(0);
+            int height = data.GetLength(1);
+            Texture2D tex = new Texture2D(width, height);
+            tex.filterMode = FilterMode.Point;
+            Color32[] colors = new Color32[width * height];
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    colors[x + (y * width)] = data[x, y] ? Color.white : Color.black;
+                }
+            }
+            tex.SetPixels32(colors);
+            tex.Apply();
+            return tex;
+        }
+
     }
-}
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(CellularAutomata))]
-public class CellGenEditor : Editor
-{
-    static Texture2D blackTexture;
-
-    SerializedProperty genMethods;
-    SerializedProperty widthProp;
-    SerializedProperty heightProp;
-    SerializedProperty densityProp;
-    SerializedProperty seedProp;
-    SerializedProperty randomizeProp;
-
-    void OnEnable()
+    [CustomEditor(typeof(CellularAutomata))]
+    public class CellularAutomataEditor : Editor
     {
-        genMethods = serializedObject.FindProperty("methods");
-        widthProp = serializedObject.FindProperty("width");
-        heightProp = serializedObject.FindProperty("height");
-        densityProp = serializedObject.FindProperty("initialDensity");
-        seedProp = serializedObject.FindProperty("seed");
-        randomizeProp = serializedObject.FindProperty("randomizeSeed");
-    }
+        static Texture2D blackTexture;
 
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update ();
-
-        if (blackTexture == null) {
-            blackTexture = new Texture2D(2,2);
-            blackTexture.SetPixels32(new Color32[] { new Color32(0,0,0,255), new Color32(0,0,0,255), new Color32(0,0,0,255), new Color32(0,0,0,255)});
-            blackTexture.Apply();
-        }
-
-        CellularAutomata cellGen = target as CellularAutomata;
-        if (GUILayout.Button("Generate"))
+        public override void OnInspectorGUI()
         {
-            cellGen.Generate();
-        
-        }
+            serializedObject.Update();
 
-        EditorGUILayout.PropertyField(randomizeProp);
-        if (!randomizeProp.boolValue) {
-            EditorGUILayout.PropertyField(seedProp);
-        }
-        EditorGUILayout.PropertyField(widthProp);
-        EditorGUILayout.PropertyField(heightProp);
-        EditorGUILayout.PropertyField(densityProp);
+            if (blackTexture == null)
+            {
+                blackTexture = new Texture2D(2, 2);
+                blackTexture.SetPixels32(new Color32[] { new Color32(0, 0, 0, 255), new Color32(0, 0, 0, 255), new Color32(0, 0, 0, 255), new Color32(0, 0, 0, 255) });
+                blackTexture.Apply();
+            }
+            CellularAutomata cellularAutomata = target as CellularAutomata;
 
-        for (int i = 0; i < genMethods.arraySize; i++) 
-        {
+            base.OnInspectorGUI();
+
             GUILayout.BeginHorizontal();
+            if (cellularAutomata.GetTileData() != null)
+            {
+                int width = cellularAutomata.GetTileData().GetLength(0);
+                int height = cellularAutomata.GetTileData().GetLength(1);
+                var rect = GUILayoutUtility.GetAspectRect((float)width / height);
 
-            int currentIndex = System.Array.IndexOf(CellularAutomata.methodNames, genMethods.GetArrayElementAtIndex(i).stringValue);
-            int newIndex = EditorGUILayout.Popup(currentIndex, CellularAutomata.methodNames);
-            if (newIndex != currentIndex) {
-                genMethods.GetArrayElementAtIndex(i).stringValue = CellularAutomata.methodNames[newIndex];
+                GUI.DrawTexture(rect, cellularAutomata.GetOutputTexture());
             }
-            if (GUILayout.Button(new GUIContent("+", "Duplicate"), GUILayout.Width(20))) {
-                genMethods.InsertArrayElementAtIndex(i);
-                genMethods.GetArrayElementAtIndex(i).stringValue = genMethods.GetArrayElementAtIndex(i+1).stringValue;
-            }
-
-            if (i != 0) {
-                if (GUILayout.Button(new GUIContent("⇑", "move up"), GUILayout.Width(20))) {
-                    genMethods.MoveArrayElement(i, i-1);
-                }
-            } else {
-                GUILayout.Space(23f);
-            }
-
-            if (i != genMethods.arraySize-1) {
-                if (GUILayout.Button(new GUIContent("⇓", "move down"), GUILayout.Width(20))) {
-                    genMethods.MoveArrayElement(i, i+1);
-                }
-            } else {
-                GUILayout.Space(23f);
-            }
-
-            if (GUILayout.Button(new GUIContent("☓", "delete"), GUILayout.Width(20))) genMethods.DeleteArrayElementAtIndex(i);
-
             GUILayout.EndHorizontal();
         }
-
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button(new GUIContent("+", "add new method"))) {
-            genMethods.InsertArrayElementAtIndex(genMethods.arraySize);
-            genMethods.GetArrayElementAtIndex(genMethods.arraySize-1).stringValue = CellularAutomata.methodNames[0];
-        }
-        GUILayout.EndHorizontal();
-
-        if (cellGen.tiles != null) {
-
-            int width = cellGen.tiles.GetLength(0);
-            int height = cellGen.tiles.GetLength(1);
-            var rect = GUILayoutUtility.GetAspectRect((float) width / height);
-            float tileSize = rect.width / width;
-
-            Vector2 start = new Vector2(rect.x, rect.y);
-
-            GUI.DrawTexture(rect, cellGen.outputTexture);
-        }
-
-        GUILayout.Label($"Generation time: {cellGen.genTime.ToString("0.00")}ms");
-
-        serializedObject.ApplyModifiedProperties ();
     }
-}
 #endif
+}
