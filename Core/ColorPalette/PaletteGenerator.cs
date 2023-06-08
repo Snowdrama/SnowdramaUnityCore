@@ -26,10 +26,14 @@ public class PaletteGenerator : MonoBehaviour
         for (int i = 0; i < baseColorCount; i++) {
             output.AddRange(ColorRange(RandomBaseColor(hueStart + (i * hueOffset)), shadeCount, hueRange, satRange, valRange));
         }
-        if(palletToSaveGeneratedValues != null)
+
+
+#if UNITY_EDITOR
+        if (palletToSaveGeneratedValues != null)
         {
             palletToSaveGeneratedValues.AssignColors(output);
         }
+#endif
 
         colors = output.ToArray();
     }

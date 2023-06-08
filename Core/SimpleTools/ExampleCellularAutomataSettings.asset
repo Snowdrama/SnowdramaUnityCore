@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89103273eb9d0bf45aeb4271f122f327, type: 3}
   m_Name: ExampleCellularAutomataSettings
   m_EditorClassIdentifier: 
-  processes: 
+  width: 128
+  height: 128
+  gridWallsCountAsSolid: 0
+  threshold: 0.5
+  processes: 050000000200000002000000020000000000000000000000000000000200000003000000
