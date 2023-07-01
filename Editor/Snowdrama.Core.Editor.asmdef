@@ -2,8 +2,8 @@
     "name": "Snowdrama.Core.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:b998718984e591841a0cb1e9c54f2e6e",
-        "GUID:69448af7b92c7f342b298e06a37122aa"
+        "GUID:69448af7b92c7f342b298e06a37122aa",
+        "GUID:b998718984e591841a0cb1e9c54f2e6e"
     ],
     "includePlatforms": [
         "Editor"
