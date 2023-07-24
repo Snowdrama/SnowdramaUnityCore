@@ -33,6 +33,16 @@ namespace Snowdrama.InputTools
 
         private static Dictionary<InputAction, Dictionary<object, List<Delegate>>> InputEventDelegateMappings = new Dictionary<InputAction, Dictionary<object, List<Delegate>>>();
 
+
+        /// <summary>
+        /// Binds a controller class to the generated input class from Unity's input system
+        /// </summary>
+        /// <typeparam name="T">Generic type for the bound object instance. Must be a class</typeparam>
+        /// <param name="playerInput">The <see cref="PlayerInput"/>Object instance</param>
+        /// <param name="generatedInputClassType">The type of the generated class e.g. typeof(Controls) where Controls is the name of the Unity input asset</param>
+        /// <param name="instanceToBindTo">The object instance that contains the implemented methods</param>
+        /// <param name="Settings">Settings for the Binder, e.g. internal caching of reflection properties</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the input parameters are null</exception>
         public static void BindPlayerInputToClass<T>(PlayerInput playerInput, Type generatedInputClassType, T instanceToBindTo, PlayerInputBinderSettings Settings = default)
             where T : class
         {
