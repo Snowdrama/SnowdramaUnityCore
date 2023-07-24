@@ -63,6 +63,11 @@ namespace Snowdrama.InputTools
 
             Type instanceType = instanceToBindTo.GetType();
             (Type[] nestedTypes, Type[] nestedInterfaces, MethodInfo[] instanceMethods, Type[] instanceInterfaces) = GetReflectionProperties(instanceType, generatedInputClassType, Settings);
+            
+            if (nestedInterfaces.Length == 0)
+            {
+                throw new Exception("The Input Actions generated class need to have at least one Action Map");
+            }
 
             foreach (var ni in nestedInterfaces)
             {
@@ -114,6 +119,7 @@ namespace Snowdrama.InputTools
             Type instanceType = instanceToBindTo.GetType();
             (Type[] nestedTypes, Type[] nestedInterfaces, MethodInfo[] instanceMethods, Type[] instanceInterfaces) = GetReflectionProperties(instanceType, generatedInputClassType, Settings);
 
+          
             foreach (var ni in nestedInterfaces)
             {
                 if (!instanceInterfaces.Any(x => x.Name == ni.Name))
