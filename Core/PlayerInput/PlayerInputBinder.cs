@@ -36,6 +36,11 @@ namespace Snowdrama.InputTools
         public static void BindPlayerInputToClass<T>(PlayerInput playerInput, Type generatedInputClassType, T instanceToBindTo, PlayerInputBinderSettings Settings = default)
             where T : class
         {
+            if (!generatedInputClassType.IsClass)
+            {
+                throw new Exception("generatedInputClassType needs to be the input class");
+            }
+
             if (playerInput == null)
             {
                 throw new ArgumentNullException(nameof(playerInput));
