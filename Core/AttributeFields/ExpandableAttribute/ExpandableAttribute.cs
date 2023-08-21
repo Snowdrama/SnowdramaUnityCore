@@ -73,19 +73,31 @@ public class ExpandableAttributeDrawer : PropertyDrawer
         totalHeight += EditorGUIUtility.singleLineHeight;
 
         if (property == null)
+        {
             return totalHeight;
+        }
 
-        var objRefValue = property.objectReferenceValue;
-        if (objRefValue == null)
+        if (property.propertyType != SerializedPropertyType.ObjectReference)
+        {
             return totalHeight;
+        }
+
+        if (property.objectReferenceValue == null)
+        {
+            return totalHeight;
+        }
 
         if (!property.isExpanded)
+        {
             return totalHeight;
+        }
 
         SerializedObject targetObject = new SerializedObject(property.objectReferenceValue);
 
         if (targetObject == null)
+        {
             return totalHeight;
+        }
 
         SerializedProperty field = targetObject.GetIterator();
 
@@ -112,8 +124,12 @@ public class ExpandableAttributeDrawer : PropertyDrawer
         Rect fieldRect = new Rect(position);
         fieldRect.height = EditorGUIUtility.singleLineHeight;
 
-        var objRefValue = property.objectReferenceValue;
-        if (property == null || objRefValue == null)
+        if (property.propertyType != SerializedPropertyType.ObjectReference)
+        {
+            return;
+        }
+
+        if (property == null || property.objectReferenceValue == null)
         {
             GUIContent guiContent = new GUIContent($"{property.displayName}");
             EditorGUI.PropertyField(fieldRect, property, guiContent, true);
