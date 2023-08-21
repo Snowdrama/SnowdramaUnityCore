@@ -1,5 +1,21 @@
 # Snowdrama Unity Core
-The core of some tools I use shared among other packages
+The core of some tools I use in a lot of projects. Some of the things in here are used in my other unity toolsets.
+
+### Here's links to the other tools I made and use in my projects:
+
+[Extensions to base classes](https://github.com/Snowdrama/SnowdramaUnityClassExtensions)
+
+[UI Tools](https://github.com/Snowdrama/SnowdramaUnityUITools)
+
+[UI Routing Tools](https://github.com/Snowdrama/SnowdramaUnityUIRouterTools)
+
+[Options and Settings Tools](https://github.com/Snowdrama/SnowdramaUnityOptionTools)
+
+[Scene Transition Tools](https://github.com/Snowdrama/SnowdramaUnityTransitionTools)
+
+[Spring Animation Tools](https://github.com/Snowdrama/SnowdramaUnitySpringTools)
+
+[Simple Timer Tools](https://github.com/Snowdrama/SnowdramaUnityTimerTools)
 
 # Requirements & Disclaimer
 In theory it works with earlier versions but I have tested against 2020.3.19f1(current LTS version) but I have it set to work with 2019.1
