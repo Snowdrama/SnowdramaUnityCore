@@ -75,7 +75,8 @@ public class ExpandableAttributeDrawer : PropertyDrawer
         if (property == null)
             return totalHeight;
 
-        if (property.objectReferenceValue == null)
+        var objRefValue = property.objectReferenceValue;
+        if (objRefValue == null)
             return totalHeight;
 
         if (!property.isExpanded)
@@ -111,8 +112,8 @@ public class ExpandableAttributeDrawer : PropertyDrawer
         Rect fieldRect = new Rect(position);
         fieldRect.height = EditorGUIUtility.singleLineHeight;
 
-
-        if (property == null || property.objectReferenceValue == null)
+        var objRefValue = property.objectReferenceValue;
+        if (property == null || objRefValue == null)
         {
             GUIContent guiContent = new GUIContent($"{property.displayName}");
             EditorGUI.PropertyField(fieldRect, property, guiContent, true);
