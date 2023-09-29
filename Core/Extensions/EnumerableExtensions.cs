@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class EnumerableExtensions
@@ -25,11 +26,26 @@ public static class EnumerableExtensions
             yield return t;
     }
 
-    public static T GetRandom<T>(this List<T> source)
+    public static T GetRandom<T>(this IEnumerable<T> source)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        int count = source.Count();
+        if (count == 0) throw new Exception("GetRandom can't be called since list has no values");
+
+        return source.ElementAt(UnityEngine.Random.Range(0, count));
+    }
+    public static T GetRandom<T>(this ICollection<T> source)
     {
         if (source == null) throw new ArgumentNullException("source");
         if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
 
-        return source[UnityEngine.Random.Range(0, source.Count)];
+        return source.ElementAt(UnityEngine.Random.Range(0, source.Count));
+    }
+    public static T GetRandom<T>(this IList<T> source)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
+
+        return source.ElementAt(UnityEngine.Random.Range(0, source.Count));
     }
 }

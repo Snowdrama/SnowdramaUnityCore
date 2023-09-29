@@ -1,6 +1,6 @@
 {
   "name": "com.snowdrama.core",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The core of some tools I use shared among other packages",
   "displayName": "Snowdrama Core Tools",
   "unity": "2019.1",
@@ -9,7 +9,9 @@
     "email": "SnowdramaGames@gmail.com",
     "url": "http://www.snowdrama.net"
   },
-  "dependencies": {},
+  "dependencies": {
+    "com.unity.addressables": ""
+  },
   "type": "utility",
   "samples": [
     {
