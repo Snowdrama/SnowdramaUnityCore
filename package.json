@@ -10,7 +10,8 @@
     "url": "http://www.snowdrama.net"
   },
   "dependencies": {
-    "com.unity.addressables": "1.21.0"
+    "com.unity.addressables": "1.21.0",
+    "com.unity.inputsystem": "1.6.0"
   },
   "type": "utility",
   "samples": [
