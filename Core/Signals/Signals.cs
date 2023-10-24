@@ -6,13 +6,7 @@
 // function asserts suggestion.
 //
 // 2023, John "Snowdrama" Close
-//
-// SignalHubs can now be managed the same way signals are managed, useful for having a
-// custom hub for each 
-//
-// they allow signals and hubs to count
-// references so they are removed automatically if there's no users! Useful if you have
-// custom hubs for 
+// Used in our Ludum Dare game, and made some changes to allow more flexible useage. 
 // ========================================================================================
 // Inspired by StrangeIOC, minus the clutter.
 // Based on http://wiki.unity3d.com/index.php/CSharpMessenger_Extended
