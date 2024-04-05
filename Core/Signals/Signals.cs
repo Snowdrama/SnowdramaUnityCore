@@ -80,7 +80,6 @@ public interface ISignal
     void AddUser();
     void RemoveUser();
     int GetUserCount();
-    string Hash { get; }
 }
 
 /// <summary>
@@ -255,22 +254,6 @@ public class SignalHub
 public abstract class ABaseSignal : ISignal
 {
     public int UserCount {  get; private set; }
-    protected string _hash;
-
-    /// <summary>
-    /// Unique id for this ammoSignal
-    /// </summary>
-    public string Hash
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(_hash))
-            {
-                _hash = this.GetType().ToString();
-            }
-            return _hash;
-        }
-    }
 
     /// <summary>
     /// Called when a user is added to the signal
