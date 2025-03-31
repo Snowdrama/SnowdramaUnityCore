@@ -1,72 +1,92 @@
-// ========================================================================================
-// Signals - A typesafe, lightweight messaging lib for Unity.
-// ========================================================================================
-// 2017-2019, Yanko Oliveira  / http://yankooliveira.com / http://twitter.com/yankooliveira
-// Special thanks to Max Knoblich for code review and Aswhin Sudhir for the anonymous 
-// function asserts suggestion.
-//
-// 2023, John "Snowdrama" Close
-// Used in our Ludum Dare game, and made some changes to allow more flexible useage. 
-// ========================================================================================
-// Inspired by StrangeIOC, minus the clutter.
-// Based on http://wiki.unity3d.com/index.php/CSharpMessenger_Extended
-// Converted to use strongly typed parameters and prevent use of strings as ids.
-//
-// Supports up to 3 parameters. More than that, and you should probably use a VO.
-//
-// Usage:
-//    1) Define your class, eg:
-//          ScoreSignal : ASignal<int> {}
-//    2) Add listeners on portions that should react, eg on Awake():
-//          Signals.Get<ScoreSignal>().AddListener(OnScore);
-//    3) Dispatch, eg:
-//          Signals.Get<ScoreSignal>().Dispatch(userScore);
-//    4) Don'time forget to remove the listeners upon destruction! Eg on OnDestroy():
-//          Signals.Get<ScoreSignal>().RemoveListener(OnScore);
-//    5) If you don'time want to use global Signals, you can have your very own SignalHub
-//       instance in your class
-//
-// ========================================================================================
-// Added by Snowdrama 10/24/2023:
-//
-// SignalHubs can now be created similar to how signals work, it uses name strings for the hubs name
-// For example using something like a unique entity Id, or something like "PlayerOne"
-//      1) Get a reference to your hub:
-//          playerHub = Signals.GetHub("PlayerOne");
-//      2) Signal refrences should be gotten through the unique hub instead of the globalHub:
-//          scoreSignal = playerHub.Get<ScoreSignal>();
-//
-// SignalHubs now can have signal usages returned to them so we can know if the signal is
-// no longer being used, and if the hub also has no users.
-// 
-// Short example of using and returning signals and hubs.
-// 
-// public class ScoreSignal : ASignal<int> { }
-// public class GameOverSignal : ASignal { }
-// public class Player : MonoBehaviour
-// {
-//     SignalHub playerHub;
-//     ScoreSignal scoreSignal;
-//     void OnEnable()
-//     {
-//         playerHub = Signals.GetHub("PlayerOne");
-//         scoreSignal = playerHub.Get<ScoreSignal>();
-//         //Note this is a global signal
-//         gameOverSignal = Signals.Get<GameOverSignal>(); 
-//     }
-// 
-//     void OnDisable()
-//     {
-//         //remember to return the score signal to the hub!
-//         playerHub.Return<ScoreSignal>();
-// 
-//         //also return the hub referene!
-//         Signals.ReturnHub("PlayerOne");
-//
-//         //global signals are just returned to the globalHub
-//         Signals.Return<GameOverSignal>();
-//     }
-// }
+/* ========================================================================================
+ * Signals - A typesafe, lightweight messaging lib for Unity.
+ * ========================================================================================
+ * 2017-2019, Yanko Oliveira  / http://yankooliveira.com / http://twitter.com/yankooliveira
+ * Special thanks to Max Knoblich for code review and Aswhin Sudhir for the anonymous 
+ * function asserts suggestion.
+ *
+ * 2023, John "Snowdrama" Close
+ * Used in our Ludum Dare game, and made some changes to allow more flexible useage. 
+ * ========================================================================================
+ * Inspired by StrangeIOC, minus the clutter.
+ * Based on http://wiki.unity3d.com/index.php/CSharpMessenger_Extended
+ * Converted to use strongly typed parameters and prevent use of strings as ids.
+ *
+ * Supports up to 3 parameters. More than that, and you should probably use a VO.
+ *
+ * Usage:
+ *    1) Define your class, eg:
+ *          ScoreSignal : ASignal<int> {}
+ *    2) Add listeners on portions that should react, eg on Awake():
+ *          Signals.Get<ScoreSignal>().AddListener(OnScore);
+ *    3) Dispatch, eg:
+ *          Signals.Get<ScoreSignal>().Dispatch(userScore);
+ *    4) Don'time forget to remove the listeners upon destruction! Eg on OnDestroy():
+ *          Signals.Get<ScoreSignal>().RemoveListener(OnScore);
+ *    5) If you don'time want to use global Signals, you can have your very own SignalHub
+ *       instance in your class
+ *
+ * ========================================================================================
+ * Added by Snowdrama 10/24/2023:
+ *
+ * SignalHubs can now be created similar to how signals work, it uses name strings for the hubs name
+ * For example using something like a unique entity Id, or something like "PlayerOne"
+ *      1) Get a reference to your hub:
+ *          playerHub = Signals.GetHub("PlayerOne");
+ *      2) Signal refrences should be gotten through the unique hub instead of the globalHub:
+ *          scoreSignal = playerHub.Get<ScoreSignal>();
+ *
+ * SignalHubs now can have signal usages returned to them so we can know if the signal is
+ * no longer being used, and if the hub also has no users.
+ * 
+ * Short example of using and returning signals and hubs.
+ * 
+ * public class ScoreSignal : ASignal<int> { }
+ * public class GameOverSignal : ASignal { }
+ * public class Player : MonoBehaviour
+ * {
+ *     SignalHub playerHub;
+ *     ScoreSignal scoreSignal;
+ *     void OnEnable()
+ *     {
+ *         playerHub = Signals.GetHub("PlayerOne");
+ *         scoreSignal = playerHub.Get<ScoreSignal>();
+ *         //Note this is a global signal
+ *         gameOverSignal = Signals.Get<GameOverSignal>(); 
+ *     }
+ * 
+ *     void OnDisable()
+ *     {
+ *         //remember to return the score signal to the hub!
+ *         playerHub.Return<ScoreSignal>();
+ * 
+ *         //also return the hub referene!
+ *         Signals.ReturnHub("PlayerOne");
+ *
+ *         //global signals are just returned to the globalHub
+ *         Signals.Return<GameOverSignal>();
+ *     }
+ * }
+ * 
+ * This could be converted into using objects however I've found this to be messy
+ * in cases where you procedurally generate the hub's parent object. 
+ * 
+ * however the solution for normal signals does prevent the use of string keys which 
+ * does mean more typesafety and prevents typos which is ideal
+ * 
+ * Maybe at some point we consider this, or some kind of variant that works with a
+ * type AND a string. 
+ * 
+ * public class Player1Hub : ASignalHub {}
+ * 
+ * Signals.GetHub<Player1Hub>().Get<ScoreSignal>();
+ * 
+ * vs.
+ * 
+ * Signals.GetHub("Player1Hub").Get<ScoreSignal>();
+ * 
+ */
+
 
 using System;
 using System.Collections.Generic;
@@ -447,6 +467,50 @@ public abstract class ASignal<T, U, V> : ABaseSignal
         if (callback != null)
         {
             callback(arg1, arg2, arg3);
+        }
+    }
+}
+
+/// <summary>
+/// Strongly typed messages with 3 parameter
+/// </summary>
+/// <typeparam name="T">First parameter type</typeparam>
+/// <typeparam name="U">Second parameter type</typeparam>
+/// <typeparam name="V">Third parameter type</typeparam>
+public abstract class ASignal<T, U, V, W> : ABaseSignal
+{
+    private Action<T, U, V, W> callback;
+
+    /// <summary>
+    /// Adds a listener to this Signal
+    /// </summary>
+    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    public void AddListener(Action<T, U, V, W> handler)
+    {
+#if UNITY_EDITOR
+        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
+            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+#endif
+        callback += handler;
+    }
+
+    /// <summary>
+    /// Removes a listener from this Signal
+    /// </summary>
+    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    public void RemoveListener(Action<T, U, V, W> handler)
+    {
+        callback -= handler;
+    }
+
+    /// <summary>
+    /// Dispatch this ammoSignal
+    /// </summary>
+    public void Dispatch(T arg1, U arg2, V arg3, W arg4)
+    {
+        if (callback != null)
+        {
+            callback(arg1, arg2, arg3, arg4);
         }
     }
 }

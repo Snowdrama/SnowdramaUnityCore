@@ -166,9 +166,9 @@ namespace Snowdrama.IO
 		//public delegate void OnWebLoaded(string responseText);
 		////this creates a 
 		//public static IEnumerator LoadJsonFromURL(string url, OnWebLoaded callback){
-		//	WWW request = new WWW(url);
-		//	yield return request;
-		//	callback(request.text);
+		//	WWW _request = new WWW(url);
+		//	yield return _request;
+		//	callback(_request.text);
 		//}
 
 		////this creates a new file
@@ -177,9 +177,9 @@ namespace Snowdrama.IO
 		//	//put headers here as the api requires
 		//	headers["content-type"] = "application/json; charset=utf-8";
 
-		//	WWW request = new WWW(url, Encoding.ASCII.GetBytes(body), headers);
-		//	yield return request;
-		//	callback(request.text);
+		//	WWW _request = new WWW(url, Encoding.ASCII.GetBytes(body), headers);
+		//	yield return _request;
+		//	callback(_request.text);
 		//}
 
 	}

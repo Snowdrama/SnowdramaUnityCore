@@ -1,0 +1,22 @@
+{
+    "name": "Snowdrama.Core.GameDataTools",
+    "rootNamespace": "",
+    "references": [
+        "GUID:70b388a0097951c4f8c94cc376d2c05e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.nuget.newtonsoft-json",
+            "expression": "3.2.1",
+            "define": "HAS_NEWTONSOFT_JSON"
+        }
+    ],
+    "noEngineReferences": false
+}
