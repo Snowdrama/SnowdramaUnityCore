@@ -1,7 +1,7 @@
 {
   "name": "com.snowdrama.core",
-  "version": "0.1.4",
-  "description": "The core of some tools I use shared among other packages",
+  "version": "0.2.0",
+  "description": "The core tools I use for my games. This package contains the core tools I use for my games. It is a collection of scripts, shaders, and other assets that I use to speed up my development process.",
   "displayName": "Snowdrama Core Tools",
   "unity": "2019.1",
   "author": {
@@ -15,9 +15,39 @@
   "type": "utility",
   "samples": [
     {
-      "displayName": "Core Example",
-      "description": "Contains Examples of some of the Core features",
-      "path": "Samples~/CoreExamples"
+      "displayName": "Expandable Attribute Sample",
+      "description": "Shows the use of Expandable Attribute in the Inspector",
+      "path": "Samples~/ExpandableAttributeSample"
+    },
+    {
+      "displayName": "Spring Sample",
+      "description": "Shows the use of Springs",
+      "path": "Samples~/SpringSample"
+    },
+    {
+      "displayName": "Tag System Sample",
+      "description": "Shows the use of TagSystems",
+      "path": "Samples~/TagSystemSample"
+    },
+    {
+      "displayName": "Timer Sample",
+      "description": "Shows the use of Timers",
+      "path": "Samples~/TimerSample"
+    },
+    {
+      "displayName": "UI Router Sample",
+      "description": "Shows the use of UIRouters",
+      "path": "Samples~/UIRouterSample"
+    },
+    {
+      "displayName": "UI Tools Sample",
+      "description": "Shows the use of UITools",
+      "path": "Samples~/UIToolsSample"
+    },
+    {
+      "displayName": "Virtual Cursor Sample",
+      "description": "Shows the use of VirtualCursors",
+      "path": "Samples~/VirtualCursorSample"
     }
   ]
 }

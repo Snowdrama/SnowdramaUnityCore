@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-04-01
+### Changed
+- Combined all the packages back into this package after being split off in 2020-2024
+### Added
+- Transitions
+- Springs
+- Timers and Iterators
+- Signals
+- Options and Settings
+- Generic LootTable implementation
+- UI Components and UI Router tools
+- GameData object and save/load system
+- Other Things... 
+
 ## [0.1.7] - 2019-11-15
 ### Added
 - Added the RequiredInterfaceAttribute class and editor
