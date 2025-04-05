@@ -156,7 +156,7 @@ public static class Messages
         }
     }
 
-    //This uses the UserCount value of a message hub
+    //This uses the UserCount Value of a message hub
     //to remove unused messages. This has to be called
     //manually and 
     public static void CleanUpMessageHubs()

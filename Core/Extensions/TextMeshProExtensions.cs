@@ -30,7 +30,7 @@ public static class TextMeshProExtensions
     }
 
     /// <summary>
-    /// Sets the color of the text according to the parameter value.
+    /// Sets the color of the text according to the parameter Value.
     /// </summary>
     public static string Color(this string input, Color color)
     { 
@@ -38,7 +38,7 @@ public static class TextMeshProExtensions
     }
 
     /// <summary>
-    /// Sets the color of the text according to the parameter value in hex
+    /// Sets the color of the text according to the parameter Value in hex
     /// </summary>
     public static string Color(this string input, string hexColor)
     {

@@ -9,7 +9,7 @@ namespace Snowdrama.Transition
 {
     public abstract class Transition : MonoBehaviour
     {
-        [Tooltip("The key that allows you to ")]
+        [Tooltip("The Key that allows you to ")]
         [SerializeField] public string transitionName;
         public abstract void UpdateTransition(float transitionValue, bool hiding);
         public virtual void OnTransitionStarted() { }

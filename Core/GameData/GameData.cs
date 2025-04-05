@@ -13,26 +13,26 @@ namespace Snowdrama.Core.GameData
         /// </summary>
         public string gameScene;
 
-        public StringIntDictionary intFlags = new StringIntDictionary();
-        public StringStringDictionary stringFlags = new StringStringDictionary();
-        public StringFloatDictionary floatFlags = new StringFloatDictionary();
-        public StringBoolDictionary boolFlags = new StringBoolDictionary();
-        public StringVector2Dictionary vector2Flags = new StringVector2Dictionary();
-        public StringVector3Dictionary vector3Flags = new StringVector3Dictionary();
-        public StringVector2IntDictionary vector2IntFlags = new StringVector2IntDictionary();
-        public StringVector3IntDictionary vector3IntFlags = new StringVector3IntDictionary();
-        public StringColorDictionary colorFlags = new StringColorDictionary();
+        public UnityDictionary<string, int> intFlags = new UnityDictionary<string, int>();
+        public UnityDictionary<string, string> stringFlags = new UnityDictionary<string, string>();
+        public UnityDictionary<string, float> floatFlags = new UnityDictionary<string, float>();
+        public UnityDictionary<string, bool> boolFlags = new UnityDictionary<string, bool>();
+        public UnityDictionary<string, Vector2> vector2Flags = new UnityDictionary<string, Vector2>();
+        public UnityDictionary<string, Vector3> vector3Flags = new UnityDictionary<string, Vector3>();
+        public UnityDictionary<string, Vector2Int> vector2IntFlags = new UnityDictionary<string, Vector2Int>();
+        public UnityDictionary<string, Vector3Int> vector3IntFlags = new UnityDictionary<string, Vector3Int>();
+        public UnityDictionary<string, Color> colorFlags = new UnityDictionary<string, Color>();
         public void Init()
         {
-            intFlags = new StringIntDictionary();
-            stringFlags = new StringStringDictionary();
-            floatFlags = new StringFloatDictionary();
-            boolFlags = new StringBoolDictionary();
-            vector2Flags = new StringVector2Dictionary();
-            vector3Flags = new StringVector3Dictionary();
-            vector2IntFlags = new StringVector2IntDictionary();
-            vector3IntFlags = new StringVector3IntDictionary();
-            colorFlags = new StringColorDictionary();
+            intFlags = new UnityDictionary<string, int>();
+            stringFlags = new UnityDictionary<string, string>();
+            floatFlags = new UnityDictionary<string, float>();
+            boolFlags = new UnityDictionary<string, bool>();
+            vector2Flags = new UnityDictionary<string, Vector2>();
+            vector3Flags = new UnityDictionary<string, Vector3>();
+            vector2IntFlags = new UnityDictionary<string, Vector2Int>();
+            vector3IntFlags = new UnityDictionary<string, Vector3Int>();
+            colorFlags = new UnityDictionary<string, Color>();
         }
 
         public void ClearAllData()

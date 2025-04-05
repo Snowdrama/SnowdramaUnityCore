@@ -6,7 +6,7 @@ using UnityEngine;
 public static class IntExtensions
 {
     /// <summary>
-    /// Clamp a value and wrap around to based on the difference
+    /// Clamp a Value and wrap around to based on the difference
     /// </summary>
     /// <param name="value"></param>
     /// <param name="minValue"></param>

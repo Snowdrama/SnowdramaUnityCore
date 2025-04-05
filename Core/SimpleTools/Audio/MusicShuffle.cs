@@ -6,7 +6,6 @@ namespace Snow.SimpleTools
 {
     public class MusicShuffle : MonoBehaviour
     {
-
         public List<AudioSource> allSongs;
         public AudioSource currentSource;
 
@@ -24,6 +23,7 @@ namespace Snow.SimpleTools
         }
         void Update()
         {
+            //go to new song if finished
             if (currentSource == null || !currentSource.isPlaying || currentSource.time >= currentSource.clip.length)
             {
                 currentSource = allSongs[Random.Range(0, allSongs.Count)];

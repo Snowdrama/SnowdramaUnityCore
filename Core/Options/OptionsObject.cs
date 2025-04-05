@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Snowdrama.Core.GameData;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,16 +9,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "OptionsObject", menuName = "OptionsObject")]
 public class OptionsObject : ScriptableObject
 {
-    public List<FloatOption> defaultFloats = new List<FloatOption>();
-    public List<IntOption> defaultInts = new List<IntOption>();
-    public List<BoolOption> defaultBools = new List<BoolOption>();
-    public List<StringOption> defaultStrings = new List<StringOption>();
+    public UnityDictionary<string, float> defaultFloats = new UnityDictionary<string, float>();
+    public UnityDictionary<string, int> defaultInts = new UnityDictionary<string, int>();
+    public UnityDictionary<string, bool> defaultBools = new UnityDictionary<string, bool>();
+    public UnityDictionary<string, string> defaultStrings = new UnityDictionary<string, string>();
 
     [Header("Debug [Edits Do Nothing]")]
-    public List<FloatOption> debugFloats = new List<FloatOption>();
-    public List<IntOption> debugInts = new List<IntOption>();
-    public List<BoolOption> debugBools = new List<BoolOption>();
-    public List<StringOption> debugStrings = new List<StringOption>();
+    public UnityDictionary<string, float> debugFloats = new UnityDictionary<string, float>();
+    public UnityDictionary<string, int> debugInts = new UnityDictionary<string, int>();
+    public UnityDictionary<string, bool> debugBools = new UnityDictionary<string, bool>();
+    public UnityDictionary<string, string> debugStrings = new UnityDictionary<string, string>();
 
     [System.Serializable]
     struct OptionData
@@ -90,30 +91,30 @@ public class OptionsObject : ScriptableObject
         }
         foreach (var item in defaultInts)
         {
-            if (!data.intValues.ContainsKey(item.name))
+            if (!data.intValues.ContainsKey(item.Key))
             {
-                data.intValues.Add(item.name, item.defaultValue);
+                data.intValues.Add(item.Key, item.Value);
             }
         }
         foreach (var item in defaultFloats)
         {
-            if (!data.floatValues.ContainsKey(item.name))
+            if (!data.floatValues.ContainsKey(item.Key))
             {
-                data.floatValues.Add(item.name, item.defaultValue);
+                data.floatValues.Add(item.Key, item.Value);
             }
         }
         foreach (var item in defaultBools)
         {
-            if (!data.boolValues.ContainsKey(item.name))
+            if (!data.boolValues.ContainsKey(item.Key))
             {
-                data.boolValues.Add(item.name, item.defaultValue);
+                data.boolValues.Add(item.Key, item.Value);
             }
         }
         foreach (var item in defaultStrings)
         {
-            if (!data.stringValues.ContainsKey(item.name))
+            if (!data.stringValues.ContainsKey(item.Key))
             {
-                data.stringValues.Add(item.name, item.defaultValue);
+                data.stringValues.Add(item.Key, item.Value);
             }
         }
     }
@@ -170,7 +171,7 @@ public class OptionsObject : ScriptableObject
         }
         else
         {
-            Debug.LogWarning($"No key! {name} : {defaultValue}");
+            Debug.LogWarning($"No Key! {name} : {defaultValue}");
             return defaultValue;
         }
     }
@@ -232,62 +233,45 @@ public class OptionsObject : ScriptableObject
 
     public void OnEnable()
     {
-        Debug.LogWarning("OnEnable");
+        Debug.Log($"Loading Options From: {Application.persistentDataPath}");
         Load();
     }
 
-    //private void OnDisable()
-    //{
-    //    Debug.LogWarning("OnDisable");
-    //    Debug.LogWarning($"Disabling and Saving! {initialized}");
-    //    Save();
-    //}
+    private void OnDisable()
+    {
+        Debug.Log($"Saving Options To: {Application.persistentDataPath}");
+        Save();
+    }
 
     public void UpdateDebug()
     {
-        debugInts = new List<IntOption>();
+        debugInts = new UnityDictionary<string, int>();
         foreach (var item in data.intValues)
         {
             var key = item.Key;
             var value = item.Value;
-            debugInts.Add(new IntOption()
-            {
-                name = key,
-                defaultValue = value
-            });
+            debugInts.Add(key, value);
         }
-        debugFloats = new List<FloatOption>();
+        debugFloats = new UnityDictionary<string, float>();
         foreach (var item in data.floatValues)
         {
             var key = item.Key;
             var value = item.Value;
-            debugFloats.Add(new FloatOption()
-            {
-                name = key,
-                defaultValue = value
-            });
+            debugFloats.Add(key, value);
         }
-        debugBools = new List<BoolOption>();
+        debugBools = new UnityDictionary<string, bool>();
         foreach (var item in data.boolValues)
         {
             var key = item.Key;
             var value = item.Value;
-            debugBools.Add(new BoolOption()
-            {
-                name = key,
-                defaultValue = value
-            });
+            debugBools.Add(key, value);
         }
-        debugStrings = new List<StringOption>();
+        debugStrings = new UnityDictionary<string, string>();
         foreach (var item in data.stringValues)
         {
             var key = item.Key;
             var value = item.Value;
-            debugStrings.Add(new StringOption()
-            {
-                name = key,
-                defaultValue = value
-            });
+            debugStrings.Add(key, value);
         }
     }
 }

@@ -6,9 +6,9 @@ using UnityEngine;
 public static class HexExtensions
 {
     /// <summary>
-    /// Takes a value from 0 to 255 and returns a hex value from 00 to FF
+    /// Takes a Value from 0 to 255 and returns a hex Value from 00 to FF
     /// </summary>
-    /// <param name="value">A value from 0 to 255</param>
+    /// <param name="value">A Value from 0 to 255</param>
     /// <returns>a string representing hex from 00 to FF</returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static string IntToHexByte(int value)

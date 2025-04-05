@@ -16,7 +16,7 @@ namespace Snowdrama.Core
         /// if It sucks or doesn't produce good results it's 100% my implementation
         /// and not their algorithm
         /// </summary>
-        /// <param name="position">Some positional value in the noise array</param>
+        /// <param name="position">Some positional Value in the noise array</param>
         /// <param name="seed">The noise functions seed</param>
         /// <returns></returns>
         public static uint Squirrel3(int position, uint seed = 69420)
@@ -61,7 +61,7 @@ namespace Snowdrama.Core
             uint xValue = Squirrel3(x, seed);
             uint yValue = Squirrel3(y, seed);
 
-            //??? no clue how good a value this returns
+            //??? no clue how good a Value this returns
             return xValue ^ yValue;
         }
 
@@ -71,7 +71,7 @@ namespace Snowdrama.Core
             uint yValue = Squirrel3(y, seed);
             uint zValue = Squirrel3(z, seed);
 
-            //??? no clue how good a value this returns
+            //??? no clue how good a Value this returns
             return xValue ^ yValue ^ zValue;
         }
 
@@ -89,7 +89,7 @@ namespace Snowdrama.Core
         /// 
         /// This function is intended to be a joke... unless it works...
         /// </summary>
-        /// <param name="position">Some positional value in the noise array</param>
+        /// <param name="position">Some positional Value in the noise array</param>
         /// <param name="seed">The noise functions seed</param>
         /// <returns></returns>
         public static long Squirrel64(int position, long seed = 69420717580085)

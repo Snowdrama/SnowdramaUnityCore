@@ -12,10 +12,10 @@ public static class FloatExtensions
     }
 
     /// <summary>
-    /// Takes a value from one range and remaps it relative to a different range.
+    /// Takes a Value from one range and remaps it relative to a different range.
     /// For example 0.5 in a 0 to 1 range, would map to 5 in a 0 to 10 range.
     /// </summary>
-    /// <param name="value">The value to remap</param>
+    /// <param name="value">The Value to remap</param>
     /// <param name="fromMin">Original Min</param>
     /// <param name="fromMax">Original Max</param>
     /// <param name="toMin">New Min</param>
@@ -27,7 +27,7 @@ public static class FloatExtensions
     }
 
     /// <summary>
-    /// Clamp a value and wrap around to based on the difference
+    /// Clamp a Value and wrap around to based on the difference
     ///
     /// the wrap clamp maxValue is EXCLUSIVE so 
     /// WrapClamp(0, 5, 4.99f) = 4.99f
@@ -73,7 +73,7 @@ public static class FloatExtensions
     }
 
     /// <summary>
-    /// Returns the normalized value of the value between min and max;
+    /// Returns the normalized Value of the Value between min and max;
     /// </summary>
     /// <param name="value"></param>
     /// <param name="min"></param>
@@ -85,8 +85,8 @@ public static class FloatExtensions
 
     }
     /// <summary>
-    /// Returns the normalized value of the value between min and max unclamped
-    /// For example InverseLerpUnclamped(value = 20, min = 0, max = 10); will 
+    /// Returns the normalized Value of the Value between min and max unclamped
+    /// For example InverseLerpUnclamped(Value = 20, min = 0, max = 10); will 
     /// return 2 since 20 is double the size of the range
     /// </summary>
     /// <param name="value"></param>

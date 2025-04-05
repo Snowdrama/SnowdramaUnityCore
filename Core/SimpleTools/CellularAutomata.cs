@@ -483,7 +483,7 @@ namespace Snowdrama.Core
                     else
                     {
                         //if the current tile is not already true
-                        //make it true if the value is 5 or greater
+                        //make it true if the Value is 5 or greater
                         if (count >= neighborsForDeadCells)
                         {
                             newData[x, y] = true;
@@ -672,7 +672,7 @@ namespace Snowdrama.Core
 
         private bool IsWall(bool[,] data, int x, int y, bool offGrid = false)
         {
-            //if the value is off the grid, return the flag
+            //if the Value is off the grid, return the flag
             //if the flag is true then we count pixels off the grid
             //as being a solid block
             if (x < 0) return offGrid;

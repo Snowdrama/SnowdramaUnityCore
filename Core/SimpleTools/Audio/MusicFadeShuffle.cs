@@ -37,9 +37,12 @@ public class MusicFadeShuffle : MonoBehaviour
             //start transitioning
             if (!nextSource.isPlaying)
             {
+                //set the next clip
                 nextSource.clip = songs[Random.Range(0, songs.Count)];
                 nextSource.Play();
             }
+
+            //fade between the sources until we get to the end
             var currentSourceVolume = Mathf.Lerp(0.0f, 1.0f, Mathf.InverseLerp(0.0f, 0.1f, timePercentRemaining));
             var nextSourceVolume = Mathf.Lerp(0.0f, 1.0f, Mathf.InverseLerp(0.1f, 0.0f, timePercentRemaining));
             currentSource.volume = currentSourceVolume;
@@ -48,6 +51,7 @@ public class MusicFadeShuffle : MonoBehaviour
 
         if (!currentSource.isPlaying)
         {
+            //swap sources
             var temp = currentSource;
             currentSource = nextSource;
             nextSource = temp;
