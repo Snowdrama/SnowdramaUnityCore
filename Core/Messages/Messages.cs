@@ -90,14 +90,10 @@
  * 
  */
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Base interface for Messages
-/// </summary>
 public interface IMessage
 {
     void AddUser();
@@ -105,81 +101,91 @@ public interface IMessage
     int GetUserCount();
 }
 
-/// <summary>
-/// Messages main facade class for global, game-wide messages
-/// </summary>
-public static class Messages
+public class Messages
 {
     private static Dictionary<string, MessageHub> messageHubs = new Dictionary<string, MessageHub>();
     private static readonly MessageHub globalHub = new MessageHub();
 
+    /// <summary>
+    /// Gets a message object of the type passed and adds a user count
+    /// 
+    /// If you use it imediately and don't store a reference use Messages.GetNoCount
+    /// Ex: Messages.GetNoCount<SType>().Dispatch(); <- No reference is stored.
+    /// 
+    /// This gets it from a global hub, if you need to differentiate it
+    /// consider using GetHub("SomeIdentifier").Get<SType>() instead
+    /// 
+    /// Make sure to return the reference so memory can be freed if no references exist using:
+    /// Messages.Return<SType>();
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
     public static SType Get<SType>() where SType : IMessage, new()
     {
         return globalHub.Get<SType>();
     }
-
+    /// <summary>
+    /// Gets a message object of the type passed DOES NOT add a reference count
+    /// 
+    /// If you are holding onto a reference use Messages.Get to ensure the memory it isn't freed
+    /// Ex: Messages.Get<SType>(); <- Reference is counted.
+    /// 
+    /// This gets it from a global hub, if you need to differentiate it
+    /// consider using GetHub("SomeIdentifier").Get<SType>() instead
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
+    /// <returns></returns>
+    public static SType GetNoCount<SType>() where SType : IMessage, new()
+    {
+        return globalHub.Get<SType>();
+    }
+    /// <summary>
+    /// Returns a copy of the message, by returning it we can 
+    /// manage the memory of used messages, if there's no,
+    /// users actively holding a reference. 
+    /// </summary>
+    /// <typeparam name="SType"></typeparam>
     public static void Return<SType>() where SType : IMessage, new()
     {
         globalHub.Return<SType>();
     }
-
-    //This creates a named MessageHub which is useful for when
-    //Several components share a message type
-    //for example a local multiplayer game where each
-    //player has a health bar. They can all share a "HealthChanged" message
-    //but each use their own hub!
+    /// <summary>
+    /// get's a message without changing user count
+    /// used for intentionally only getting it to dispatch once
+    /// </summary>
+    /// <typeparam name="SType">The Type of the message</typeparam>
+    /// <returns>The message object</returns>
+    public static SType GetOnce<SType>() where SType : IMessage, new()
+    {
+        return globalHub.GetOnce<SType>();
+    }
     public static MessageHub GetHub(string hubName)
     {
         if (messageHubs.ContainsKey(hubName))
         {
-            messageHubs[hubName].AddUser();
             return messageHubs[hubName];
         }
         var newHub = new MessageHub();
-        newHub.AddUser();
         messageHubs.Add(hubName, newHub);
         return newHub;
     }
-
-    //returns a reference of the hub 
     public static void ReturnHub(string hubName)
     {
-        //you can only return a use of a hub that exists
         if (messageHubs.ContainsKey(hubName))
         {
             messageHubs[hubName].RemoveUser();
             if (messageHubs[hubName].UserCount == 0)
             {
-                //if the hub has no users, then we can safely remove it!
                 messageHubs.Remove(hubName);
             }
         }
     }
-
-    //This uses the UserCount Value of a message hub
-    //to remove unused messages. This has to be called
-    //manually and 
-    public static void CleanUpMessageHubs()
-    {
-        //remove any hubs with 0 messages
-        //
-        messageHubs = messageHubs.Where(x => x.Value.GetMessageCount() == 0).ToDictionary(x => x.Key, x => x.Value);
-    }
 }
 
-/// <summary>
-/// A hub for Messages you can implement in your classes
-/// </summary>
 public class MessageHub
 {
     public int UserCount { get; private set; }
     private Dictionary<Type, IMessage> messages = new Dictionary<Type, IMessage>();
 
-    /// <summary>
-    /// Getter for a ammoMessage of a given type
-    /// </summary>
-    /// <typeparam name="SType">Type of ammoMessage</typeparam>
-    /// <returns>The proper ammoMessage binding</returns>
     public SType Get<SType>() where SType : IMessage, new()
     {
         Type messageType = typeof(SType);
@@ -195,38 +201,58 @@ public class MessageHub
         return newMessage;
     }
 
-    /// <summary>
-    /// Returns a useage of a message, decreasing the users of that message
-    /// allowing us to know when the message is no longer in use
-    /// </summary>
-    /// <typeparam name="SType"></typeparam>
+    public SType GetNoCount<SType>() where SType : IMessage, new()
+    {
+        Type messageType = typeof(SType);
+        IMessage message;
+
+        if (messages.TryGetValue(messageType, out message))
+        {
+            return (SType)message;
+        }
+        var newMessage = (SType)Bind(messageType);
+        return newMessage;
+    }
+
     public void Return<SType>() where SType : IMessage, new()
     {
         Type messageType = typeof(SType);
         IMessage message;
 
-        //obviously we can't return a message that doesn't exist
         if (messages.TryGetValue(messageType, out message))
         {
-            //decrease the user count
             message.RemoveUser();
-
-            //if there's no users, remove the whole message
-            //so we can dispose of the hub if there's no
-            //messages in the hub
-            if(message.GetUserCount() == 0)
+            if (message.GetUserCount() == 0)
             {
                 messages.Remove(messageType);
             }
         }
     }
-
-    private IMessage Bind(Type messageType)
+    /// <summary>
+    /// get's a message without changing user count
+    /// used for intentionally only getting it to dispatch once
+    /// </summary>
+    /// <typeparam name="SType">The Type of the message</typeparam>
+    /// <returns>The message object</returns>
+    public SType GetOnce<SType>() where SType : IMessage, new()
     {
+        Type messageType = typeof(SType);
         IMessage message;
+
         if (messages.TryGetValue(messageType, out message))
         {
-            UnityEngine.Debug.LogError(string.Format("Message already registered for type {0}", messageType.ToString()));
+            return (SType)message;
+        }
+        var newMessage = (SType)Bind(messageType);
+        return newMessage;
+    }
+
+    public IMessage Bind(Type messageType)
+    {
+        IMessage message;
+
+        if (messages.TryGetValue(messageType, out message))
+        {
             return message;
         }
 
@@ -234,286 +260,148 @@ public class MessageHub
         messages.Add(messageType, message);
         return message;
     }
-
-    private IMessage Bind<T>() where T : IMessage, new()
-    {
-        return Bind(typeof(T));
-    }
-
-    public int GetMessageCount()
-    {
-        return messages.Count;
-    }
-
-    /// <summary>
-    /// Called when a user is added to the message
-    /// </summary>
     public void AddUser()
     {
         ++UserCount;
     }
-
-    /// <summary>
-    /// Get the nuber of message users
-    /// </summary>
-    /// <returns>The number of message users</returns>
     public int GetUserCount()
     {
         return UserCount;
     }
-
-    /// <summary>
-    /// Called when a user is removed from a message
-    /// </summary>
     public void RemoveUser()
     {
         --UserCount;
     }
 }
-
-/// <summary>
-/// Abstract class for Messages, provides hash by type functionality
-/// </summary>
 public abstract class ABaseMessage : IMessage
 {
-    public int UserCount {  get; private set; }
-
-    /// <summary>
-    /// Called when a user is added to the message
-    /// </summary>
+    public int UserCount { get; private set; }
     public void AddUser()
     {
         ++UserCount;
     }
-
-    /// <summary>
-    /// Get the nuber of message users
-    /// </summary>
-    /// <returns>The number of message users</returns>
     public int GetUserCount()
     {
         return UserCount;
     }
-
-    /// <summary>
-    /// Called when a user is removed from a message
-    /// </summary>
     public void RemoveUser()
     {
         --UserCount;
     }
 }
 
-/// <summary>
-/// Strongly typed messages with no parameters
-/// </summary>
 public abstract class AMessage : ABaseMessage
 {
     private Action callback;
 
-    /// <summary>
-    /// Adds a listener to this Message
-    /// </summary>
-    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action handler)
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
-#endif
         callback += handler;
     }
 
-    /// <summary>
-    /// Removes a listener from this Message
-    /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action handler)
     {
         callback -= handler;
     }
 
-    /// <summary>
-    /// Dispatch this ammoMessage
-    /// </summary>
     public void Dispatch()
     {
-        if (callback != null)
-        {
-            callback();
-        }
+        callback?.Invoke();
     }
 }
-
-/// <summary>
-/// Strongly typed messages with 1 parameter
-/// </summary>
-/// <typeparam name="T">Parameter type</typeparam>
 public abstract class AMessage<T> : ABaseMessage
 {
     private Action<T> callback;
 
-    /// <summary>
-    /// Adds a listener to this Message
-    /// </summary>
-    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T> handler)
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
-#endif
         callback += handler;
     }
 
-    /// <summary>
-    /// Removes a listener from this Message
-    /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T> handler)
     {
         callback -= handler;
     }
 
-    /// <summary>
-    /// Dispatch this ammoMessage with 1 parameter
-    /// </summary>
     public void Dispatch(T arg1)
     {
-        if (callback != null)
-        {
-            callback(arg1);
-        }
+        callback?.Invoke(arg1);
     }
 }
-
-/// <summary>
-/// Strongly typed messages with 2 parameters
-/// </summary>
-/// <typeparam name="T">First parameter type</typeparam>
-/// <typeparam name="U">Second parameter type</typeparam>
 public abstract class AMessage<T, U> : ABaseMessage
 {
     private Action<T, U> callback;
 
-    /// <summary>
-    /// Adds a listener to this Message
-    /// </summary>
-    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U> handler)
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
-#endif
         callback += handler;
     }
 
-    /// <summary>
-    /// Removes a listener from this Message
-    /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U> handler)
     {
         callback -= handler;
     }
 
-    /// <summary>
-    /// Dispatch this ammoMessage
-    /// </summary>
     public void Dispatch(T arg1, U arg2)
     {
-        if (callback != null)
-        {
-            callback(arg1, arg2);
-        }
+        callback?.Invoke(arg1, arg2);
     }
 }
-
-/// <summary>
-/// Strongly typed messages with 3 parameter
-/// </summary>
-/// <typeparam name="T">First parameter type</typeparam>
-/// <typeparam name="U">Second parameter type</typeparam>
-/// <typeparam name="V">Third parameter type</typeparam>
 public abstract class AMessage<T, U, V> : ABaseMessage
 {
     private Action<T, U, V> callback;
 
-    /// <summary>
-    /// Adds a listener to this Message
-    /// </summary>
-    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U, V> handler)
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
-#endif
         callback += handler;
     }
 
-    /// <summary>
-    /// Removes a listener from this Message
-    /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U, V> handler)
     {
         callback -= handler;
     }
 
-    /// <summary>
-    /// Dispatch this ammoMessage
-    /// </summary>
     public void Dispatch(T arg1, U arg2, V arg3)
     {
-        if (callback != null)
-        {
-            callback(arg1, arg2, arg3);
-        }
+        callback?.Invoke(arg1, arg2, arg3);
     }
 }
 
-/// <summary>
-/// Strongly typed messages with 3 parameter
-/// </summary>
-/// <typeparam name="T">First parameter type</typeparam>
-/// <typeparam name="U">Second parameter type</typeparam>
-/// <typeparam name="V">Third parameter type</typeparam>
 public abstract class AMessage<T, U, V, W> : ABaseMessage
 {
     private Action<T, U, V, W> callback;
 
-    /// <summary>
-    /// Adds a listener to this Message
-    /// </summary>
-    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U, V, W> handler)
     {
-#if UNITY_EDITOR
-        UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
-#endif
         callback += handler;
     }
 
-    /// <summary>
-    /// Removes a listener from this Message
-    /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U, V, W> handler)
     {
         callback -= handler;
     }
 
-    /// <summary>
-    /// Dispatch this ammoMessage
-    /// </summary>
     public void Dispatch(T arg1, U arg2, V arg3, W arg4)
     {
-        if (callback != null)
-        {
-            callback(arg1, arg2, arg3, arg4);
-        }
+        callback?.Invoke(arg1, arg2, arg3, arg4);
+    }
+}
+public abstract class AMessage<T1, T2, T3, T4, T5> : ABaseMessage
+{
+    private Action<T1, T2, T3, T4, T5> callback;
+
+    public void AddListener(Action<T1, T2, T3, T4, T5> handler)
+    {
+        callback += handler;
+    }
+
+    public void RemoveListener(Action<T1, T2, T3, T4, T5> handler)
+    {
+        callback -= handler;
+    }
+
+    public void Dispatch(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+    {
+        callback?.Invoke(arg1, arg2, arg3, arg4, arg5);
     }
 }

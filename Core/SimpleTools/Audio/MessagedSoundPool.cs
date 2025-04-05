@@ -80,11 +80,10 @@ public partial class MessagedSoundPool : MonoBehaviour
         {
             if (!players[i].isPlaying)
             {
+
+                players[i].volume = volume;
+
                 var mixerGroups = Mixer.FindMatchingGroups(busName);
-
-                var busVolumeDb = Mathf.Lerp(-80, 0, volume / 100);
-                players[i].volume = busVolumeDb;
-
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];
@@ -93,6 +92,7 @@ public partial class MessagedSoundPool : MonoBehaviour
                 {
                     players[i].outputAudioMixerGroup = null;
                 }
+
                 players[i].clip = stream;
                 players[i].spatializePostEffects = false;
                 players[i].spatialBlend = 0.0f;
@@ -120,11 +120,9 @@ public partial class MessagedSoundPool : MonoBehaviour
         {
             if (!players[i].isPlaying)
             {
+                players[i].volume = volume;
+
                 var mixerGroups = Mixer.FindMatchingGroups(busName);
-
-                var busVolumeDb = Mathf.Lerp(-80, 0, volume / 100);
-                players[i].volume = busVolumeDb;
-
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];
@@ -161,11 +159,9 @@ public partial class MessagedSoundPool : MonoBehaviour
         {
             if (!players[i].isPlaying)
             {
+                players[i].volume = volume;
+
                 var mixerGroups = Mixer.FindMatchingGroups(busName);
-
-                var busVolumeDb = Mathf.Lerp(-80, 0, volume / 100);
-                players[i].volume = busVolumeDb;
-
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];

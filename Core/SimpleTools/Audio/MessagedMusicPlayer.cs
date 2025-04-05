@@ -30,16 +30,16 @@ public class MessagedMusicPlayer : MonoBehaviour
     }
 
     [Header("Target Songs")]
-    [SerializeField] string nextSong = "";
-    [SerializeField] string currentSong = "";
+    [SerializeField, EditorReadOnly] string nextSong = "";
+    [SerializeField, EditorReadOnly] string currentSong = "";
 
     [Header("Transition Info")]
-    [SerializeField] bool transitioning;
-    [SerializeField] float transitionTime;
-    [SerializeField] float transitionSpeed = 1.0f;
+    [SerializeField, EditorReadOnly] bool transitioning;
+    [SerializeField, EditorReadOnly] float transitionTime;
+    [SerializeField, EditorReadOnly] float transitionSpeed = 1.0f;
 
     [Header("Debug")]
-    [SerializeField] bool debugChangeSong;
+    [SerializeField, EditorReadOnly] bool debugChangeSong;
 
     void Update()
     {
