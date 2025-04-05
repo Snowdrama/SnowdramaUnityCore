@@ -101,5 +101,31 @@ public static class FloatExtensions
     public static bool InRange(this int value, int min, int max) 
     {
         return value >= min && value <= max;
-    } 
+    }
+
+    /// <summary>
+    /// Takes a value from 0 to 1.0 and converts it to decibels.
+    /// </summary>
+    /// <param name="linear">A value from 0.0 to 1.0</param>
+    /// <returns>A value in Decibels from -144.0 to 0.0</returns>
+    public static float LinearToDecibel(this float linear)
+    {
+        float dB;
+        if (linear != 0)
+            dB = 20.0f * Mathf.Log10(linear);
+        else
+            dB = -144.0f;
+        return dB;
+    }
+
+    /// <summary>
+    /// Takes a value in decibels and converts it to linear.
+    /// </summary>
+    /// <param name="linear">A value in dB</param>
+    /// <returns>A value from 0-1 linearly</returns>
+    public static float DecibelToLinear(float dB)
+    {
+        float linear = Mathf.Pow(10.0f, dB / 20.0f);
+        return linear;
+    }
 }

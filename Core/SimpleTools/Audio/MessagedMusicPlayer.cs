@@ -12,19 +12,36 @@ public class MessagedMusicPlayer : MonoBehaviour
 {
     public UnityDictionary<string, AudioClip> songs;
     PlayMusicRequestMessage requestMessage;
-    AudioSource currentSource;
-    AudioSource nextSource;
+
+    [SerializeField] AudioSource currentSource;
+    [SerializeField] AudioSource nextSource;
 
     void Start()
     {
         
     }
-    float timePercentRemaining;
-    bool transitioning;
-    float transitionTime;
-    float transitionSpeed = 1.0f;
+
+    [Header("Target Songs")]
+    [SerializeField] string nextSong = "";
+    [SerializeField] string currentSong = "";
+
+    [Header("Transition Info")]
+    [SerializeField] bool transitioning;
+    [SerializeField] float transitionTime;
+    [SerializeField] float transitionSpeed = 1.0f;
+
+    [Header("Debug")]
+    [SerializeField] bool debugChangeSong;
+
     void Update()
     {
+        if (debugChangeSong)
+        {
+            Messages.Get<PlayMusicRequestMessage>().Dispatch(songs.GetRandom().Key, 0.25f);
+            debugChangeSong = false;
+        }
+
+
         if (nextSong != currentSong)
         {
             //set the next clip
@@ -32,29 +49,27 @@ public class MessagedMusicPlayer : MonoBehaviour
             nextSource.Play();
             transitioning = true;
             transitionTime = 0;
-            nextSong = currentSong;
+            currentSong = nextSong;
         }
 
         if (transitioning)
         {
             transitionTime += Time.deltaTime * transitionSpeed;
-            float lerp = Mathf.Lerp(0, 1, transitionTime);
-            float invLerp = Mathf.Lerp(1, 0, transitionTime);
 
             //fade between the sources until we get to the end
-            var currentSourceVolume = Mathf.Lerp(0.0f, 1.0f, Mathf.InverseLerp(0.0f, 0.1f, timePercentRemaining));
-            var nextSourceVolume = Mathf.Lerp(0.0f, 1.0f, Mathf.InverseLerp(0.1f, 0.0f, timePercentRemaining));
+            var nextSourceVolume = Mathf.Lerp(0.0f, 1.0f, transitionTime);
+            var currentSourceVolume = Mathf.Lerp(1.0f, 0.0f, transitionTime);
+
             currentSource.volume = currentSourceVolume;
             nextSource.volume = nextSourceVolume;
 
-            if(lerp >= 1.0f)
+            if(transitionTime >= 1.0f)
             {
                 transitioning = false;
                 transitionTime = 0;
                 SwapSources();
             }
         }
-
     }
 
     void SwapSources()
@@ -78,12 +93,13 @@ public class MessagedMusicPlayer : MonoBehaviour
         requestMessage = null;
     }
 
-    string currentSong = "";
-    string nextSong = "";
 
     private void SetNextSong(string setNextSong, float setTransitionSpeed)
     {
-        transitionSpeed = setTransitionSpeed;
-        nextSong = setNextSong;
+        if (currentSong != setNextSong)
+        {
+            transitionSpeed = setTransitionSpeed;
+            nextSong = setNextSong;
+        }
     }
 }

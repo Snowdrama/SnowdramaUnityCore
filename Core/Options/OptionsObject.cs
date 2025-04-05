@@ -41,20 +41,16 @@ public class OptionsObject : ScriptableObject
         AddDefaults();
         Debug.Log($"Saving To ApplicationDataFolder: {Application.persistentDataPath}/options.json");
         var jsonString = JsonConvert.SerializeObject(data);
-        Debug.Log(jsonString);
         File.WriteAllText($"{Application.persistentDataPath}/options.json", jsonString);
-        Debug.Log($"Done Saving!!!");
         UpdateDebug();
     }
 
     public void Load()
     {
         Debug.Log($"Loading From ApplicationDataFolder: {Application.persistentDataPath}/options.json");
-        
         if (File.Exists($"{Application.persistentDataPath}/options.json"))
         {
             var jsonString = File.ReadAllText($"{Application.persistentDataPath}/options.json");
-            Debug.Log(jsonString);
             data = JsonConvert.DeserializeObject<OptionData>(jsonString);
         }
         else
@@ -67,7 +63,6 @@ public class OptionsObject : ScriptableObject
         }
         AddDefaults();
         Save();
-        Debug.Log($"Done Loading!!!");
         UpdateDebug();
     }
 
