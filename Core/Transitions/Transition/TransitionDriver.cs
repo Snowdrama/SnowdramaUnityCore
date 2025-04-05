@@ -153,12 +153,15 @@ namespace Snowdrama.Transition
 
         public void ValidateTransition()
         {
+            if (!Application.isPlaying)
+            {
+                return;
+            }
             if(transitions.Keys.Count == 0)
             {
                 Debug.LogError($"Transition list has 0 transitions, one transition is required", this.gameObject);
                 return;
             }
-
             if (currentTransition == null)
             {
                 currentTransition = transitions[transitions.Keys.First()];
