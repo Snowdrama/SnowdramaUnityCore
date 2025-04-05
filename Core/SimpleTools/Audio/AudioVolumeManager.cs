@@ -21,7 +21,8 @@ public class AudioVolumeManager : MonoBehaviour
     {
         foreach (var item in audioChannelData)
         {
-            audioMixer.SetFloat(item.mixerChannelName, options.GetFloatValue(item.optionsKey, item.defaultValue));
+            //0 to 1 comverted logarithmically to -80 to 0 DB
+            audioMixer.SetFloat(item.mixerChannelName, Mathf.Log10(options.GetFloatValue(item.optionsKey, item.defaultValue) * 100) * 20);
         }
     }
 }

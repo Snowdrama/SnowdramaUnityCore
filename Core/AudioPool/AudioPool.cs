@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Audio;
 
-public class PlaySoundSignal : ASignal<AudioClip, string, float> {}
-public class PlaySoundSignal2D : ASignal<AudioClip, Vector2, string, float> {}
-public class PlaySoundSignal3D : ASignal<AudioClip, Vector3, string, float> {}
+public class PlaySoundMessage : AMessage<AudioClip, string, float> {}
+public class PlaySoundMessage2D : AMessage<AudioClip, Vector2, string, float> {}
+public class PlaySoundMessage3D : AMessage<AudioClip, Vector3, string, float> {}
 
 public partial class MessagedSoundPool : MonoBehaviour
 {
@@ -16,9 +16,9 @@ public partial class MessagedSoundPool : MonoBehaviour
 
     List<AudioSource> players = new List<AudioSource>();
 
-    PlaySoundSignal _playSoundSignal;
-    PlaySoundSignal3D _playSoundSignal3D;
-    PlaySoundSignal2D _playSoundSignal2D;
+    PlaySoundMessage _playSoundMessage;
+    PlaySoundMessage3D _playSoundMessage3D;
+    PlaySoundMessage2D _playSoundMessage2D;
 
     [SerializeField] AudioMixer Mixer;
     public void Awake()
@@ -54,24 +54,24 @@ public partial class MessagedSoundPool : MonoBehaviour
             }
         }
 
-        _playSoundSignal = Signals.Get<PlaySoundSignal>();
-        _playSoundSignal.AddListener(PlaySound);
-        _playSoundSignal2D = Signals.Get<PlaySoundSignal2D>();
-        _playSoundSignal2D.AddListener(PlayPositionedSound2D);
-        _playSoundSignal3D = Signals.Get<PlaySoundSignal3D>();
-        _playSoundSignal3D.AddListener(PlayPositionedSound3D);
+        _playSoundMessage = Messages.Get<PlaySoundMessage>();
+        _playSoundMessage.AddListener(PlaySound);
+        _playSoundMessage2D = Messages.Get<PlaySoundMessage2D>();
+        _playSoundMessage2D.AddListener(PlayPositionedSound2D);
+        _playSoundMessage3D = Messages.Get<PlaySoundMessage3D>();
+        _playSoundMessage3D.AddListener(PlayPositionedSound3D);
     }
 
     public void OnDestroy()
     {
-        _playSoundSignal.RemoveListener(PlaySound);
-        _playSoundSignal2D.RemoveListener(PlayPositionedSound2D);
-        _playSoundSignal3D.RemoveListener(PlayPositionedSound3D);
+        _playSoundMessage.RemoveListener(PlaySound);
+        _playSoundMessage2D.RemoveListener(PlayPositionedSound2D);
+        _playSoundMessage3D.RemoveListener(PlayPositionedSound3D);
 
 
-        Signals.Return<PlaySoundSignal>();
-        Signals.Return<PlaySoundSignal3D>();
-        Signals.Return<PlaySoundSignal2D>();
+        Messages.Return<PlaySoundMessage>();
+        Messages.Return<PlaySoundMessage3D>();
+        Messages.Return<PlaySoundMessage2D>();
     }
 
     public void PlaySound(AudioClip stream, string busName, float volume)

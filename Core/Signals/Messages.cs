@@ -1,5 +1,5 @@
 /* ========================================================================================
- * Signals - A typesafe, lightweight messaging lib for Unity.
+ * Messages(Previously Signals) - A typesafe, lightweight messaging lib for Unity.
  * ========================================================================================
  * 2017-2019, Yanko Oliveira  / http://yankooliveira.com / http://twitter.com/yankooliveira
  * Special thanks to Max Knoblich for code review and Aswhin Sudhir for the anonymous 
@@ -7,6 +7,9 @@
  *
  * 2023, John "Snowdrama" Close
  * Used in our Ludum Dare game, and made some changes to allow more flexible useage. 
+ * 
+ * Changed name to Messages as this as I use this in to Godot as well 
+ * and godot has something called messages but it's different.
  * ========================================================================================
  * Inspired by StrangeIOC, minus the clutter.
  * Based on http://wiki.unity3d.com/index.php/CSharpMessenger_Extended
@@ -16,74 +19,74 @@
  *
  * Usage:
  *    1) Define your class, eg:
- *          ScoreSignal : ASignal<int> {}
+ *          ScoreMessage : AMessage<int> {}
  *    2) Add listeners on portions that should react, eg on Awake():
- *          Signals.Get<ScoreSignal>().AddListener(OnScore);
+ *          Messages.Get<ScoreMessage>().AddListener(OnScore);
  *    3) Dispatch, eg:
- *          Signals.Get<ScoreSignal>().Dispatch(userScore);
+ *          Messages.Get<ScoreMessage>().Dispatch(userScore);
  *    4) Don'time forget to remove the listeners upon destruction! Eg on OnDestroy():
- *          Signals.Get<ScoreSignal>().RemoveListener(OnScore);
- *    5) If you don'time want to use global Signals, you can have your very own SignalHub
+ *          Messages.Get<ScoreMessage>().RemoveListener(OnScore);
+ *    5) If you don'time want to use global Messages, you can have your very own MessageHub
  *       instance in your class
  *
  * ========================================================================================
  * Added by Snowdrama 10/24/2023:
  *
- * SignalHubs can now be created similar to how signals work, it uses name strings for the hubs name
+ * MessageHubs can now be created similar to how messages work, it uses name strings for the hubs name
  * For example using something like a unique entity Id, or something like "PlayerOne"
  *      1) Get a reference to your hub:
- *          playerHub = Signals.GetHub("PlayerOne");
- *      2) Signal refrences should be gotten through the unique hub instead of the globalHub:
- *          scoreSignal = playerHub.Get<ScoreSignal>();
+ *          playerHub = Messages.GetHub("PlayerOne");
+ *      2) Message refrences should be gotten through the unique hub instead of the globalHub:
+ *          scoreMessage = playerHub.Get<ScoreMessage>();
  *
- * SignalHubs now can have signal usages returned to them so we can know if the signal is
+ * MessageHubs now can have message usages returned to them so we can know if the message is
  * no longer being used, and if the hub also has no users.
  * 
- * Short example of using and returning signals and hubs.
+ * Short example of using and returning messages and hubs.
  * 
- * public class ScoreSignal : ASignal<int> { }
- * public class GameOverSignal : ASignal { }
+ * public class ScoreMessage : AMessage<int> { }
+ * public class GameOverMessage : AMessage { }
  * public class Player : MonoBehaviour
  * {
- *     SignalHub playerHub;
- *     ScoreSignal scoreSignal;
+ *     MessageHub playerHub;
+ *     ScoreMessage scoreMessage;
  *     void OnEnable()
  *     {
- *         playerHub = Signals.GetHub("PlayerOne");
- *         scoreSignal = playerHub.Get<ScoreSignal>();
- *         //Note this is a global signal
- *         gameOverSignal = Signals.Get<GameOverSignal>(); 
+ *         playerHub = Messages.GetHub("PlayerOne");
+ *         scoreMessage = playerHub.Get<ScoreMessage>();
+ *         //Note this is a global message
+ *         gameOverMessage = Messages.Get<GameOverMessage>(); 
  *     }
  * 
  *     void OnDisable()
  *     {
- *         //remember to return the score signal to the hub!
- *         playerHub.Return<ScoreSignal>();
+ *         //remember to return the score message to the hub!
+ *         playerHub.Return<ScoreMessage>();
  * 
  *         //also return the hub referene!
- *         Signals.ReturnHub("PlayerOne");
+ *         Messages.ReturnHub("PlayerOne");
  *
- *         //global signals are just returned to the globalHub
- *         Signals.Return<GameOverSignal>();
+ *         //global messages are just returned to the globalHub
+ *         Messages.Return<GameOverMessage>();
  *     }
  * }
  * 
  * This could be converted into using objects however I've found this to be messy
  * in cases where you procedurally generate the hub's parent object. 
  * 
- * however the solution for normal signals does prevent the use of string keys which 
+ * however the solution for normal messages does prevent the use of string keys which 
  * does mean more typesafety and prevents typos which is ideal
  * 
  * Maybe at some point we consider this, or some kind of variant that works with a
  * type AND a string. 
  * 
- * public class Player1Hub : ASignalHub {}
+ * public class Player1Hub : AMessageHub {}
  * 
- * Signals.GetHub<Player1Hub>().Get<ScoreSignal>();
+ * Messages.GetHub<Player1Hub>().Get<ScoreMessage>();
  * 
  * vs.
  * 
- * Signals.GetHub("Player1Hub").Get<ScoreSignal>();
+ * Messages.GetHub("Player1Hub").Get<ScoreMessage>();
  * 
  */
 
@@ -93,9 +96,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Base interface for Signals
+/// Base interface for Messages
 /// </summary>
-public interface ISignal
+public interface IMessage
 {
     void AddUser();
     void RemoveUser();
@@ -103,38 +106,38 @@ public interface ISignal
 }
 
 /// <summary>
-/// Signals main facade class for global, game-wide signals
+/// Messages main facade class for global, game-wide messages
 /// </summary>
-public static class Signals
+public static class Messages
 {
-    private static Dictionary<string, SignalHub> signalHubs = new Dictionary<string, SignalHub>();
-    private static readonly SignalHub globalHub = new SignalHub();
+    private static Dictionary<string, MessageHub> messageHubs = new Dictionary<string, MessageHub>();
+    private static readonly MessageHub globalHub = new MessageHub();
 
-    public static SType Get<SType>() where SType : ISignal, new()
+    public static SType Get<SType>() where SType : IMessage, new()
     {
         return globalHub.Get<SType>();
     }
 
-    public static void Return<SType>() where SType : ISignal, new()
+    public static void Return<SType>() where SType : IMessage, new()
     {
         globalHub.Return<SType>();
     }
 
-    //This creates a named SignalHub which is useful for when
-    //Several components share a signal type
+    //This creates a named MessageHub which is useful for when
+    //Several components share a message type
     //for example a local multiplayer game where each
-    //player has a health bar. They can all share a "HealthChanged" signal
+    //player has a health bar. They can all share a "HealthChanged" message
     //but each use their own hub!
-    public static SignalHub GetHub(string hubName)
+    public static MessageHub GetHub(string hubName)
     {
-        if (signalHubs.ContainsKey(hubName))
+        if (messageHubs.ContainsKey(hubName))
         {
-            signalHubs[hubName].AddUser();
-            return signalHubs[hubName];
+            messageHubs[hubName].AddUser();
+            return messageHubs[hubName];
         }
-        var newHub = new SignalHub();
+        var newHub = new MessageHub();
         newHub.AddUser();
-        signalHubs.Add(hubName, newHub);
+        messageHubs.Add(hubName, newHub);
         return newHub;
     }
 
@@ -142,108 +145,108 @@ public static class Signals
     public static void ReturnHub(string hubName)
     {
         //you can only return a use of a hub that exists
-        if (signalHubs.ContainsKey(hubName))
+        if (messageHubs.ContainsKey(hubName))
         {
-            signalHubs[hubName].RemoveUser();
-            if (signalHubs[hubName].UserCount == 0)
+            messageHubs[hubName].RemoveUser();
+            if (messageHubs[hubName].UserCount == 0)
             {
                 //if the hub has no users, then we can safely remove it!
-                signalHubs.Remove(hubName);
+                messageHubs.Remove(hubName);
             }
         }
     }
 
-    //This uses the UserCount value of a signal hub
-    //to remove unused signals. This has to be called
+    //This uses the UserCount value of a message hub
+    //to remove unused messages. This has to be called
     //manually and 
-    public static void CleanUpSignalHubs()
+    public static void CleanUpMessageHubs()
     {
-        //remove any hubs with 0 signals
+        //remove any hubs with 0 messages
         //
-        signalHubs = signalHubs.Where(x => x.Value.GetSignalCount() == 0).ToDictionary(x => x.Key, x => x.Value);
+        messageHubs = messageHubs.Where(x => x.Value.GetMessageCount() == 0).ToDictionary(x => x.Key, x => x.Value);
     }
 }
 
 /// <summary>
-/// A hub for Signals you can implement in your classes
+/// A hub for Messages you can implement in your classes
 /// </summary>
-public class SignalHub
+public class MessageHub
 {
     public int UserCount { get; private set; }
-    private Dictionary<Type, ISignal> signals = new Dictionary<Type, ISignal>();
+    private Dictionary<Type, IMessage> messages = new Dictionary<Type, IMessage>();
 
     /// <summary>
-    /// Getter for a ammoSignal of a given type
+    /// Getter for a ammoMessage of a given type
     /// </summary>
-    /// <typeparam name="SType">Type of ammoSignal</typeparam>
-    /// <returns>The proper ammoSignal binding</returns>
-    public SType Get<SType>() where SType : ISignal, new()
+    /// <typeparam name="SType">Type of ammoMessage</typeparam>
+    /// <returns>The proper ammoMessage binding</returns>
+    public SType Get<SType>() where SType : IMessage, new()
     {
-        Type signalType = typeof(SType);
-        ISignal signal;
+        Type messageType = typeof(SType);
+        IMessage message;
 
-        if (signals.TryGetValue(signalType, out signal))
+        if (messages.TryGetValue(messageType, out message))
         {
-            signal.AddUser();
-            return (SType)signal;
+            message.AddUser();
+            return (SType)message;
         }
-        var newSignal = (SType)Bind(signalType);
-        newSignal.AddUser();
-        return newSignal;
+        var newMessage = (SType)Bind(messageType);
+        newMessage.AddUser();
+        return newMessage;
     }
 
     /// <summary>
-    /// Returns a useage of a signal, decreasing the users of that signal
-    /// allowing us to know when the signal is no longer in use
+    /// Returns a useage of a message, decreasing the users of that message
+    /// allowing us to know when the message is no longer in use
     /// </summary>
     /// <typeparam name="SType"></typeparam>
-    public void Return<SType>() where SType : ISignal, new()
+    public void Return<SType>() where SType : IMessage, new()
     {
-        Type signalType = typeof(SType);
-        ISignal signal;
+        Type messageType = typeof(SType);
+        IMessage message;
 
-        //obviously we can't return a signal that doesn't exist
-        if (signals.TryGetValue(signalType, out signal))
+        //obviously we can't return a message that doesn't exist
+        if (messages.TryGetValue(messageType, out message))
         {
             //decrease the user count
-            signal.RemoveUser();
+            message.RemoveUser();
 
-            //if there's no users, remove the whole signal
+            //if there's no users, remove the whole message
             //so we can dispose of the hub if there's no
-            //signals in the hub
-            if(signal.GetUserCount() == 0)
+            //messages in the hub
+            if(message.GetUserCount() == 0)
             {
-                signals.Remove(signalType);
+                messages.Remove(messageType);
             }
         }
     }
 
-    private ISignal Bind(Type signalType)
+    private IMessage Bind(Type messageType)
     {
-        ISignal signal;
-        if (signals.TryGetValue(signalType, out signal))
+        IMessage message;
+        if (messages.TryGetValue(messageType, out message))
         {
-            UnityEngine.Debug.LogError(string.Format("Signal already registered for type {0}", signalType.ToString()));
-            return signal;
+            UnityEngine.Debug.LogError(string.Format("Message already registered for type {0}", messageType.ToString()));
+            return message;
         }
 
-        signal = (ISignal)Activator.CreateInstance(signalType);
-        signals.Add(signalType, signal);
-        return signal;
+        message = (IMessage)Activator.CreateInstance(messageType);
+        messages.Add(messageType, message);
+        return message;
     }
 
-    private ISignal Bind<T>() where T : ISignal, new()
+    private IMessage Bind<T>() where T : IMessage, new()
     {
         return Bind(typeof(T));
     }
 
-    public int GetSignalCount()
+    public int GetMessageCount()
     {
-        return signals.Count;
+        return messages.Count;
     }
 
     /// <summary>
-    /// Called when a user is added to the signal
+    /// Called when a user is added to the message
     /// </summary>
     public void AddUser()
     {
@@ -251,16 +254,16 @@ public class SignalHub
     }
 
     /// <summary>
-    /// Get the nuber of signal users
+    /// Get the nuber of message users
     /// </summary>
-    /// <returns>The number of signal users</returns>
+    /// <returns>The number of message users</returns>
     public int GetUserCount()
     {
         return UserCount;
     }
 
     /// <summary>
-    /// Called when a user is removed from a signal
+    /// Called when a user is removed from a message
     /// </summary>
     public void RemoveUser()
     {
@@ -269,14 +272,14 @@ public class SignalHub
 }
 
 /// <summary>
-/// Abstract class for Signals, provides hash by type functionality
+/// Abstract class for Messages, provides hash by type functionality
 /// </summary>
-public abstract class ABaseSignal : ISignal
+public abstract class ABaseMessage : IMessage
 {
     public int UserCount {  get; private set; }
 
     /// <summary>
-    /// Called when a user is added to the signal
+    /// Called when a user is added to the message
     /// </summary>
     public void AddUser()
     {
@@ -284,16 +287,16 @@ public abstract class ABaseSignal : ISignal
     }
 
     /// <summary>
-    /// Get the nuber of signal users
+    /// Get the nuber of message users
     /// </summary>
-    /// <returns>The number of signal users</returns>
+    /// <returns>The number of message users</returns>
     public int GetUserCount()
     {
         return UserCount;
     }
 
     /// <summary>
-    /// Called when a user is removed from a signal
+    /// Called when a user is removed from a message
     /// </summary>
     public void RemoveUser()
     {
@@ -304,34 +307,34 @@ public abstract class ABaseSignal : ISignal
 /// <summary>
 /// Strongly typed messages with no parameters
 /// </summary>
-public abstract class ASignal : ABaseSignal
+public abstract class AMessage : ABaseMessage
 {
     private Action callback;
 
     /// <summary>
-    /// Adds a listener to this Signal
+    /// Adds a listener to this Message
     /// </summary>
-    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action handler)
     {
 #if UNITY_EDITOR
         UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
 #endif
         callback += handler;
     }
 
     /// <summary>
-    /// Removes a listener from this Signal
+    /// Removes a listener from this Message
     /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action handler)
     {
         callback -= handler;
     }
 
     /// <summary>
-    /// Dispatch this ammoSignal
+    /// Dispatch this ammoMessage
     /// </summary>
     public void Dispatch()
     {
@@ -346,34 +349,34 @@ public abstract class ASignal : ABaseSignal
 /// Strongly typed messages with 1 parameter
 /// </summary>
 /// <typeparam name="T">Parameter type</typeparam>
-public abstract class ASignal<T> : ABaseSignal
+public abstract class AMessage<T> : ABaseMessage
 {
     private Action<T> callback;
 
     /// <summary>
-    /// Adds a listener to this Signal
+    /// Adds a listener to this Message
     /// </summary>
-    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T> handler)
     {
 #if UNITY_EDITOR
         UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
 #endif
         callback += handler;
     }
 
     /// <summary>
-    /// Removes a listener from this Signal
+    /// Removes a listener from this Message
     /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T> handler)
     {
         callback -= handler;
     }
 
     /// <summary>
-    /// Dispatch this ammoSignal with 1 parameter
+    /// Dispatch this ammoMessage with 1 parameter
     /// </summary>
     public void Dispatch(T arg1)
     {
@@ -389,34 +392,34 @@ public abstract class ASignal<T> : ABaseSignal
 /// </summary>
 /// <typeparam name="T">First parameter type</typeparam>
 /// <typeparam name="U">Second parameter type</typeparam>
-public abstract class ASignal<T, U> : ABaseSignal
+public abstract class AMessage<T, U> : ABaseMessage
 {
     private Action<T, U> callback;
 
     /// <summary>
-    /// Adds a listener to this Signal
+    /// Adds a listener to this Message
     /// </summary>
-    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U> handler)
     {
 #if UNITY_EDITOR
         UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
 #endif
         callback += handler;
     }
 
     /// <summary>
-    /// Removes a listener from this Signal
+    /// Removes a listener from this Message
     /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U> handler)
     {
         callback -= handler;
     }
 
     /// <summary>
-    /// Dispatch this ammoSignal
+    /// Dispatch this ammoMessage
     /// </summary>
     public void Dispatch(T arg1, U arg2)
     {
@@ -433,34 +436,34 @@ public abstract class ASignal<T, U> : ABaseSignal
 /// <typeparam name="T">First parameter type</typeparam>
 /// <typeparam name="U">Second parameter type</typeparam>
 /// <typeparam name="V">Third parameter type</typeparam>
-public abstract class ASignal<T, U, V> : ABaseSignal
+public abstract class AMessage<T, U, V> : ABaseMessage
 {
     private Action<T, U, V> callback;
 
     /// <summary>
-    /// Adds a listener to this Signal
+    /// Adds a listener to this Message
     /// </summary>
-    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U, V> handler)
     {
 #if UNITY_EDITOR
         UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
 #endif
         callback += handler;
     }
 
     /// <summary>
-    /// Removes a listener from this Signal
+    /// Removes a listener from this Message
     /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U, V> handler)
     {
         callback -= handler;
     }
 
     /// <summary>
-    /// Dispatch this ammoSignal
+    /// Dispatch this ammoMessage
     /// </summary>
     public void Dispatch(T arg1, U arg2, V arg3)
     {
@@ -477,34 +480,34 @@ public abstract class ASignal<T, U, V> : ABaseSignal
 /// <typeparam name="T">First parameter type</typeparam>
 /// <typeparam name="U">Second parameter type</typeparam>
 /// <typeparam name="V">Third parameter type</typeparam>
-public abstract class ASignal<T, U, V, W> : ABaseSignal
+public abstract class AMessage<T, U, V, W> : ABaseMessage
 {
     private Action<T, U, V, W> callback;
 
     /// <summary>
-    /// Adds a listener to this Signal
+    /// Adds a listener to this Message
     /// </summary>
-    /// <param name="handler">Method to be called when ammoSignal is fired</param>
+    /// <param name="handler">Method to be called when ammoMessage is fired</param>
     public void AddListener(Action<T, U, V, W> handler)
     {
 #if UNITY_EDITOR
         UnityEngine.Debug.Assert(handler.Method.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false).Length == 0,
-            "Adding anonymous delegates as Signal callbacks is not supported (you wouldn'time be able to unregister them later).");
+            "Adding anonymous delegates as Message callbacks is not supported (you wouldn'time be able to unregister them later).");
 #endif
         callback += handler;
     }
 
     /// <summary>
-    /// Removes a listener from this Signal
+    /// Removes a listener from this Message
     /// </summary>
-    /// <param name="handler">Method to be unregistered from ammoSignal</param>
+    /// <param name="handler">Method to be unregistered from ammoMessage</param>
     public void RemoveListener(Action<T, U, V, W> handler)
     {
         callback -= handler;
     }
 
     /// <summary>
-    /// Dispatch this ammoSignal
+    /// Dispatch this ammoMessage
     /// </summary>
     public void Dispatch(T arg1, U arg2, V arg3, W arg4)
     {
