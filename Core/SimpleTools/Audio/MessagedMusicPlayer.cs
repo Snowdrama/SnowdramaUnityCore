@@ -18,7 +18,15 @@ public class MessagedMusicPlayer : MonoBehaviour
 
     void Start()
     {
-        
+        if (currentSource.clip == null)
+        {
+            currentSource.clip = songs.GetRandom().Value;
+        }
+
+        if (currentSource.isPlaying && currentSource.clip != null)
+        {
+            currentSource.Play();
+        }
     }
 
     [Header("Target Songs")]
