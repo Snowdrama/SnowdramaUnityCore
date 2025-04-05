@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class VirtualCursorUIHoverComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    OnUIHoverStartSignal onUIHoverStartSignal;
-    OnUIHoverEndSignal onUIHoverEndSignal;
+    OnUIHoverStartMessage onUIHoverStartSignal;
+    OnUIHoverEndMessage onUIHoverEndSignal;
     public void OnPointerEnter(PointerEventData data)
     {
         onUIHoverStartSignal?.Dispatch();
@@ -20,13 +20,13 @@ public class VirtualCursorUIHoverComponent : MonoBehaviour, IPointerEnterHandler
 
     private void OnEnable()
     {
-        onUIHoverStartSignal = Signals.Get<OnUIHoverStartSignal>();
-        onUIHoverEndSignal = Signals.Get<OnUIHoverEndSignal>();
+        onUIHoverStartSignal = Messages.Get<OnUIHoverStartMessage>();
+        onUIHoverEndSignal = Messages.Get<OnUIHoverEndMessage>();
     }
 
     private void OnDisable()
     {
-        Signals.Return<OnUIHoverStartSignal>();
-        Signals.Return<OnUIHoverEndSignal>();
+        Messages.Return<OnUIHoverStartMessage>();
+        Messages.Return<OnUIHoverEndMessage>();
     }
 }

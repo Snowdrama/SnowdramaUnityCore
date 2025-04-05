@@ -51,8 +51,8 @@ public class VirtualCursor : MonoBehaviour
     private const string gamepadScheme = "Gamepad";
     private const string keyboardAndMouseScheme = "KBM";
 
-    OnUIHoverStartSignal onUIHoverStartSignal;
-    OnUIHoverEndSignal onUIHoverEndSignal;
+    OnUIHoverStartMessage onUIHoverStartSignal;
+    OnUIHoverEndMessage onUIHoverEndSignal;
     int hovered = 0;
     public void OnUIHoverStart()
     {
@@ -87,8 +87,8 @@ public class VirtualCursor : MonoBehaviour
         InputSystem.onAfterUpdate += UpdateMotion;
         playerInput.onControlsChanged += OnControlsChanged;
 
-        onUIHoverStartSignal = Signals.Get<OnUIHoverStartSignal>();
-        onUIHoverEndSignal = Signals.Get<OnUIHoverEndSignal>();
+        onUIHoverStartSignal = Messages.Get<OnUIHoverStartMessage>();
+        onUIHoverEndSignal = Messages.Get<OnUIHoverEndMessage>();
         onUIHoverStartSignal.AddListener(OnUIHoverStart);
         onUIHoverEndSignal.AddListener(OnUIHoverEnd);
     }
@@ -104,8 +104,8 @@ public class VirtualCursor : MonoBehaviour
 
         onUIHoverStartSignal.RemoveListener(OnUIHoverStart);
         onUIHoverEndSignal.RemoveListener(OnUIHoverEnd);
-        Signals.Return<OnUIHoverStartSignal>();
-        Signals.Return<OnUIHoverEndSignal>();
+        Messages.Return<OnUIHoverStartMessage>();
+        Messages.Return<OnUIHoverEndMessage>();
     }
 
     private void UpdateMotion()
