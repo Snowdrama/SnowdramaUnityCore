@@ -30,11 +30,13 @@ Shader "Unlit/CutoffShader"
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
+				float2 uv2 : TEXCOORD1;
 			};
 
 			struct v2f
 			{
 				float2 uv : TEXCOORD0;
+				float2 uv2 : TEXCOORD1;
 				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
 			};
@@ -43,6 +45,7 @@ Shader "Unlit/CutoffShader"
 			sampler2D _TransTex;
 			sampler2D _PatternTex;
 			float4 _MainTex_ST;
+			float4 _PatternTex_ST;
 			float _Cutoff;
 			float _CutoffSteps;
 			fixed4 _Color;
@@ -56,6 +59,7 @@ Shader "Unlit/CutoffShader"
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.uv2 = TRANSFORM_TEX(v.uv, _PatternTex);
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
@@ -63,7 +67,7 @@ Shader "Unlit/CutoffShader"
 			fixed4 frag (v2f i) : SV_Target
 			{
 				//take the pattern ath this pixel
-				fixed4 pattern = tex2D(_PatternTex, i.uv);
+				fixed4 pattern = tex2D(_PatternTex, i.uv2);
 
 				//clamp the cutoff so it can't be negative
 				_Cutoff = clamp(_Cutoff, 0, 1);

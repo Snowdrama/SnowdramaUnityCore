@@ -8,6 +8,11 @@ namespace Snowdrama.Core.GameData
     [System.Serializable]
     public class GameData
     {
+        /// <summary>
+        /// This scene gets loaded when the game loads
+        /// </summary>
+        public string gameScene;
+
         public StringIntDictionary intFlags = new StringIntDictionary();
         public StringStringDictionary stringFlags = new StringStringDictionary();
         public StringFloatDictionary floatFlags = new StringFloatDictionary();

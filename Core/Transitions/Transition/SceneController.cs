@@ -30,6 +30,7 @@ namespace Snowdrama.Transition
     public class SceneControllerOptions : ScriptableObject
     {
         public bool showConsoleMessages = false;
+        public bool hideRequiredSceneWarning = false;
     }
     public class SceneController
     {
@@ -93,6 +94,13 @@ namespace Snowdrama.Transition
                         }
                     }
                 }
+            }
+            else
+            {
+                DebugLogWarning("No Required Scene List asset named 'RequiredSceneList' is in" +
+                    " the Resources folder. If there are no Required scenes please place a " +
+                    "SceneControllerOptions object in the Resources folder and check Hide Warnings", 
+                    !sceneControllerOptions.hideRequiredSceneWarning);
             }
 
 

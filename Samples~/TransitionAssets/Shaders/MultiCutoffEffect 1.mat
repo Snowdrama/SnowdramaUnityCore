@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ScreneTransitionEffect
+  m_Name: MultiCutoffEffect 1
   m_Shader: {fileID: 4800000, guid: e7a42557fb8ce3944bab8c72e6b9fe46, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: c8861c325256c5044bd7fafbb50c079d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0654e37524ecf104e92182dae460aca7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -64,18 +64,18 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PatternTex:
-        m_Texture: {fileID: 2800000, guid: 1c81ceea659aba64d88c6c46f24eca81, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: 12bdfaf98f1af44448e17b51e7946f53, type: 3}
+        m_Scale: {x: 10, y: 10}
+        m_Offset: {x: 2.62, y: 0}
     - _TransTex:
         m_Texture: {fileID: 2800000, guid: 7083130f5b91df54596bfc32558a732f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints:
-    - _CutoffSteps: 1923
+    - _CutoffSteps: 1000
     m_Floats:
     - _BumpScale: 1
-    - _Cutoff: -0.0005631419
+    - _Cutoff: 0
     - _CutoffSteps: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0

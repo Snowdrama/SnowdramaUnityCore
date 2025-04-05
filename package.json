@@ -13,10 +13,19 @@
     "com.unity.inputsystem": "1.5.0",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.nuget.newtonsoft-json": "3.0.2"
-
   },
   "type": "utility",
   "samples": [
+    {
+      "displayName": "Transition Assets",
+      "description": "A collection of Scripts, Shaders, and Images for different types of transitions",
+      "path": "Samples~/TransitionAssets"
+    },
+    {
+      "displayName": "Transition Sample",
+      "description": "Shows the use of Transitions",
+      "path": "Samples~/TransitionSample"
+    },
     {
       "displayName": "Expandable Attribute Sample",
       "description": "Shows the use of Expandable Attribute in the Inspector",
@@ -36,11 +45,6 @@
       "displayName": "Timer Sample",
       "description": "Shows the use of Timers",
       "path": "Samples~/TimerSample"
-    },
-    {
-      "displayName": "Transition Sample",
-      "description": "Shows the use of Transitions",
-      "path": "Samples~/TransitionSample"
     },
     {
       "displayName": "UI Router Sample",

@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "GUID:69448af7b92c7f342b298e06a37122aa",
-        "GUID:b998718984e591841a0cb1e9c54f2e6e"
+        "GUID:b998718984e591841a0cb1e9c54f2e6e",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [
         "Editor"
@@ -19,6 +20,11 @@
             "name": "com.unity.addressables",
             "expression": "1.19.0",
             "define": "HAS_ADDRESSABLES"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.11.2",
+            "define": "HAS_NEW_INPUT_SYSTEM"
         }
     ],
     "noEngineReferences": false
