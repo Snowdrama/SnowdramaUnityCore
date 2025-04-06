@@ -39,7 +39,7 @@ public class OptionsObject : ScriptableObject
         if (data.boolValues == null) { data.boolValues = new Dictionary<string, bool>(); }
         if (data.stringValues == null) { data.stringValues = new Dictionary<string, string>(); }
         AddDefaults();
-        Debug.Log($"Saving To ApplicationDataFolder: {Application.persistentDataPath}/options.json");
+        //Debug.Log($"Saving To ApplicationDataFolder: {Application.persistentDataPath}/options.json");
         var jsonString = JsonConvert.SerializeObject(data);
         File.WriteAllText($"{Application.persistentDataPath}/options.json", jsonString);
         UpdateDebug();
@@ -47,7 +47,7 @@ public class OptionsObject : ScriptableObject
 
     public void Load()
     {
-        Debug.Log($"Loading From ApplicationDataFolder: {Application.persistentDataPath}/options.json");
+        //Debug.Log($"Loading From ApplicationDataFolder: {Application.persistentDataPath}/options.json");
         if (File.Exists($"{Application.persistentDataPath}/options.json"))
         {
             var jsonString = File.ReadAllText($"{Application.persistentDataPath}/options.json");
@@ -156,7 +156,7 @@ public class OptionsObject : ScriptableObject
     {
         foreach (var item in data.intValues)
         {
-            Debug.LogWarning($"{item.Key} : {item.Value}");
+            //Debug.LogWarning($"{item.Key} : {item.Value}");
         }
 
 
@@ -166,7 +166,7 @@ public class OptionsObject : ScriptableObject
         }
         else
         {
-            Debug.LogWarning($"No Key! {name} : {defaultValue}");
+            //Debug.LogWarning($"No Key! {name} : {defaultValue}");
             return defaultValue;
         }
     }
@@ -198,17 +198,17 @@ public class OptionsObject : ScriptableObject
 
     public void SetFloatValue(string name, float value)
     {
-        Debug.Log($"Setting Float Value! {name}, {value}");
+        //Debug.Log($"Setting Float Value! {name}, {value}");
         if (data.floatValues.ContainsKey(name))
         {
             data.floatValues[name] = value;
         }
         else
         {
-            Debug.Log($"Adding To List! {name}, {value}");
+            //Debug.Log($"Adding To List! {name}, {value}");
             data.floatValues.Add(name, value);
         }
-        Debug.Log($"Saving!");
+        //Debug.Log($"Saving!");
         Save();
     }
 
@@ -228,13 +228,13 @@ public class OptionsObject : ScriptableObject
 
     public void OnEnable()
     {
-        Debug.Log($"Loading Options From: {Application.persistentDataPath}");
+        //Debug.Log($"Loading Options From: {Application.persistentDataPath}");
         Load();
     }
 
     private void OnDisable()
     {
-        Debug.Log($"Saving Options To: {Application.persistentDataPath}");
+        //Debug.Log($"Saving Options To: {Application.persistentDataPath}");
         Save();
     }
 
