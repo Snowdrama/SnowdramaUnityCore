@@ -21,8 +21,14 @@ public static class ArrayExtensions
         }
         T[] newList = new T[sourceList.Length];
         int size = newList.Length;
+        for (int i = 0; i < sourceList.Length; i++)
+        {
+            newList[i] = sourceList[i];
+        }
+
         for (int i = 0; i < size; i++)
         {
+            //copy the value from newList
             T temp = newList[i];
             int randIndex = UnityEngine.Random.Range(0, size);
             newList[i] = newList[randIndex];

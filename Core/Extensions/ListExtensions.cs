@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ListExtensions
@@ -78,12 +79,38 @@ public static class ListExtensions
 
     public static void RemoveNullEntries<T>(this IList<T> list) where T : class
     {
-        for (int i = list.Count - 1; i >= 0; i--)
+        list = list.Where(x => x != null).ToList();
+        //for (int i = list.Count - 1; i >= 0; i--)
+        //{
+        //    if (Equals(list[i], null))
+        //    {
+        //        list.RemoveAt(i);
+        //    }
+        //}
+    }
+
+    public static List<T> GetRandomCount<T>(this List<T> source, int count)
+    {
+        //get a set of bools for each element
+        bool[] bools = new bool[source.Count()];
+        //mark 'count' of those true
+        for (int i = 0; i < count; i++)
         {
-            if (Equals(list[i], null))
+            bools[i] = true;
+        };
+        //shuffle the list of bools
+        bools = bools.Shuffle();
+
+        //check the bools list and add it if it's true
+        List<T> newList = new List<T>();
+        for (int i = 0; i < source.Count(); i++)
+        {
+            if (bools[i])
             {
-                list.RemoveAt(i);
+                newList.Add(source[i]);
             }
         }
+
+        return newList;
     }
 }

@@ -13,6 +13,7 @@ public static class EnumerableExtensions
 
         if (count == 0) yield break;
 
+        //create a queue of some number
         var queue = new Queue<T>(count);
 
         foreach (var t in source)
