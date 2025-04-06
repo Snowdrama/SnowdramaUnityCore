@@ -68,19 +68,19 @@ namespace Snowdrama.Transition
 
             transitions.Clear();
             debugTransitionNameKeys.Clear();
-
-            Debug.Log($"Checking for child transitions");
             for (int i = 0; i < transitionCanvas.transform.childCount; i++)
             {
                 var child = transitionCanvas.transform.GetChild(i);
-                Debug.Log($"Checking {child.name}");
-
                 var transitionElement = child.GetComponent<Transition>();
                 if (transitionElement)
                 {
                     transitions.Add(transitionElement.transitionName, transitionElement);
                     debugTransitionNameKeys.Add(transitionElement.transitionName);
                 }
+            }
+            if (transitions.Count == 0)
+            {
+                Debug.LogWarning($"Found 0 transitions, you need at least 1 transition that's a child of the Transition Driver");
             }
 
             ValidateTransition();
