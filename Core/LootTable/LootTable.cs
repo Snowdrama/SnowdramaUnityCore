@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class LootTable<T>
 {
@@ -76,20 +77,26 @@ public class LootTable<T>
     {
         List<T> itemsFromLoot = new List<T>();
         double totalPercents = 0;
-        double roll = rand.NextDouble();
         foreach (var lootRoll in lootTable)
         {
             totalPercents += (double)lootRoll.Right;
-        }
 
+            Debug.LogError($"Adding Percents: {lootRoll.Right} = {totalPercents}");
+        }
+        Debug.LogError($"Rolling for loot: {totalPercents}");
         //roll multiple times
         for (int i = 0; i < rollCount; i++)
         {
+            //next double is 0.0-1.0 * totalPercents will give us 0.0-totalPercents
+            double roll = rand.NextDouble() * totalPercents;
+            Debug.LogError($"Roll {i}: {roll}");
             foreach (var lootRoll in lootTable)
             {
                 //if it's in the range, add it to the list and break
+                Debug.LogError($"Testing next loot: {roll} > {lootRoll.Right} = {roll > lootRoll.Right}");
                 if (roll > lootRoll.Right)
                 {
+                    Debug.LogError("Adding loot!");
                     itemsFromLoot.Add(lootRoll.Left);
                     break;
                 }
