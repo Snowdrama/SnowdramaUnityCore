@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LootTable<T>
 {
-    Random rand = new Random();
+    System.Random rand = new System.Random();
     public TableList<T, double> lootTable;
 
     public double totalTableValue;
