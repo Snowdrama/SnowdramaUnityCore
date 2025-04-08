@@ -7,10 +7,9 @@ namespace Snowdrama.Transition
     [RequireComponent(typeof(TMP_Text))]
     public class TextFadeTransition : Transition
     {
-        private Color textColor;
-        private TMP_Text text;
-
-        public LoadingScreenTextObject loadingScreenText;
+        [SerializeField] Color textColor;
+        [SerializeField] TMP_Text text;
+        [SerializeField] LoadingScreenTextObject loadingScreenText;
 
         void Start()
         {
@@ -26,6 +25,7 @@ namespace Snowdrama.Transition
             {
                 text = this.GetComponent<TMP_Text>();
             }
+            textColor = text.color;
             textColor.a = 0;
         }
 

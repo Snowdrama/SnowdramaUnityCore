@@ -8,8 +8,8 @@ namespace Snowdrama.Transition
 {
     public class ImageFadeTransition : Transition
     {
-        public Image transitionImage;
-        public Color transitionColor;
+        [SerializeField] Image transitionImage;
+        [SerializeField] Color transitionColor;
         private void Start()
         {
             if(transitionImage == null)

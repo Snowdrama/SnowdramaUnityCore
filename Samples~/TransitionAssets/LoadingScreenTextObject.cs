@@ -6,8 +6,8 @@ namespace Snowdrama.Transition
     [CreateAssetMenu]
     public class LoadingScreenTextObject : ScriptableObject
     {
-        public List<string> loadingScreenText = new List<string>();
-        public int index = 0;
+        [SerializeField] List<string> loadingScreenText = new List<string>();
+        [SerializeField] int index = 0;
 
         public string GetLoadingScreenText()
         {

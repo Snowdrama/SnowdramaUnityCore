@@ -17,7 +17,7 @@ public class LootTable<T>
     {
         lootTable = new TableList<T, double>();
 
-        if(itemList.Count != chanceList.Count)
+        if (itemList.Count != chanceList.Count)
         {
             throw new Exception("Item List and Chance List of Loot Table must be the same length");
         }
@@ -70,36 +70,45 @@ public class LootTable<T>
     /// Lucky and roll 3 Fairy Dusts, but would require you getting 3
     /// 13s in a row.
     /// 
+    /// Pros of this technique: No chance that you don't draw an item
+    /// Cons of this technique: Chance to roll X of the same item many times
+    /// 
     /// </summary>
     /// <param name="rollCount">How many times to roll</param>
     /// <returns>A list of items to get from the loot table</returns>
-    public List<T> GetRandomLinear(int rollCount = 1)
+    public List<T> GetRandomWeighted(int rollCount = 1)
     {
         List<T> itemsFromLoot = new List<T>();
+
+        //do we want to throw an error here? 
+        if (rollCount <= 0)
+        {
+            return itemsFromLoot;
+        }
+
         double totalPercents = 0;
         foreach (var lootRoll in lootTable)
         {
             totalPercents += (double)lootRoll.Right;
-
-            //Debug.LogError($"Adding Percents: {lootRoll.Right} = {totalPercents}");
         }
-        //Debug.LogError($"Rolling for loot: {totalPercents}");
-        //roll multiple times
+        //roll once for each loot item we want
         for (int i = 0; i < rollCount; i++)
         {
-            //next double is 0.0-1.0 * totalPercents will give us 0.0-totalPercents
+            //roll for each of the loot we want.
             double roll = rand.NextDouble() * totalPercents;
-            //Debug.LogError($"Roll {i}: {roll}");
+
+            //current starts at 0 and adds the lootRoll value
+            double currentRoll = 0.0d;
             foreach (var lootRoll in lootTable)
             {
-                //if it's in the range, add it to the list and break
-                //Debug.LogError($"Testing next loot: {roll} > {lootRoll.Right} = {roll > lootRoll.Right}");
-                if (roll > lootRoll.Right)
+                // 0 < roll < 1
+                // 1 < roll < 2 etc.
+                if (currentRoll < roll && roll <= (currentRoll + lootRoll.Right))
                 {
-                    //Debug.LogError("Adding loot!");
                     itemsFromLoot.Add(lootRoll.Left);
                     break;
                 }
+                currentRoll += lootRoll.Right;
             }
         }
 
@@ -130,12 +139,12 @@ public class LootTable<T>
     /// 
     /// So for example given the drop table above:
     /// 
-    /// Bones are an 80% drop chance, you roll a 20, 20 is less than the rollValue so you add it 
-    /// Bones are an 50% drop chance, you roll a 36, 20 is less than the rollValue so you add it 
-    /// Bones are an 30% drop chance, you roll a 50, 30 is more than the rollValue so you don't add it 
-    /// Scales are an 50% drop chance, you roll a 75, 75 is more than the rollValue so you don't add it
-    /// Scales are an 80% drop chance, you roll a 45, 45 is less than the rollValue so you add it 
-    /// Ancient Fairy Dust of Doom are an 5% drop chance, you roll a 6, 6 is more than the rollValue so you don't add it 
+    /// Bones are an 80% drop chance, you roll a 20, rollValue is less than 80% so you add it 
+    /// Bones are an 50% drop chance, you roll a 36, rollValue is less than 50% so you add it 
+    /// Bones are an 30% drop chance, you roll a 50, rollValue is more than 30% is more than the  so you don't add it 
+    /// Scales are an 80% drop chance, you roll a 45, rollValue is less than 80% so you add it 
+    /// Scales are an 50% drop chance, you roll a 75, rollValue is more than 50% is more than the  so you don't add it
+    /// Ancient Fairy Dust of Doom are an 5% drop chance, you roll a 6, rollValue is more than 5% so you don't add it 
     /// 
     /// The player would obtain from this:
     /// Bones
@@ -147,13 +156,18 @@ public class LootTable<T>
     /// more than once, unless the item is on the table several times.
     /// So if an item is only listed one, you can only obtain 1 in each list
     /// 
+    /// Pros of this technique: Easy to design and provides many items.
+    /// Cons of this technique: If you don't add items with 100% chance, there is a chance to get 0 items
+    /// 
     /// </summary>
     /// <returns>A list of all the dropped items</returns>
     public List<T> GetRandomFullTable()
     {
         List<T> itemsFromLoot = new List<T>();
+        //roll a random value for each element in the loot table
         foreach (var lootRoll in lootTable)
         {
+            //In this case it's represented as a percentage
             if ((rand.NextDouble() * 100.0) < lootRoll.Right)
             {
                 itemsFromLoot.Add(lootRoll.Left);
@@ -161,4 +175,39 @@ public class LootTable<T>
         }
         return itemsFromLoot;
     }
+
+
+
+    /// <summary>
+    /// Diminishing return loot table
+    /// 
+    /// implementation of this one is tricky.
+    /// 
+    /// this is essentially one of the other types but where you
+    /// remove any loot that's already been pulled until
+    /// all loot has been pulled from the table
+    /// 
+    /// For example you might have a table like:
+    /// 
+    /// Bones: 5
+    /// Scales: 5
+    /// Tail: 2
+    /// Ancient Fairy Dust of Doom: 1
+    /// 
+    /// If you roll 2 items, and then get scales and bones 
+    /// the next time you roll it, it should not be possible
+    /// to get scales or bones, so it's now a 66% chance for 
+    /// Tail and a 33% chance of AFDOD. 
+    /// 
+    /// The goal here is to minimize the RNG aspect 
+    /// by having the loot eventualy guaranteed to roll a rare 
+    /// item if you get many items
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    //public List<T> GetRandomDeminishing()
+    //{
+    //    throw new NotImplementedException();
+    //    return null;
+    //}
 }

@@ -80,37 +80,11 @@ public static class ListExtensions
     public static void RemoveNullEntries<T>(this IList<T> list) where T : class
     {
         list = list.Where(x => x != null).ToList();
-        //for (int i = list.Count - 1; i >= 0; i--)
-        //{
-        //    if (Equals(list[i], null))
-        //    {
-        //        list.RemoveAt(i);
-        //    }
-        //}
     }
 
     public static List<T> GetRandomCount<T>(this List<T> source, int count)
     {
-        //get a set of bools for each element
-        bool[] bools = new bool[source.Count()];
-        //mark 'count' of those true
-        for (int i = 0; i < count; i++)
-        {
-            bools[i] = true;
-        };
-        //shuffle the list of bools
-        bools = bools.Shuffle();
-
-        //check the bools list and add it if it's true
-        List<T> newList = new List<T>();
-        for (int i = 0; i < source.Count(); i++)
-        {
-            if (bools[i])
-            {
-                newList.Add(source[i]);
-            }
-        }
-
-        return newList;
+        var randomizedList = source.ShuffleList();
+        return randomizedList.Take(count).ToList();
     }
 }

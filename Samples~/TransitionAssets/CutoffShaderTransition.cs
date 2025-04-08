@@ -8,17 +8,17 @@ namespace Snowdrama.Transition
     public class CutoffShaderTransition : Transition
     {
         [Header("Image and Material")]
-        public Image transitionImage;
+        [SerializeField] Image transitionImage;
         Material transitionMaterial;
 
         [Header("Main Texture")]
-        public bool changeMainTextureOnStart;
-        public List<Sprite> transitionSprites;
+        [SerializeField] bool changeMainTextureOnStart;
+        [SerializeField] List<Sprite> transitionSprites;
 
         [Header("Patterns")]
-        public bool changePatternOnStart;
-        public bool changePatternMidTransition;
-        public List<Texture2D> transitionPatterns;
+        [SerializeField] bool changePatternOnStart;
+        [SerializeField] bool changePatternMidTransition;
+        [SerializeField] List<Texture2D> transitionPatterns;
 
         private void Start()
         {

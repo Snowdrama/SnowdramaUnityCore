@@ -15,16 +15,16 @@ namespace Snowdrama.Transition
     }
     public class TransformTransition : Transition
     {
-        public Transform startTransform;
+        [SerializeField] Transform startTransform;
         private Vector3 startPosition;
         private Quaternion startRotation;
 
-        public Transform endTransform;
+        [SerializeField] Transform endTransform;
         private Vector3 endPosition;
         private Quaternion endRotation;
 
-        public TransformTransitionEaseType easeInType;
-        public TransformTransitionEaseType easeOutType;
+        [SerializeField] TransformTransitionEaseType easeInType;
+        [SerializeField] TransformTransitionEaseType easeOutType;
 
         // Start is called before the first frame update
         void Start()

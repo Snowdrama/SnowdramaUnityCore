@@ -93,4 +93,15 @@ public static class Vector2Extensions{
         if (angle < 0f) angle += 360f;
         return angle;
     }
+
+    public static Vector2 FindScaleFactor(this Vector2 size, Vector2 targetSize, bool stretchToFit = false)
+    {
+        if (!stretchToFit)
+        {
+            var fullScale = targetSize / size;
+            var minimumNeededToFit = Mathf.Min(fullScale.x, fullScale.y);
+            return new Vector2(minimumNeededToFit, minimumNeededToFit);
+        }
+        return targetSize / size;
+    }
 }

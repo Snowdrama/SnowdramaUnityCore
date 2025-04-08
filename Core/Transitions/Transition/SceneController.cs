@@ -8,30 +8,10 @@ using UnityEngine.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.PlayerLoop;
 using Snowdrama.Core;
+using UnityEditor.SceneManagement;
 
 namespace Snowdrama.Transition
 {
-    public enum TransitionState
-    {
-        None,
-        Start,
-        HidingScene,
-        SceneHidden,
-        StartUnload,
-        WaitingforUnload,
-        StartLoad,
-        WaitingForLoad,
-        FakeTimeBuffer,
-        RevealingScene,
-        End,
-    }
-
-    [CreateAssetMenu(fileName = "SceneControllerOptions", menuName = "Snowdrama/Transitions/Scene Controller Options")]
-    public class SceneControllerOptions : ScriptableObject
-    {
-        public bool showConsoleMessages = false;
-        public bool hideRequiredSceneWarning = false;
-    }
     public class SceneController
     {
         public static List<string> loadedScenes;
