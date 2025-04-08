@@ -22,12 +22,8 @@ public class MessagedMusicPlayer : MonoBehaviour
         {
             currentSource.clip = songs.GetRandom().Value;
         }
-
-        if (currentSource.isPlaying && currentSource.clip != null)
-        {
-            currentSource.Play();
-        }
     }
+   
 
     [Header("Target Songs")]
     [SerializeField, EditorReadOnly] string nextSong = "";
@@ -58,6 +54,12 @@ public class MessagedMusicPlayer : MonoBehaviour
             transitioning = true;
             transitionTime = 0;
             currentSong = nextSong;
+        }
+
+        //if it's not playing and the clip isn't null, start playing
+        if (!currentSource.isPlaying && currentSource.clip != null)
+        {
+            currentSource.Play();
         }
 
         if (transitioning)
