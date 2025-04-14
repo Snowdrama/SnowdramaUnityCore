@@ -47,14 +47,14 @@ namespace Snowdrama.UI
         private float percentHeight;
 
 
-        private void OnEnable()
+        public virtual void OnEnable()
         {
             if (_children == null)
             {
                 _children = new List<RectTransform>();
+                
             }
         }
-
 
         public virtual void LateUpdate()
         {
