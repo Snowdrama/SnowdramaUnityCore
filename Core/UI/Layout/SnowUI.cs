@@ -162,16 +162,16 @@ namespace Snowdrama.UI
         protected void CalculateColumns(int count, int rowCount)
         {
             this.internalRowCount = rowCount;
-            internalColumnCount = Mathf.CeilToInt((float)count / (float)rowCount);
-            percentWidth = 1.0f / (float)internalColumnCount;
-            percentHeight = 1.0f / (float)rowCount;
+            this.internalColumnCount = Mathf.CeilToInt((float)count / (float)rowCount);
+            percentWidth = 1.0f / (float)this.internalColumnCount;
+            percentHeight = 1.0f / (float)this.internalRowCount;
         }
 
         protected void CalculateRows(int count, int columnCount)
         {
             this.internalColumnCount = columnCount;
-            internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
-            percentWidth = 1.0f / (float)columnCount;
+            this.internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
+            percentWidth = 1.0f / (float)this.internalColumnCount;
             percentHeight = 1.0f / (float)internalRowCount;
         }
         protected void CalculateGrid(int count, int columnCount, int rowCount)
@@ -240,5 +240,14 @@ namespace Snowdrama.UI
                 }
             }
         }
+        public int GetRowCount()
+        {
+            return this.internalRowCount;
+        }
+        public int GetColumnCount()
+        {
+            return this.internalColumnCount;
+        }
     }
+
 }
