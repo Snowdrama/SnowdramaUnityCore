@@ -7,11 +7,12 @@ namespace Snowdrama.UI
     public class SnowUI : MonoBehaviour
     {
         [Header("Gap")]
-        [Range(0, 1)] public float gapX = 0.1f;
-        [Range(0, 1)] public float gapY = 0.1f;
+        [Range(0, 1), SerializeField] protected float gapX = 0.1f;
+        [Range(0, 1), SerializeField] protected float gapY = 0.1f;
         [Header("Active Items")]
-        public bool forceActiveIfInactive = false;
-        public bool useActive;
+        [SerializeField] protected bool forceActiveIfInactive = false;
+        [SerializeField] protected bool useActive;
+        [SerializeField] protected bool shrinkCountToElementCount;
         protected int currentActiveCount = 0;
         protected int tempActiveCount = 0;
 
@@ -22,14 +23,12 @@ namespace Snowdrama.UI
         [Header("Force Update")]
         public bool forceUpdate = false;
 
-        public int columnCount
-        {
-            get; private set;
-        }
-        public int rowCount
-        {
-            get; private set;
-        }
+        [Header("Debug")]
+        [SerializeField]
+        protected int internalColumnCount;
+
+        [SerializeField]
+        protected int internalRowCount;
 
         [SerializeField]
         private List<RectTransform> _children;
@@ -77,7 +76,7 @@ namespace Snowdrama.UI
             if (index < children.Count)
             {
                 var child = children[index];
-                if (index < rowCount * columnCount)
+                if (index < internalRowCount * internalColumnCount)
                 {
                     var minX = x * percentWidth;
                     var maxX = x * percentWidth + percentWidth;
@@ -122,7 +121,7 @@ namespace Snowdrama.UI
                 }
                 else
                 {
-                    Debug.LogError($"Child {child.gameObject.name} does not fit in the {columnCount * rowCount} " +
+                    Debug.LogError($"Child {child.gameObject.name} does not fit in the {internalColumnCount * internalRowCount} " +
                         $"spaces calculated by the row and column count. " +
                         $"Hiding the child, if this is not intentional, check the numberOfRows and numberOfColumns variable", child.gameObject);
                     child.gameObject.SetActive(false);
@@ -138,9 +137,9 @@ namespace Snowdrama.UI
                 switch (direction)
                 {
                     case UIDirection.ColumnsFirst:
-                        for (int y = 0; y < rowCount; y++)
+                        for (int y = 0; y < internalRowCount; y++)
                         {
-                            for (int x = 0; x < columnCount; x++)
+                            for (int x = 0; x < internalColumnCount; x++)
                             {
                                 ProcessCell(x, y, index);
                                 ++index;
@@ -148,9 +147,9 @@ namespace Snowdrama.UI
                         }
                         break;
                     case UIDirection.RowsFirst:
-                        for (int x = 0; x < columnCount; x++)
+                        for (int x = 0; x < internalColumnCount; x++)
                         {
-                            for (int y = 0; y < rowCount; y++)
+                            for (int y = 0; y < internalRowCount; y++)
                             {
                                 ProcessCell(x, y, index);
                                 ++index;
@@ -162,26 +161,60 @@ namespace Snowdrama.UI
         }
         protected void CalculateColumns(int count, int rowCount)
         {
-            this.rowCount = rowCount;
-            columnCount = Mathf.CeilToInt((float)count / (float)rowCount);
-            percentWidth = 1.0f / (float)columnCount;
+            this.internalRowCount = rowCount;
+            internalColumnCount = Mathf.CeilToInt((float)count / (float)rowCount);
+            percentWidth = 1.0f / (float)internalColumnCount;
             percentHeight = 1.0f / (float)rowCount;
         }
 
         protected void CalculateRows(int count, int columnCount)
         {
-            this.columnCount = columnCount;
-            rowCount = Mathf.CeilToInt((float)children.Count / (float)columnCount);
+            this.internalColumnCount = columnCount;
+            internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
             percentWidth = 1.0f / (float)columnCount;
-            percentHeight = 1.0f / (float)rowCount;
+            percentHeight = 1.0f / (float)internalRowCount;
         }
         protected void CalculateGrid(int count, int columnCount, int rowCount)
         {
-            this.columnCount = columnCount;
-            this.rowCount = rowCount;
+            this.internalColumnCount = columnCount;
+            this.internalRowCount = rowCount;
 
-            percentWidth = 1.0f / (float)columnCount;
-            percentHeight = 1.0f / (float)rowCount;
+            if (shrinkCountToElementCount)
+            {
+                
+                switch (direction)
+                {
+                    case UIDirection.ColumnsFirst:
+                        if(count <= columnCount)
+                        {
+                            this.internalColumnCount = count;
+                        }
+                        if(Mathf.CeilToInt((float)count / (float)columnCount) < rowCount)
+                        {
+                            this.internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
+                        }
+                        break;
+
+                    case UIDirection.RowsFirst:
+
+                        if (Mathf.CeilToInt((float)count / (float)rowCount) < columnCount)
+                        {
+                            this.internalRowCount = Mathf.CeilToInt((float)count / (float)rowCount);
+                        }
+                        if (count <= rowCount)
+                        {
+                            this.internalRowCount = count;
+                        }
+                        break;
+                }
+
+
+
+
+            }
+
+            percentWidth = 1.0f / (float)this.internalColumnCount;
+            percentHeight = 1.0f / (float)this.internalRowCount;
         }
 
         protected void CollectChildren()

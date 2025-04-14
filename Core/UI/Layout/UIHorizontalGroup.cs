@@ -19,7 +19,14 @@ namespace Snowdrama.UI
             if (transform.childCount != children.Count || forceUpdate || currentActiveCount != tempActiveCount)
             {
                 CollectChildren();
-                CalculateRows(children.Count, numberOfColumns);
+                if (this.shrinkCountToElementCount)
+                {
+                    CalculateRows(children.Count, (children.Count <= numberOfColumns)? children.Count : numberOfColumns);
+                }
+                else
+                {
+                    CalculateRows(children.Count, numberOfColumns);
+                }
                 ProcessChildren();
 
                 forceUpdate = false;

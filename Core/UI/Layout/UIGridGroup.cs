@@ -20,7 +20,10 @@ namespace Snowdrama.UI
             if (transform.childCount != children.Count || forceUpdate || currentActiveCount != tempActiveCount)
             {
                 CollectChildren();
+
                 CalculateGrid(children.Count, numberOfColumns, numberOfRows);
+
+
                 ProcessChildren();
                 forceUpdate = false;
                 currentActiveCount = tempActiveCount;
