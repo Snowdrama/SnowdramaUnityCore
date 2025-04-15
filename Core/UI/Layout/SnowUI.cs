@@ -70,6 +70,9 @@ namespace Snowdrama.UI
                 }
             }
         }
+        public virtual void UpdateLayout()
+        {
+        }
 
         protected void ProcessCell(int x, int y, int index)
         {
@@ -118,6 +121,7 @@ namespace Snowdrama.UI
 
                     child.offsetMin = new Vector2(offsetX, offsetY);
                     child.offsetMax = new Vector2(-offsetX, -offsetY);
+                    child.ForceUpdateRectTransforms();
                 }
                 else
                 {
@@ -207,10 +211,6 @@ namespace Snowdrama.UI
                         }
                         break;
                 }
-
-
-
-
             }
 
             percentWidth = 1.0f / (float)this.internalColumnCount;

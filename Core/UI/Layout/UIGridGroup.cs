@@ -30,7 +30,7 @@ namespace Snowdrama.UI
             }
         }
 
-        private void UpdateLayout()
+        public override void UpdateLayout()
         {
             CollectChildren();
             CalculateGrid(children.Count, numberOfColumns, numberOfRows);

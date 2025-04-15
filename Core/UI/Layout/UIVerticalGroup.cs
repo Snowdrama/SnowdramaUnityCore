@@ -27,7 +27,7 @@ namespace Snowdrama.UI
                 UpdateLayout();
             }
         }
-        private void UpdateLayout()
+        public override void UpdateLayout()
         {
             CollectChildren();
             if (this.shrinkCountToElementCount)
