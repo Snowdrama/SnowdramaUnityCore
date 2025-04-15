@@ -32,7 +32,7 @@ namespace Snowdrama.UI
             CollectChildren();
             if (this.shrinkCountToElementCount)
             {
-                CalculateRows(children.Count, (children.Count <= numberOfRows) ? children.Count : numberOfRows);
+                CalculateColumns(children.Count, (children.Count <= numberOfRows) ? children.Count : numberOfRows);
             }
             else
             {
