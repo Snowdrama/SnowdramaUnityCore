@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public static class Vector2Extensions{
+public static class Vector2Extensions
+{
     public static Vector2 VectorFromAngleRads(float angle)
     {
         Vector2 V = new Vector2();
@@ -69,7 +69,7 @@ public static class Vector2Extensions{
 
     public static float AngleFromVectorRads(this Vector2 dir)
     {
-        var angle = Mathf.Atan2(dir.y , dir.x);
+        var angle = Mathf.Atan2(dir.y, dir.x);
         if (angle < 0)
         {
             angle += 2 * Mathf.PI;
