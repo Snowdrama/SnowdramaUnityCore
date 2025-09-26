@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class FloatExtensions
+public static class DoubleExtensions
 {
 
-    public static float Clamp(this float f, float min, float max)
+    public static double Clamp(this double f, double min, double max)
     {
-        return Mathf.Clamp(f, min, max);
+        return Math.Clamp(f, min, max);
     }
 
     /// <summary>
@@ -21,7 +21,7 @@ public static class FloatExtensions
     /// <param name="toMin">New Min</param>
     /// <param name="toMax">New Max</param>
     /// <returns></returns>
-    public static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
+    public static double Remap(this double value, double fromMin, double fromMax, double toMin, double toMax)
     {
         return (value - fromMin) / (fromMax - fromMin) * (toMax - toMin) + toMin;
     }
@@ -37,39 +37,39 @@ public static class FloatExtensions
     /// <param name="maxValue"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static float WrapClamp(this float x, float min, float max)
+    public static double WrapClamp(this double x, double min, double max)
     {
         return (((x - min) % (max - min)) + (max - min)) % (max - min) + min;
     }
 
-    public static int FloorToInt(this float val)
+    public static int FloorToInt(this double val)
     {
-        return Mathf.FloorToInt(val);
+        return (int)Math.Floor(val);
     }
 
-    public static int CeilToInt(this float val)
+    public static int CeilToInt(this double val)
     {
-        return Mathf.CeilToInt(val);
+        return (int)Math.Ceiling(val);
     }
 
-    public static int RoundToInt(this float val)
+    public static int RoundToInt(this double val)
     {
-        return Mathf.RoundToInt(val);
+        return (int)Math.Round(val);
     }
 
-    public static float Floor(this float val)
+    public static double Floor(this double val)
     {
-        return Mathf.Floor(val);
+        return Math.Floor(val);
     }
 
-    public static float Ceil(this float val)
+    public static double Ceil(this double val)
     {
-        return Mathf.Ceil(val);
+        return Math.Ceiling(val);
     }
 
-    public static float Round(this float val)
+    public static double Round(this double val)
     {
-        return Mathf.Round(val);
+        return Math.Round(val);
     }
 
     /// <summary>
@@ -79,9 +79,9 @@ public static class FloatExtensions
     /// <param name="min"></param>
     /// <param name="max"></param>
     /// <returns></returns>
-    public static float InverseLerp(this float value, float min, float max)
+    public static double InverseLerp(this double value, double min, double max)
     {
-        return Mathf.Clamp01((value - min) / (max - min));
+        return Math.Clamp((value - min) / (max - min), 0, 1);
 
     }
     /// <summary>
@@ -93,7 +93,7 @@ public static class FloatExtensions
     /// <param name="min"></param>
     /// <param name="max"></param>
     /// <returns></returns>
-    public static float InverseLerpUnclamped(this float value, float min, float max)
+    public static double InverseLerpUnclamped(this double value, double min, double max)
     {
         return (value - min) / (max - min);
 
@@ -108,11 +108,11 @@ public static class FloatExtensions
     /// </summary>
     /// <param name="linear">A value from 0.0 to 1.0</param>
     /// <returns>A value in Decibels from -144.0 to 0.0</returns>
-    public static float LinearToDecibel(this float linear)
+    public static double LinearToDecibel(this double linear)
     {
-        float dB;
+        double dB;
         if (linear != 0)
-            dB = 20.0f * Mathf.Log10(linear);
+            dB = 20.0f * Math.Log10(linear);
         else
             dB = -144.0f;
         return dB;
@@ -123,9 +123,9 @@ public static class FloatExtensions
     /// </summary>
     /// <param name="linear">A value in dB</param>
     /// <returns>A value from 0-1 linearly</returns>
-    public static float DecibelToLinear(float dB)
+    public static double DecibelToLinear(double dB)
     {
-        float linear = Mathf.Pow(10.0f, dB / 20.0f);
+        double linear = Math.Pow(10.0f, dB / 20.0f);
         return linear;
     }
 
@@ -140,8 +140,8 @@ public static class FloatExtensions
     /// <param name="value">The value to round</param>
     /// <param name="snapTarget">A target to snap to for example 0.25f</param>
     /// <returns>The value rounded to the nearest snap target</returns>
-    public static float RoundTo(this float value, float snapTarget)
+    public static double RoundTo(this double value, double snapTarget)
     {
-        return Mathf.Round(value / snapTarget) * snapTarget;
+        return Math.Round(value / snapTarget) * snapTarget;
     }
 }
