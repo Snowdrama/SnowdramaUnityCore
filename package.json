@@ -60,6 +60,11 @@
       "displayName": "Virtual Cursor Sample",
       "description": "Shows the use of VirtualCursors",
       "path": "Samples~/VirtualCursorSample"
+    },
+    {
+      "displayName": "UI Curve Sample",
+      "description": "Shows the use of UICurves",
+      "path": "Samples~/CurvesSample"
     }
   ]
 }
