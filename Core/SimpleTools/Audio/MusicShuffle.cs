@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snow.SimpleTools
+namespace Snowdrama.SimpleTools
 {
     public class MusicShuffle : MonoBehaviour
     {
@@ -11,7 +11,7 @@ namespace Snow.SimpleTools
 
         private void Start()
         {
-            if(currentSource == null)
+            if (currentSource == null)
             {
                 currentSource = GetComponent<AudioSource>();
 
@@ -21,7 +21,7 @@ namespace Snow.SimpleTools
                 }
             }
         }
-        void Update()
+        private void Update()
         {
             //go to new song if finished
             if (currentSource == null || !currentSource.isPlaying || currentSource.time >= currentSource.clip.length)

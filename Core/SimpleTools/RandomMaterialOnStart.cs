@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snow.SimpleTools
+namespace Snowdrama.SimpleTools
 {
     public class RandomMaterialOnStart : MonoBehaviour
     {
         public List<Material> materialOptions;
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             GetComponent<Renderer>().material = materialOptions[Random.Range(0, materialOptions.Count)];
         }

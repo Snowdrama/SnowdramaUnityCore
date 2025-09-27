@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snow.SimpleTools
+namespace Snowdrama.SimpleTools
 {
     public class SphereGizmo : MonoBehaviour
     {
-        [SerializeField] Color color = Color.cyan;
-        [SerializeField] float radius = 0.5f;
-        [SerializeField] bool wireSphere = false;
-        [SerializeField] bool alwaysShow = true;
+        [SerializeField] private Color color = Color.cyan;
+        [SerializeField] private float radius = 0.5f;
+        [SerializeField] private bool wireSphere = false;
+        [SerializeField] private bool alwaysShow = true;
 
         private void OnDrawGizmosSelected()
         {

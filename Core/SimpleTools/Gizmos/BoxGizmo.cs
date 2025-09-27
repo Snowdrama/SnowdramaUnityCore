@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snow.SimpleTools
+namespace Snowdrama.SimpleTools
 {
     public class BoxGizmo : MonoBehaviour
     {
-        [SerializeField] Color color = Color.cyan;
-        [SerializeField] Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
-        [SerializeField] bool wireBox = false;
+        [SerializeField] private Color color = Color.cyan;
+        [SerializeField] private Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
+        [SerializeField] private bool wireBox = false;
 
         private void OnDrawGizmos()
         {

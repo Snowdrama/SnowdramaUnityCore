@@ -52,7 +52,7 @@ public class TextParticle2D : MonoBehaviour
     private float currentSize;
     private bool playing;
 
-    public Spline testSpline;
+    public UnityEngine.Splines.Spline testSpline;
     private void Update()
     {
         if (playing)
