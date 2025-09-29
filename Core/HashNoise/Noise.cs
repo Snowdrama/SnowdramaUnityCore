@@ -8,23 +8,25 @@ namespace Snowdrama.Core
     {
         /// <summary>
         /// A C# implementatiion based on the example hash function
-        /// in Squirrel Eiserloh's GDC Talk 
+        /// in Squirrel Eiserloh's GDC Talk on noise
         /// https://www.youtube.com/watch?v=LWFzPP8ZbdU
         /// 
         /// Not cryptographically safe!
         /// 
-        /// if It sucks or doesn't produce good results it's 100% my implementation
+        /// if it sucks or doesn't produce good results it's 100% my implementation
         /// and not their algorithm
         /// </summary>
         /// <param name="position">Some positional Value in the noise array</param>
         /// <param name="seed">The noise functions seed</param>
-        /// <returns></returns>
+        /// <returns>A uint between 0 and uint.MaxValue</returns>
         public static uint Squirrel3(int position, uint seed = 69420)
         {
+            //3 big prime numbers
             const uint NOISE_1 = 0xB5297A4D;
             const uint NOISE_2 = 0x68E31DA4;
             const uint NOISE_3 = 0x1B56C4E9;
 
+            //math magic!
             uint mangled = (uint)position;
             mangled *= NOISE_1;
             mangled += seed;
@@ -35,7 +37,15 @@ namespace Snowdrama.Core
             mangled ^= mangled >> 8;
             return mangled;
         }
-
+        /// <summary>
+        /// Gets a number between min and max, uses the position to get it via the Squirrel3
+        /// Noise function
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="position"></param>
+        /// <param name="seed"></param>
+        /// <returns></returns> 
         public static int Squirrel3Range(int min, int max, int position, uint seed = 69420)
         {
             uint value = Squirrel3(position, seed);
@@ -47,6 +57,14 @@ namespace Snowdrama.Core
             return (int)mod + min;
         }
 
+        /// <summary>
+        /// Uses Squirrel3 to get a normalized value between 0 and 1
+        /// 
+        /// Squirriel3 gets a value between 0 and uint.MaxValue
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="seed"></param>
+        /// <returns></returns>
         public static float NormalizedSquirrel3(int position, uint seed = 69420)
         {
             uint value = Squirrel3(position, seed);
@@ -56,6 +74,13 @@ namespace Snowdrama.Core
             return (float)calc;
         }
 
+        /// <summary>
+        /// Uses the Squirrel3 function to get a value from a 2D XY coordinate
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="seed"></param>
+        /// <returns>A uint between 0 and uint.MaxValue</returns>
         public static uint Squirrel3_2D(int x, int y, uint seed = 69420)
         {
             uint xValue = Squirrel3(x, seed);
@@ -65,7 +90,14 @@ namespace Snowdrama.Core
             return xValue ^ yValue;
         }
 
-        public static uint Squirrel3_2D(int x, int y, int z, uint seed = 69420)
+        /// <summary>
+        /// Uses the Squirrel3 function to get a value from a 3D XY coordinate
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="seed"></param>
+        /// <returns>A uint between 0 and uint.MaxValue</returns>
+        public static uint Squirrel3_3D(int x, int y, int z, uint seed = 69420)
         {
             uint xValue = Squirrel3(x, seed);
             uint yValue = Squirrel3(y, seed);
@@ -74,8 +106,6 @@ namespace Snowdrama.Core
             //??? no clue how good a Value this returns
             return xValue ^ yValue ^ zValue;
         }
-
-
 
         /// <summary>
         /// A modified 64 bit version of the Squirrel3 hash function from:
@@ -91,7 +121,7 @@ namespace Snowdrama.Core
         /// </summary>
         /// <param name="position">Some positional Value in the noise array</param>
         /// <param name="seed">The noise functions seed</param>
-        /// <returns></returns>
+        /// <returns>a long value between 0 and long.MaxValue</returns>
         public static long Squirrel64(int position, long seed = 69420717580085)
         {
             const long NOISE_1 = 0xB5297A4D;
@@ -109,5 +139,4 @@ namespace Snowdrama.Core
             return mangled;
         }
     }
-
 }

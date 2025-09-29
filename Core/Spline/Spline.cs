@@ -205,6 +205,18 @@ namespace Snowdrama.Spline
 
         #endregion
 
+        public void SetPointPosition(int i, Vector3 pos)
+        {
+            ControlPoints[i] = pos;
+            CalculateCache();
+        }
+
+        public void SetResolution(int res)
+        {
+            Resolution = res;
+            CalculateCache();
+        }
+
         public void CalculateCache()
         {
             if (_points == null) { _points = new List<Vector3>(); }
@@ -212,14 +224,12 @@ namespace Snowdrama.Spline
             if (_normals == null) { _normals = new List<Vector3>(); }
             if (_binormals == null) { _binormals = new List<Vector3>(); }
 
-
-
             _points.Clear();
             _tangents.Clear();
             _normals.Clear();
             _binormals.Clear();
             int segmentCount = Closed ? ControlPoints.Count : ControlPoints.Count - 1;
-            Debug.Log("Evaluating cache?");
+
             for (int i = 0; i < segmentCount; i++)
             {
                 for (int j = 0; j < Resolution; j++)

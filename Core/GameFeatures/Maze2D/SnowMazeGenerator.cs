@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Snowdrama.Core.GameData;
 
 public class SnowMazeGenerator
 {

@@ -42,6 +42,23 @@ public static class FloatExtensions
         return (((x - min) % (max - min)) + (max - min)) % (max - min) + min;
     }
 
+    /// <summary>
+    /// A slightly more complex modulo function that deals well with negative values and wraps correctly 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
+    public static float BetterMod(this float x, float m)
+    {
+        if (m == 0)
+        {
+            //should this be an error?
+            return x;
+        }
+
+        return (x % m + m) % m;
+    }
+
     public static int FloorToInt(this float val)
     {
         return Mathf.FloorToInt(val);
