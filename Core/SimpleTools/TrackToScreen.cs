@@ -1,3 +1,4 @@
+using GluonGui;
 using TMPro;
 using UnityEngine;
 
@@ -7,20 +8,21 @@ public class TrackToScreen : MonoBehaviour
 {
     [SerializeField] private TMP_Text screenElement;
 
-
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
-    {
-
-    }
-
-    // Update is called once per frame
+    [SerializeField] private Vector3 offset = new Vector3(0, 1, 0);
     private void Update()
     {
         if (screenElement == null) { return; }
-        var screenPos = Camera.main.WorldToScreenPoint(this.transform.position);
-        screenElement.transform.position = screenPos;
+        var screenPos = Camera.main.WorldToScreenPoint(this.transform.position + offset);
+
+        if (screenPos.x >= 0 && screenPos.x <= Screen.width && screenPos.y >= 0 && screenPos.y <= Screen.height && screenPos.z > 0)
+        {
+            // Your object is in the range of the camera, you can apply your behaviour
+            screenElement.gameObject.SetActive(true);
+            screenElement.transform.position = screenPos;
+        }
+        else
+        {
+            screenElement.gameObject.SetActive(false);
+        }
     }
 }
