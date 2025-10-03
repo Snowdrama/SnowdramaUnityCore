@@ -13,26 +13,26 @@ namespace Snowdrama.Core.GameData
         /// </summary>
         public string gameScene;
 
-        public UnityDictionary<string, int> intFlags = new UnityDictionary<string, int>();
-        public UnityDictionary<string, string> stringFlags = new UnityDictionary<string, string>();
-        public UnityDictionary<string, float> floatFlags = new UnityDictionary<string, float>();
-        public UnityDictionary<string, bool> boolFlags = new UnityDictionary<string, bool>();
-        public UnityDictionary<string, Vector2> vector2Flags = new UnityDictionary<string, Vector2>();
-        public UnityDictionary<string, Vector3> vector3Flags = new UnityDictionary<string, Vector3>();
-        public UnityDictionary<string, Vector2Int> vector2IntFlags = new UnityDictionary<string, Vector2Int>();
-        public UnityDictionary<string, Vector3Int> vector3IntFlags = new UnityDictionary<string, Vector3Int>();
-        public UnityDictionary<string, Color> colorFlags = new UnityDictionary<string, Color>();
+        public UnitySerializedDictionary<string, int> intFlags = new UnitySerializedDictionary<string, int>();
+        public UnitySerializedDictionary<string, string> stringFlags = new UnitySerializedDictionary<string, string>();
+        public UnitySerializedDictionary<string, float> floatFlags = new UnitySerializedDictionary<string, float>();
+        public UnitySerializedDictionary<string, bool> boolFlags = new UnitySerializedDictionary<string, bool>();
+        public UnitySerializedDictionary<string, Vector2> vector2Flags = new UnitySerializedDictionary<string, Vector2>();
+        public UnitySerializedDictionary<string, Vector3> vector3Flags = new UnitySerializedDictionary<string, Vector3>();
+        public UnitySerializedDictionary<string, Vector2Int> vector2IntFlags = new UnitySerializedDictionary<string, Vector2Int>();
+        public UnitySerializedDictionary<string, Vector3Int> vector3IntFlags = new UnitySerializedDictionary<string, Vector3Int>();
+        public UnitySerializedDictionary<string, Color> colorFlags = new UnitySerializedDictionary<string, Color>();
         public void Init()
         {
-            intFlags = new UnityDictionary<string, int>();
-            stringFlags = new UnityDictionary<string, string>();
-            floatFlags = new UnityDictionary<string, float>();
-            boolFlags = new UnityDictionary<string, bool>();
-            vector2Flags = new UnityDictionary<string, Vector2>();
-            vector3Flags = new UnityDictionary<string, Vector3>();
-            vector2IntFlags = new UnityDictionary<string, Vector2Int>();
-            vector3IntFlags = new UnityDictionary<string, Vector3Int>();
-            colorFlags = new UnityDictionary<string, Color>();
+            intFlags = new UnitySerializedDictionary<string, int>();
+            stringFlags = new UnitySerializedDictionary<string, string>();
+            floatFlags = new UnitySerializedDictionary<string, float>();
+            boolFlags = new UnitySerializedDictionary<string, bool>();
+            vector2Flags = new UnitySerializedDictionary<string, Vector2>();
+            vector3Flags = new UnitySerializedDictionary<string, Vector3>();
+            vector2IntFlags = new UnitySerializedDictionary<string, Vector2Int>();
+            vector3IntFlags = new UnitySerializedDictionary<string, Vector3Int>();
+            colorFlags = new UnitySerializedDictionary<string, Color>();
         }
 
         public void ClearAllData()

@@ -245,7 +245,7 @@ public struct SnowFillCell2D
 }
 
 [System.Serializable]
-public class ConnectedDirectionDictionary : UnityDictionary<Vector2Int, ConnectedDirectionType> { }
+public class ConnectedDirectionDictionary : UnitySerializedDictionary<Vector2Int, ConnectedDirectionType> { }
 
 [System.Serializable]
 public enum ConnectedDirectionType

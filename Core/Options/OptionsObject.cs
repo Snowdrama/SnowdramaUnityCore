@@ -8,16 +8,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "OptionsObject", menuName = "OptionsObject")]
 public class OptionsObject : ScriptableObject
 {
-    public UnityDictionary<string, float> defaultFloats = new UnityDictionary<string, float>();
-    public UnityDictionary<string, int> defaultInts = new UnityDictionary<string, int>();
-    public UnityDictionary<string, bool> defaultBools = new UnityDictionary<string, bool>();
-    public UnityDictionary<string, string> defaultStrings = new UnityDictionary<string, string>();
+    public UnitySerializedDictionary<string, float> defaultFloats = new UnitySerializedDictionary<string, float>();
+    public UnitySerializedDictionary<string, int> defaultInts = new UnitySerializedDictionary<string, int>();
+    public UnitySerializedDictionary<string, bool> defaultBools = new UnitySerializedDictionary<string, bool>();
+    public UnitySerializedDictionary<string, string> defaultStrings = new UnitySerializedDictionary<string, string>();
 
     [Header("Debug [Edits Do Nothing]")]
-    public UnityDictionary<string, float> debugFloats = new UnityDictionary<string, float>();
-    public UnityDictionary<string, int> debugInts = new UnityDictionary<string, int>();
-    public UnityDictionary<string, bool> debugBools = new UnityDictionary<string, bool>();
-    public UnityDictionary<string, string> debugStrings = new UnityDictionary<string, string>();
+    public UnitySerializedDictionary<string, float> debugFloats = new UnitySerializedDictionary<string, float>();
+    public UnitySerializedDictionary<string, int> debugInts = new UnitySerializedDictionary<string, int>();
+    public UnitySerializedDictionary<string, bool> debugBools = new UnitySerializedDictionary<string, bool>();
+    public UnitySerializedDictionary<string, string> debugStrings = new UnitySerializedDictionary<string, string>();
 
     [System.Serializable]
     struct OptionData
@@ -239,28 +239,28 @@ public class OptionsObject : ScriptableObject
 
     public void UpdateDebug()
     {
-        debugInts = new UnityDictionary<string, int>();
+        debugInts = new UnitySerializedDictionary<string, int>();
         foreach (var item in data.intValues)
         {
             var key = item.Key;
             var value = item.Value;
             debugInts.Add(key, value);
         }
-        debugFloats = new UnityDictionary<string, float>();
+        debugFloats = new UnitySerializedDictionary<string, float>();
         foreach (var item in data.floatValues)
         {
             var key = item.Key;
             var value = item.Value;
             debugFloats.Add(key, value);
         }
-        debugBools = new UnityDictionary<string, bool>();
+        debugBools = new UnitySerializedDictionary<string, bool>();
         foreach (var item in data.boolValues)
         {
             var key = item.Key;
             var value = item.Value;
             debugBools.Add(key, value);
         }
-        debugStrings = new UnityDictionary<string, string>();
+        debugStrings = new UnitySerializedDictionary<string, string>();
         foreach (var item in data.stringValues)
         {
             var key = item.Key;

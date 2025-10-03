@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// Plays a song by it's name and a transition speed 
@@ -9,40 +10,70 @@ using UnityEngine;
 public class PlayMusicRequestMessage : AMessage<string, float> { }
 public class MessagedMusicPlayer : MonoBehaviour
 {
-    public UnityDictionary<string, AudioClip> songs;
-    PlayMusicRequestMessage requestMessage;
+    [SerializeField] private AudioMixer mixer;
+    [SerializeField] private string musicMixerGroupName = "Music";
+    public UnitySerializedDictionary<string, AudioClip> songs = new UnitySerializedDictionary<string, AudioClip>();
+    private PlayMusicRequestMessage requestMessage;
 
-    [SerializeField] AudioSource currentSource;
-    [SerializeField] AudioSource nextSource;
+    [SerializeField] private AudioSource currentSource;
+    [SerializeField] private AudioSource nextSource;
 
-    void Start()
+    private void Start()
     {
         if (currentSource.clip == null)
         {
             currentSource.clip = songs.GetRandom().Value;
         }
+        if (nextSource == null)
+        {
+            GameObject newNextSource = new GameObject();
+            newNextSource.transform.SetParent(this.transform, false);
+            nextSource = newNextSource.AddComponent<AudioSource>();
+        }
+        if (currentSource == null)
+        {
+            GameObject newCurrentSource = new GameObject();
+            newCurrentSource.transform.SetParent(this.transform, false);
+            currentSource = newCurrentSource.AddComponent<AudioSource>();
+        }
+        //music isn't directional
+        nextSource.spatialBlend = 0.0f;
+        currentSource.spatialBlend = 0.0f;
+        if (mixer != null)
+        {
+            var groups = mixer.FindMatchingGroups(musicMixerGroupName);
+            foreach (var g in groups)
+            {
+                Debug.Log($"Group: {g}");
+            }
+            if (groups != null && groups.Length > 0)
+            {
+                //assume we only found one group...
+                nextSource.outputAudioMixerGroup = groups[0];
+                currentSource.outputAudioMixerGroup = groups[0];
+            }
+        }
     }
 
     [Header("Target Songs")]
-    [SerializeField, EditorReadOnly] string nextSong = "";
-    [SerializeField, EditorReadOnly] string currentSong = "";
+    [SerializeField, EditorReadOnly] private string nextSong = "";
+    [SerializeField, EditorReadOnly] private string currentSong = "";
 
     [Header("Transition Info")]
-    [SerializeField, EditorReadOnly] bool transitioning;
-    [SerializeField, EditorReadOnly] float transitionTime;
-    [SerializeField, EditorReadOnly] float transitionSpeed = 1.0f;
+    [SerializeField, EditorReadOnly] private bool transitioning;
+    [SerializeField, EditorReadOnly] private float transitionTime;
+    [SerializeField, EditorReadOnly] private float transitionSpeed = 1.0f;
 
     [Header("Debug")]
-    [SerializeField, EditorReadOnly] bool debugChangeSong;
+    [SerializeField, EditorReadOnly] private bool debugChangeSong;
 
-    void Update()
+    private void Update()
     {
         if (debugChangeSong)
         {
             Messages.Get<PlayMusicRequestMessage>().Dispatch(songs.GetRandom().Key, 0.25f);
             debugChangeSong = false;
         }
-
 
         if (nextSong != currentSong)
         {
@@ -71,7 +102,7 @@ public class MessagedMusicPlayer : MonoBehaviour
             currentSource.volume = currentSourceVolume;
             nextSource.volume = nextSourceVolume;
 
-            if(transitionTime >= 1.0f)
+            if (transitionTime >= 1.0f)
             {
                 transitioning = false;
                 transitionTime = 0;
@@ -80,7 +111,7 @@ public class MessagedMusicPlayer : MonoBehaviour
         }
     }
 
-    void SwapSources()
+    private void SwapSources()
     {
         //swap sources
         var temp = currentSource;

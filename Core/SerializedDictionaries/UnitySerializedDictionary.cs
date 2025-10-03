@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 [System.Serializable]
-public class UnityDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+public class UnitySerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 {
     [SerializeField] private List<SerializedDictionaryKVPProps<TKey, TValue>> dictionaryList = new();
 
-    public UnityDictionary() : base() { }
-    public UnityDictionary(int capacity) : base(capacity) { }
+    public UnitySerializedDictionary() : base() { }
+    public UnitySerializedDictionary(int capacity) : base(capacity) { }
     void ISerializationCallbackReceiver.OnBeforeSerialize()
     {
         foreach (var kVP in this)
