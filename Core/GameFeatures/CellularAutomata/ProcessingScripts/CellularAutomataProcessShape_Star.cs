@@ -14,6 +14,7 @@ namespace Snowdrama.CellularAutomata
 
         [Tooltip("Rotation of the star shape in degrees.")]
         public float rotationDegrees = 0f;
+        public bool randomRotation;
 
         [Header("Shape Transform")]
         [Tooltip("Scale applied to generated shapes. (1,1) = full size")]
@@ -25,6 +26,8 @@ namespace Snowdrama.CellularAutomata
 
         public override bool[,] Process(bool[,] data, int seed, ref int rngSequenceIndex)
         {
+            System.Random rng = new System.Random(seed + rngSequenceIndex);
+
             int width = data.GetLength(0);
             int height = data.GetLength(1);
 
@@ -34,6 +37,11 @@ namespace Snowdrama.CellularAutomata
             float outerRadius = Mathf.Min(width, height) / 2f * Mathf.Min(scale.x, scale.y);
 
             float rotationRadians = rotationDegrees * Mathf.Deg2Rad;
+            if (randomRotation)
+            {
+                rotationRadians = rng.Next(0, 360) * Mathf.Deg2Rad;
+            }
+
 
             // build polygon vertices
             List<Vector2> vertices = new List<Vector2>();
