@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Sun")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Shape/Sun")]
     public class CellularAutomataProcessShape_Sun : CellularAutomataProcess
     {
         [Range(3, 12)]

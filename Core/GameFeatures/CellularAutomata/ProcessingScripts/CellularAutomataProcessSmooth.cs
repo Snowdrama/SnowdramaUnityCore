@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Smooth")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Smooth")]
     public class CellularAutomataProcessSmooth : CellularAutomataProcess
     {
         public int neighborsForLiving = 4;

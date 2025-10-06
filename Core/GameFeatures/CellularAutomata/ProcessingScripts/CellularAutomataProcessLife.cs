@@ -2,7 +2,7 @@ using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
 
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Life")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Life")]
     public class CellularAutomataProcessLife : CellularAutomataProcess
     {
         public override void Init() { }

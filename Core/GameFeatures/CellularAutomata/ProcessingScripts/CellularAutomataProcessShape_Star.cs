@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Star Polygon")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Shape/Star Polygon")]
     public class CellularAutomataProcessShape_Star : CellularAutomataProcess
     {
         [Header("Star Parameters")]

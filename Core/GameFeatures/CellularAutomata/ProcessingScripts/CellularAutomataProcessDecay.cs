@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Decay")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Decay")]
     public class CellularAutomataProcessDecay : CellularAutomataProcess
     {
         [Tooltip("Alive cell dies if it has fewer than this many neighbors.")]

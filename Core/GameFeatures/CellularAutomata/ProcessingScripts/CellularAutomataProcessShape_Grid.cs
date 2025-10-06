@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Grid")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Shape/Grid")]
     public class CellularAutomataProcessShape_Grid : CellularAutomataProcess
     {
         [Header("Shape Transform")]

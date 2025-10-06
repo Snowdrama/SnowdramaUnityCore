@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: StarExample
   m_EditorClassIdentifier: 
   points: 5
-  innerRadiusFactor: 0.6
+  innerRadiusFactor: 0.355
   rotationDegrees: 18
-  scale: {x: 1, y: 1}
+  randomRotation: 1
+  scale: {x: 2, y: 2}
   aspectRatio: 1

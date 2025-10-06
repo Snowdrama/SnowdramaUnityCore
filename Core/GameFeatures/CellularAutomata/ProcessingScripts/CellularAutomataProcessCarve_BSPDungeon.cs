@@ -4,7 +4,7 @@ using UnityEngine;
 using Snowdrama.Core;
 
 
-[CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Dungeon/BSP Dungeon")]
+[CreateAssetMenu(menuName = "CellularAutomata_Dungeon/BSP Dungeon")]
 public class CellularAutomataProcessDungeon_BSP : CellularAutomataProcess
 {
     [Header("BSP Settings")]

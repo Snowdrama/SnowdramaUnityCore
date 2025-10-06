@@ -2,7 +2,7 @@ using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
 
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Cross")]
+    [CreateAssetMenu(menuName = "CellularAutomata_Shape/Cross")]
     public class CellularAutomataProcessShape_Cross : CellularAutomataProcess
     {
         [Header("Shape Transform")]
