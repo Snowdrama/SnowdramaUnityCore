@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89103273eb9d0bf45aeb4271f122f327, type: 3}
-  m_Name: ExampleCellularAutomataSettings
+  m_Script: {fileID: 11500000, guid: 56faf7de9141b4c4981827d995af809d, type: 3}
+  m_Name: Invert
   m_EditorClassIdentifier: 
-  width: 128
-  height: 128
-  processes:
-  - {fileID: 11400000, guid: 9dec1ed2076779d4880ccd8166d88a0e, type: 2}

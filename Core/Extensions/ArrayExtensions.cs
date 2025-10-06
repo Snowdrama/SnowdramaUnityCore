@@ -74,4 +74,29 @@ public static class ArrayExtensions
 
         return newList.ToArray();
     }
+
+    public static bool IndexInBounds<T>(this T[] list, int index)
+    {
+        if (index >= 0 && index < list.Length)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool IndexInBounds<T>(this T[,] list, Vector2 index)
+    {
+        if (index.x >= 0 && index.x < list.GetLength(0) && index.y >= 0 && index.y < list.GetLength(1))
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool IndexInBounds<T>(this T[,] list, int x, int y)
+    {
+        if (x >= 0 && x < list.GetLength(0) && y >= 0 && y < list.GetLength(1))
+        {
+            return true;
+        }
+        return false;
+    }
 }
