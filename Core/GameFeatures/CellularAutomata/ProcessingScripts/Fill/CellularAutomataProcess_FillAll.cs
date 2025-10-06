@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/FillAll", fileName = "FillAll")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Fill/All", fileName = "FillAll")]
     public class CellularAutomataProcess_FillAll : CellularAutomataProcess
     {
         public override void Init() { }

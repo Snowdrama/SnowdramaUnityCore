@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/FillRandom", fileName = "FillRandom")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Fill/Random", fileName = "FillRandom")]
     public class CellularAutomataProcess_FillRandom : CellularAutomataProcess
     {
         [Range(0f, 1f)]
