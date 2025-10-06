@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d7ebb4105ee6c642a7a8dba4b446706, type: 3}
   m_Name: FillStretched
   m_EditorClassIdentifier: 
-  threshold: 0.031
-  stretchAmount: 32
+  threshold: 0.01
+  threshold2: 0
+  stretchAmount: 500

@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac28ef682ce8eff4c917166d18768edc, type: 3}
   m_Name: StretchedNoise
   m_EditorClassIdentifier: 
-  density: 0.3
+  density: 0.08
   lineWidth: 2
-  maxLength: 10
+  maxLength: 60
   wobbleChance: 0.1
+  borderPadding: 2
   allowHorizontal: 1
   allowVertical: 1
+  fadeOut: 1
+  dotted: 0

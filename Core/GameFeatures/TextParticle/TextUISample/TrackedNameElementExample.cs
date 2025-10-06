@@ -1,5 +1,4 @@
 using TMPro;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class TrackedNameElementExample : MonoBehaviour, ITrackedObject

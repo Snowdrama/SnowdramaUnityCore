@@ -32,10 +32,10 @@ namespace Snowdrama.Transition
             var requredSceneListObject = Resources.Load<RequiredSceneListObject>("RequiredSceneList");
             sceneControllerOptions = Resources.Load<SceneControllerOptions>("SceneControllerOptions");
 
-            if(sceneControllerOptions == null)
+            if (sceneControllerOptions == null)
             {
                 sceneControllerOptions = ScriptableObject.CreateInstance<SceneControllerOptions>();
-            }            
+            }
 
 
             if (requredSceneListObject != null)
@@ -75,7 +75,7 @@ namespace Snowdrama.Transition
             {
                 DebugLogWarning("No Required Scene List asset named 'RequiredSceneList' is in" +
                     " the Resources folder. If there are no Required scenes please place a " +
-                    "SceneControllerOptions object in the Resources folder and check Hide Warnings", 
+                    "SceneControllerOptions object in the Resources folder and check Hide Warnings",
                     !sceneControllerOptions.hideRequiredSceneWarning);
             }
 
@@ -84,7 +84,6 @@ namespace Snowdrama.Transition
             loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
             loopInserter.Flush();
         }
-
 
         public static SceneTransition targetSceneTransition;
 
@@ -136,7 +135,7 @@ namespace Snowdrama.Transition
                     transitionState = TransitionState.HidingScene;
                     break;
                 case TransitionState.HidingScene:
-                    if(targetSceneTransition.hideSceneDuration > 0)
+                    if (targetSceneTransition.hideSceneDuration > 0)
                     {
                         transitionSpeed = 1.0f / targetSceneTransition.hideSceneDuration;
                         transitionValue += Time.unscaledDeltaTime * transitionSpeed;
@@ -146,7 +145,9 @@ namespace Snowdrama.Transition
                             transitionCallbacks.onHideCompleted?.Invoke();
                             transitionState = TransitionState.SceneHidden;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         //if it's 0 it should be instant
                         transitionValue = 1.0f;
                         transitionCallbacks.onHideCompleted?.Invoke();
@@ -171,6 +172,7 @@ namespace Snowdrama.Transition
                     }
                     break;
                 case TransitionState.StartLoad:
+                    Debug.Log("StartLoad");
                     LoadScenes(load);
                     LoadScenesDontDestroy(loadDontDestroy);
                     transitionState = TransitionState.WaitingForLoad;
@@ -185,7 +187,7 @@ namespace Snowdrama.Transition
                     }
                     break;
                 case TransitionState.FakeTimeBuffer:
-                    if(targetSceneTransition.fakeLoadBufferTime > 0)
+                    if (targetSceneTransition.fakeLoadBufferTime > 0)
                     {
                         transitionSpeed = 1.0f / targetSceneTransition.fakeLoadBufferTime;
                         fakeBufferTime += Time.unscaledDeltaTime * transitionSpeed;
@@ -215,7 +217,9 @@ namespace Snowdrama.Transition
                             transitionCallbacks.onShowCompleted?.Invoke();
                             transitionState = TransitionState.End;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         //if it's 0 it should be instant
                         transitionValue = 0.0f;
                         transitionCallbacks.onShowCompleted?.Invoke();
@@ -267,6 +271,7 @@ namespace Snowdrama.Transition
         {
             for (int i = 0; i < scenesToLoad.Count; i++)
             {
+                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
                 var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
                 asyncOperation.completed += LoadSceneComplete;
                 asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -281,6 +286,7 @@ namespace Snowdrama.Transition
         {
             for (int i = 0; i < scenesToLoad.Count; i++)
             {
+                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
                 var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
                 asyncOperation.completed += LoadSceneDontDestroyComplete;
                 asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -296,7 +302,6 @@ namespace Snowdrama.Transition
         {
             asyncLoadData = new List<SceneTransitionAsync_LoadData>();
             asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
-
 
             switch (targetSceneTransition.transitionMode)
             {
@@ -364,7 +369,7 @@ namespace Snowdrama.Transition
                     unloadDontDestroy = new List<string>();
                     loadDontDestroy = new List<string>();
 
-                    
+
                     for (int i = 0; i < targetSceneTransition.doNotDestroyScenesToUnload.Count; i++)
                     {
                         if (sceneNotToUnload.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))

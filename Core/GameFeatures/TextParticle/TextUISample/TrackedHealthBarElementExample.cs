@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using static Codice.Client.Common.Servers.RecentlyUsedServers;
 
 public class TrackedHealthBarElementExample : MonoBehaviour, ITrackedObject
 {

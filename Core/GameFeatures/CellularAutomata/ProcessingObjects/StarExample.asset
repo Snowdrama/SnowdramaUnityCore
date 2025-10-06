@@ -16,5 +16,5 @@ MonoBehaviour:
   innerRadiusFactor: 0.355
   rotationDegrees: 18
   randomRotation: 1
-  scale: {x: 2, y: 2}
+  scale: {x: 1.5, y: 1.5}
   aspectRatio: 1
