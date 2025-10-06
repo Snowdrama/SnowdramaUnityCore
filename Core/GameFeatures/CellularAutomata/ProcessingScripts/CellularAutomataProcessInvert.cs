@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "CellularAutomata_Invert")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Invert", fileName = "Invert")]
     public class CellularAutomataProcessInvert : CellularAutomataProcess
     {
         public override void Init() { }

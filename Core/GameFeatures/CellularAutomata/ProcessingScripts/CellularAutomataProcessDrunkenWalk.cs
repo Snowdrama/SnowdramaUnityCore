@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "CellularAutomata_Drunken Walk")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/DrunkenWalk", fileName = "DrunkenWalk")]
     public class CellularAutomataProcessDrunkenWalk : CellularAutomataProcess
     {
         private static Vector2Int lastPosition;

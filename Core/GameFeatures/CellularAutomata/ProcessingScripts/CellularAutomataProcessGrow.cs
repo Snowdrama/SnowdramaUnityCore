@@ -2,7 +2,7 @@ using UnityEngine;
 namespace Snowdrama.CellularAutomata
 {
 
-    [CreateAssetMenu(menuName = "CellularAutomata_Grow")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Grow", fileName = "Grow")]
     public class CellularAutomataProcessGrow : CellularAutomataProcess
     {
         [Tooltip("Cell becomes alive if it has at least this many alive neighbors.")]

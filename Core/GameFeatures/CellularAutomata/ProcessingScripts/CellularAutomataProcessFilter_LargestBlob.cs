@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "CellularAutomata_Filter/LargestBlob")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Filter/LargestBlob", fileName = "LargestBlob")]
     public class CellularAutomataProcessFilter_LargestBlob : CellularAutomataProcess
     {
         [Header("Flood Fill Settings")]

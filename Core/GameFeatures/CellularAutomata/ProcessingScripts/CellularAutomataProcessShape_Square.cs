@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "CellularAutomata_Shape/Square")]
+    [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Square", fileName = "Square")]
     public class CellularAutomataProcessShape_Square : CellularAutomataProcess
     {
         [SerializeField] private bool invert = false;
