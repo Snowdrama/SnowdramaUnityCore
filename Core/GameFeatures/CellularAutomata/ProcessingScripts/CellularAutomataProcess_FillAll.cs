@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Snowdrama.CellularAutomata
 {
-    [CreateAssetMenu(menuName = "CellularAutomata_FillRandom")]
+    [CreateAssetMenu(menuName = "CellularAutomata_FillAll")]
     public class CellularAutomataProcess_FillAll : CellularAutomataProcess
     {
         public override void Init() { }
