@@ -336,7 +336,7 @@ namespace Snowdrama.Transition
                         var newScene = targetSceneTransition.scenes[i];
 
                         //if we have a scene loaded and it's marked to be loaded again
-                        if (unload.Contains(newScene.SceneName))
+                        if (loadedScenes.Contains(newScene.SceneName) && unload.Contains(newScene.SceneName))
                         {
                             //check if we want to reload
                             if (!newScene.reloadIfAlreadyExists)
@@ -359,6 +359,17 @@ namespace Snowdrama.Transition
                                     load.Add(newScene.SceneName);
                                 }
                             }
+                        }
+                        else if (scenesNotToUnload.Contains(newScene.SceneName))
+                        {
+                            //the scene is already loaded as a don't destroy on load scene
+                            if (!newScene.reloadIfAlreadyExists)
+                            {
+                                //we want to reload so we want to unload it as well as load it again.
+                                unloadDontDestroy.Add(newScene.SceneName);
+                                loadDontDestroy.Add(newScene.SceneName);
+                            }
+                            //otherwise it's already loaded... so don't load it again.
                         }
                         else
                         {
