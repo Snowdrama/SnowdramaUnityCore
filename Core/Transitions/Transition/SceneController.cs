@@ -11,7 +11,7 @@ namespace Snowdrama.Transition
     public class SceneController : MonoBehaviour
     {
         public static List<string> loadedScenes;
-        public static List<string> sceneNotToUnload;
+        public static List<string> scenesNotToUnload;
 
         private static SceneControllerOptions sceneControllerOptions;
 
@@ -19,7 +19,7 @@ namespace Snowdrama.Transition
         public static void Bootstrap()
         {
             loadedScenes = new List<string>();
-            sceneNotToUnload = new List<string>();
+            scenesNotToUnload = new List<string>();
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
@@ -46,7 +46,7 @@ namespace Snowdrama.Transition
 
                     if (requiredScene.dontDestroyOnLoad)
                     {
-                        if (!loadedScenes.Contains(requiredScene.sceneName) && !sceneNotToUnload.Contains(requiredScene.sceneName))
+                        if (!loadedScenes.Contains(requiredScene.sceneName) && !scenesNotToUnload.Contains(requiredScene.sceneName))
                         {
                             //add it if it's not already in the lists. 
                             SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
@@ -57,9 +57,9 @@ namespace Snowdrama.Transition
                         {
                             loadedScenes.Remove(requiredScene.sceneName);
                         }
-                        if (!sceneNotToUnload.Contains(requiredScene.sceneName))
+                        if (!scenesNotToUnload.Contains(requiredScene.sceneName))
                         {
-                            sceneNotToUnload.Add(requiredScene.sceneName);
+                            scenesNotToUnload.Add(requiredScene.sceneName);
                         }
                     }
                     else
@@ -317,13 +317,16 @@ namespace Snowdrama.Transition
                 case SceneTransitionMode.Normal:
                     unload = new List<string>(loadedScenes);
                     load = new List<string>();
-                    unloadDontDestroy = new List<string>(targetSceneTransition.doNotDestroyScenesToUnload);
+                    unloadDontDestroy = new List<string>();
                     loadDontDestroy = new List<string>();
 
+                    //loop over each scene in the force unload.
                     for (int i = 0; i < targetSceneTransition.doNotDestroyScenesToUnload.Count; i++)
                     {
-                        if (sceneNotToUnload.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
+                        //if we've marked it as don't destroy on load
+                        if (scenesNotToUnload.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
                         {
+                            //add it to this list to make sure to force destroy it. 
                             unloadDontDestroy.Add(targetSceneTransition.doNotDestroyScenesToUnload[i]);
                         }
                     }
@@ -331,13 +334,14 @@ namespace Snowdrama.Transition
                     for (int i = 0; i < targetSceneTransition.scenes.Count; i++)
                     {
                         var newScene = targetSceneTransition.scenes[i];
+
+                        //if we have a scene loaded and it's marked to be loaded again
                         if (unload.Contains(newScene.SceneName))
                         {
-                            //if the scene is potentially being unloaded
+                            //check if we want to reload
                             if (!newScene.reloadIfAlreadyExists)
                             {
-                                //And we don't want to reload, stop the unload
-
+                                //we don't want to reload, stop the unload
                                 DebugLogWarning($"Preventing Unload of Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
                                 unload.Remove(newScene.SceneName);
                                 continue;
@@ -378,11 +382,13 @@ namespace Snowdrama.Transition
                     unloadDontDestroy = new List<string>();
                     loadDontDestroy = new List<string>();
 
-
+                    //loop over each scene in the force unload.
                     for (int i = 0; i < targetSceneTransition.doNotDestroyScenesToUnload.Count; i++)
                     {
-                        if (sceneNotToUnload.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
+                        //if we've marked it as don't destroy on load
+                        if (scenesNotToUnload.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
                         {
+                            //add it to this list to make sure to force destroy it. 
                             unloadDontDestroy.Add(targetSceneTransition.doNotDestroyScenesToUnload[i]);
                         }
                     }
@@ -429,10 +435,7 @@ namespace Snowdrama.Transition
                     }
                     break;
             }
-
         }
-
-
 
         private static void LoadSceneComplete(AsyncOperation obj)
         {
@@ -459,9 +462,9 @@ namespace Snowdrama.Transition
                 {
                     DebugLogWarning($"Load Dont Destroy Complete for Scene {asyncLoadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
                     asyncLoadData[i].complete = true;
-                    if (!sceneNotToUnload.Contains(asyncLoadData[i].sceneName))
+                    if (!scenesNotToUnload.Contains(asyncLoadData[i].sceneName))
                     {
-                        sceneNotToUnload.Add(asyncLoadData[i].sceneName);
+                        scenesNotToUnload.Add(asyncLoadData[i].sceneName);
                     }
                 }
             }
@@ -494,9 +497,9 @@ namespace Snowdrama.Transition
                     DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
                     asyncUnloadData[i].complete = true;
 
-                    if (sceneNotToUnload.Contains(asyncUnloadData[i].sceneName))
+                    if (scenesNotToUnload.Contains(asyncUnloadData[i].sceneName))
                     {
-                        sceneNotToUnload.Remove(asyncUnloadData[i].sceneName);
+                        scenesNotToUnload.Remove(asyncUnloadData[i].sceneName);
                     }
                 }
             }

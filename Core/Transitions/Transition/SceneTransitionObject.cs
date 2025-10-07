@@ -57,6 +57,7 @@ namespace Snowdrama.Transition
     {
         public string SceneName;
         public bool dontDestroyOnLoad;
+        public bool allowLoadingMultiple;
         public bool reloadIfAlreadyExists;
     }
 

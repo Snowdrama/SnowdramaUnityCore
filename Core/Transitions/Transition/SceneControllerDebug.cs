@@ -13,13 +13,14 @@ namespace Snowdrama.Transition
         public bool transitioning;
         [Header("Loaded Scenes")]
         public List<string> loadedScenes;
+        public List<string> scenesNotToUnload;
         [Header("Debug")]
         public List<string> unload;
         public List<string> load;
 
         public List<string> unloadDontDestroy;
         public List<string> loadDontDestroy;
-        void Update()
+        private void Update()
         {
             transitionState = SceneController.transitionState;
             transitionValue = SceneController.transitionValue;
@@ -28,7 +29,7 @@ namespace Snowdrama.Transition
 
 
             loadedScenes = SceneController.loadedScenes;
-
+            scenesNotToUnload = SceneController.scenesNotToUnload;
 
 
             unload = SceneController.unload;
