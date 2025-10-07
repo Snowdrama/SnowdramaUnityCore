@@ -8,7 +8,7 @@ using Snowdrama.Core;
 
 namespace Snowdrama.Transition
 {
-    public class SceneController
+    public class SceneController : MonoBehaviour
     {
         public static List<string> loadedScenes;
         public static List<string> sceneNotToUnload;
@@ -80,9 +80,12 @@ namespace Snowdrama.Transition
             }
 
 
-            var loopInserter = UnityPlayerLoopInserter.GetCurrent();
-            loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
-            loopInserter.Flush();
+            //TODO: We need to check into this it seems to be causing issues
+            //TODO: For now this needs to be added to the required scene and put manually into the loop
+            //not using the inserter...
+            //var loopInserter = UnityPlayerLoopInserter.GetCurrent();            
+            //loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
+            //loopInserter.Flush();
         }
 
         public static SceneTransition targetSceneTransition;
@@ -123,6 +126,12 @@ namespace Snowdrama.Transition
         public static List<string> loadDontDestroy = new List<string>();
 
         public static List<string> allowedTransitions;
+
+        public void Update()
+        {
+            //TODO: Needed to update the static class
+            SceneController.UpdateTransition();
+        }
         public static void UpdateTransition()
         {
             switch (transitionState)
