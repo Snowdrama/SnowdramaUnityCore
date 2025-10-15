@@ -12,7 +12,7 @@ namespace Snowdrama.Transition
 
         public void TransitionToThis()
         {
-            Debug.Log("Going To Scene");
+            Debug.Log($"[{this.name}]: Going To Scene");
             SceneController.StartTransition(sceneTransition);
         }
     }

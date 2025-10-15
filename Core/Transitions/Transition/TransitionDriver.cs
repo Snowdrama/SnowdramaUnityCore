@@ -63,6 +63,7 @@ namespace Snowdrama.Transition
         {
             if (transitionCanvas == null)
             {
+                //attmpt to get the canvas if we didn't set it explicitly
                 transitionCanvas = this.transform.GetChild(0).gameObject;
             }
 
@@ -72,12 +73,15 @@ namespace Snowdrama.Transition
             {
                 var child = transitionCanvas.transform.GetChild(i);
                 var transitionElement = child.GetComponent<Transition>();
-                if (transitionElement)
+                if (transitionElement != null)
                 {
+                    //set them all to false
+                    transitionElement.gameObject.SetActive(false);
                     transitions.Add(transitionElement.transitionName, transitionElement);
                     debugTransitionNameKeys.Add(transitionElement.transitionName);
                 }
             }
+
             if (transitions.Count == 0)
             {
                 Debug.LogWarning($"Found 0 transitions, you need at least 1 transition that's a child of the Transition Driver");
@@ -135,17 +139,30 @@ namespace Snowdrama.Transition
             }
             transitionCanvas?.SetActive(false);
             currentTransition?.OnTransitionComplete();
+            currentTransition?.gameObject?.SetActive(false);
         }
 
         private void Update()
         {
             if (Application.isPlaying)
             {
+                //the update is playing, we're doing ti for realll!!!!
                 debugTransitionValue = SceneController.transitionValue;
                 currentTransition?.UpdateTransition(SceneController.transitionValue, hiding);
             }
             else
             {
+                //This is debug plz just force visible
+                if (debugTransitionValue > 0)
+                {
+                    transitionCanvas?.SetActive(true);
+                    currentTransition?.gameObject?.SetActive(true);
+                }
+                else
+                {
+                    transitionCanvas?.SetActive(false);
+                    currentTransition?.gameObject?.SetActive(false);
+                }
                 currentTransition?.UpdateTransition(debugTransitionValue, hiding);
             }
         }
@@ -157,7 +174,7 @@ namespace Snowdrama.Transition
             {
                 return;
             }
-            if(transitions.Keys.Count == 0)
+            if (transitions.Keys.Count == 0)
             {
                 Debug.LogError($"Transition list has 0 transitions, one transition is required", this.gameObject);
                 return;

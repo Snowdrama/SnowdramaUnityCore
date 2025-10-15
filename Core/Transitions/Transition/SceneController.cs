@@ -10,16 +10,17 @@ namespace Snowdrama.Transition
 {
     public class SceneController : MonoBehaviour
     {
-        public static List<string> loadedScenes;
-        public static List<string> scenesNotToUnload;
+        public static List<string> requiredScenesLoaded = new List<string>();
+
+        public static List<string> loadedScenes = new List<string>();
+        public static List<string> scenesNotToUnload = new List<string>();
 
         private static SceneControllerOptions sceneControllerOptions;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Bootstrap()
         {
-            loadedScenes = new List<string>();
-            scenesNotToUnload = new List<string>();
+            //add all scenes from the editor as loaded.
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
@@ -29,6 +30,22 @@ namespace Snowdrama.Transition
                 }
             }
 
+            //load required scenes
+            LoadRequiredScenes();
+
+
+            //TODO: We need to check into this it seems to be causing issues
+            //TODO: For now this needs to be added to the required scene and put manually into the loop
+            //not using the inserter...
+            //var loopInserter = UnityPlayerLoopInserter.GetCurrent();            
+            //loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
+            //loopInserter.Flush();
+        }
+
+
+        public static void LoadRequiredScenes()
+        {
+
             var requredSceneListObject = Resources.Load<RequiredSceneListObject>("RequiredSceneList");
             sceneControllerOptions = Resources.Load<SceneControllerOptions>("SceneControllerOptions");
 
@@ -36,7 +53,6 @@ namespace Snowdrama.Transition
             {
                 sceneControllerOptions = ScriptableObject.CreateInstance<SceneControllerOptions>();
             }
-
 
             if (requredSceneListObject != null)
             {
@@ -79,14 +95,26 @@ namespace Snowdrama.Transition
                     !sceneControllerOptions.hideRequiredSceneWarning);
             }
 
-
-            //TODO: We need to check into this it seems to be causing issues
-            //TODO: For now this needs to be added to the required scene and put manually into the loop
-            //not using the inserter...
-            //var loopInserter = UnityPlayerLoopInserter.GetCurrent();            
-            //loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
-            //loopInserter.Flush();
         }
+
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        public static void AfterSceneLoad()
+        {
+            if (loadedScenes.Count > 1)
+            {
+                //unload each scene except scene index 0
+                for (int i = 0; i < loadedScenes.Count; i++)
+                {
+                    if (i != 0)
+                    {
+                        DebugLog($"Unloading Excess Scene {loadedScenes[i]}", sceneControllerOptions.showConsoleMessages);
+                        SceneManager.UnloadSceneAsync(loadedScenes[i]);
+                    }
+                }
+            }
+        }
+
 
         public static SceneTransition targetSceneTransition;
 
@@ -244,68 +272,6 @@ namespace Snowdrama.Transition
             }
         }
 
-        public static void UnloadScenes(List<string> scenesToUnload)
-        {
-            for (int i = 0; i < scenesToUnload.Count; i++)
-            {
-                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
-                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
-                asyncOperation.completed += UnloadSceneComplete;
-                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToUnload[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-
-        public static void UnloadDoNotDestroyScenes(List<string> scenesToUnload)
-        {
-            for (int i = 0; i < scenesToUnload.Count; i++)
-            {
-                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
-                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
-                asyncOperation.completed += UnloadSceneDoNotDestroyComplete;
-                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToUnload[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-
-        public static void LoadScenes(List<string> scenesToLoad)
-        {
-            for (int i = 0; i < scenesToLoad.Count; i++)
-            {
-                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
-                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
-                asyncOperation.completed += LoadSceneComplete;
-                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToLoad[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-        public static void LoadScenesDontDestroy(List<string> scenesToLoad)
-        {
-            for (int i = 0; i < scenesToLoad.Count; i++)
-            {
-                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
-                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
-                asyncOperation.completed += LoadSceneDontDestroyComplete;
-                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToLoad[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
 
         public static void CalculateScenesToChange()
         {
@@ -448,6 +414,75 @@ namespace Snowdrama.Transition
             }
         }
 
+
+        #region Load Functions
+        public static void LoadScenes(List<string> scenesToLoad)
+        {
+            for (int i = 0; i < scenesToLoad.Count; i++)
+            {
+                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
+                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
+                asyncOperation.completed += LoadSceneComplete;
+                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
+                {
+                    sceneName = scenesToLoad[i],
+                    asyncOperation = asyncOperation,
+                    complete = false,
+                });
+            }
+        }
+        public static void LoadScenesDontDestroy(List<string> scenesToLoad)
+        {
+            for (int i = 0; i < scenesToLoad.Count; i++)
+            {
+                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
+                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
+                asyncOperation.completed += LoadSceneDontDestroyComplete;
+                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
+                {
+                    sceneName = scenesToLoad[i],
+                    asyncOperation = asyncOperation,
+                    complete = false,
+                });
+            }
+        }
+        #endregion
+
+        #region Unload Functions
+
+        public static void UnloadScenes(List<string> scenesToUnload)
+        {
+            for (int i = 0; i < scenesToUnload.Count; i++)
+            {
+                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
+                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
+                asyncOperation.completed += UnloadSceneComplete;
+                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
+                {
+                    sceneName = scenesToUnload[i],
+                    asyncOperation = asyncOperation,
+                    complete = false,
+                });
+            }
+        }
+        public static void UnloadDoNotDestroyScenes(List<string> scenesToUnload)
+        {
+            for (int i = 0; i < scenesToUnload.Count; i++)
+            {
+                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
+                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
+                asyncOperation.completed += UnloadSceneDoNotDestroyComplete;
+                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
+                {
+                    sceneName = scenesToUnload[i],
+                    asyncOperation = asyncOperation,
+                    complete = false,
+                });
+            }
+        }
+        #endregion
+
+        #region Load Complete Callbacks
         private static void LoadSceneComplete(AsyncOperation obj)
         {
             for (int i = 0; i < asyncLoadData.Count; i++)
@@ -464,7 +499,6 @@ namespace Snowdrama.Transition
                 }
             }
         }
-
         private static void LoadSceneDontDestroyComplete(AsyncOperation obj)
         {
             for (int i = 0; i < asyncLoadData.Count; i++)
@@ -480,7 +514,9 @@ namespace Snowdrama.Transition
                 }
             }
         }
+        #endregion
 
+        #region Unload Complete Callbacks
         private static void UnloadSceneComplete(AsyncOperation obj)
         {
             for (int i = 0; i < asyncUnloadData.Count; i++)
@@ -497,8 +533,6 @@ namespace Snowdrama.Transition
                 }
             }
         }
-
-
         private static void UnloadSceneDoNotDestroyComplete(AsyncOperation obj)
         {
             for (int i = 0; i < asyncUnloadData.Count; i++)
@@ -515,7 +549,7 @@ namespace Snowdrama.Transition
                 }
             }
         }
-
+        #endregion
 
         public static void StartTransition(SceneTransition setSceneTransition)
         {
@@ -528,25 +562,11 @@ namespace Snowdrama.Transition
                 transitionCallbacks.onTransitionStarted?.Invoke();
                 transitionState = TransitionState.Start;
             }
-        }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        public static void AfterSceneLoad()
-        {
-            if (loadedScenes.Count > 1)
+            else
             {
-                //unload each scene except scene index 0
-                for (int i = 0; i < loadedScenes.Count; i++)
-                {
-                    if (i != 0)
-                    {
-                        DebugLog($"Unloading Excess Scene {loadedScenes[i]}", sceneControllerOptions.showConsoleMessages);
-                        SceneManager.UnloadSceneAsync(loadedScenes[i]);
-                    }
-                }
+                Debug.LogError("Currently in a transition! Can't transition again!");
             }
         }
-
 
         public static void DebugLog(string log, bool enableFlag = false, GameObject target = null)
         {
