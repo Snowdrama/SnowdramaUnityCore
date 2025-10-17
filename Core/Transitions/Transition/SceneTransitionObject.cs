@@ -33,13 +33,13 @@ namespace Snowdrama.Transition
         [Tooltip("How to manage the existing scnees")]
         [SerializeField] public SceneTransitionMode transitionMode;
 
-        [Tooltip("A list of scenes to load")]
+        [Tooltip("A list of scenes to calculatedScenes_ToLoad_Normal")]
         [SerializeField] public List<SceneTransitionData> scenes = new List<SceneTransitionData>();
 
         [Header("Time")]
         [SerializeField] public float hideSceneDuration = 1.0f;
 
-        [Tooltip("Add a fake load time to make sure the transition doesn't look ugly when the scene loads too fast")]
+        [Tooltip("Add a fake calculatedScenes_ToLoad_Normal time to make sure the transition doesn't look ugly when the scene loads too fast")]
         [SerializeField] public float fakeLoadBufferTime = 1.0f;
         [SerializeField] public float showSceneDuration = 1.0f;
 
@@ -48,7 +48,7 @@ namespace Snowdrama.Transition
         [SerializeField] public List<string> allowedTransitionNames = new List<string>();
 
         [Header("Force Unload DontDestroy Scene")]
-        [Tooltip("A list of DontDestroy scenes to force unload")]
+        [Tooltip("A list of DontDestroy scenes to force calculatedScenes_ToUnload_Normal")]
         [SerializeField] public List<string> doNotDestroyScenesToUnload = new List<string>();
     }
 

@@ -28,15 +28,15 @@ namespace Snowdrama.Transition
             transitionSpeed = SceneController.transitionSpeed;
 
 
-            loadedScenes = SceneController.loadedScenes;
-            scenesNotToUnload = SceneController.scenesNotToUnload;
+            loadedScenes = SceneController.loadedScenes_Normal;
+            scenesNotToUnload = SceneController.loadedScenes_DontDestroyOnLoad;
 
 
-            unload = SceneController.unload;
-            load = SceneController.load;
+            unload = SceneController.calculatedScenes_ToUnload;
+            load = SceneController.calculatedScenes_ToLoad;
 
-            unloadDontDestroy = SceneController.unloadDontDestroy;
-            loadDontDestroy = SceneController.loadDontDestroy;
+            unloadDontDestroy = SceneController.calculatedScenes_ToUnload_DontDestroyOnLoad;
+            loadDontDestroy = SceneController.calculatedScenes_ToLoad_DontDestroyOnLoad;
         }
     }
 }
