@@ -17,11 +17,6 @@
   "type": "utility",
   "samples": [
     {
-      "displayName": "Transition Assets",
-      "description": "A collection of Scripts, Shaders, and Images for different types of transitions",
-      "path": "Samples~/TransitionAssets"
-    },
-    {
       "displayName": "Transition Sample",
       "description": "Shows the use of Transitions",
       "path": "Samples~/TransitionSample"

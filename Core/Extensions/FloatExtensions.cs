@@ -1,6 +1,8 @@
+using Codice.CM.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 public static class FloatExtensions
@@ -160,5 +162,75 @@ public static class FloatExtensions
     public static float RoundTo(this float value, float snapTarget)
     {
         return Mathf.Round(value / snapTarget) * snapTarget;
+    }
+
+
+    /// <summary>
+    /// Converts a time into a speed to multiply delta time by
+    /// 
+    /// Since delta time is "per second" the time is the inverse of the speed
+    /// 
+    /// for example 
+    /// If something should take 1.0 second then the speed is 1.0
+    /// If something shoudl take 2.0 seconds then the speed is 0.5
+    /// if something should take 0.5 seconds then the speed is 2.0
+    /// 
+    /// This is the opposite of CreateTimeFromSpeed
+    /// 
+    /// This is because I'm dumb and always forget the math is just 1.0/time
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    public static float CreateSpeedFromTime(this float time)
+    {
+        if (time == 0)
+        {
+            //it will take 0 time then the speed is infiite
+            return float.PositiveInfinity;
+        }
+
+        /// If something should take 1.0 second then the speed is 1.0
+        /// 1.0 / 1.0 = 1.0
+        /// If something shoudl take 2.0 seconds then the speed is 0.5
+        /// 1.0 / 2.0 = 0.5
+        /// if something should take 0.5 seconds then the speed is 2.0
+        /// 1.0 / 0.5 = 2.0
+        return 1.0f / time;
+    }
+
+    /// <summary>
+    /// 
+    /// Converts a speed into a duration per second
+    /// 
+    /// Since speed is units "per second" the speed is the inverse of the time
+    /// 
+    /// for example
+    /// if somethign moves at 1.0 speed, it would travel 1 unit in 1.0 seconds
+    /// if something moves at 2.0 speed, it would travel 1 unit in 0.5 seconds
+    /// if something moves at 0.5 speed, it would travel 1 unit in 2.0 seconds
+    /// 
+    /// This is the opposite of CreateSpeedFromTime
+    /// 
+    /// This is because I'm dumb and always forget the math is just 1.0/speed
+    /// </summary>
+    /// <param name="speed"></param>
+    /// <returns></returns>
+    public static float CreateTimeFromSpeed(this float speed)
+    {
+        if (speed == 0)
+        {
+            //it will take infinite time if the speed is 0
+            return float.PositiveInfinity;
+        }
+
+        // 1.0 / 2.0 = 0.5
+        /// if somethign moves at 1.0 speed, it would travel 1 unit in 1.0 seconds
+        /// 1.0 / 1.0 = 1.0
+        /// if something moves at 2.0 speed, it would travel 1 unit in 0.5 seconds
+        /// 1.0 / 2.0 = 0.5
+        /// if something moves at 0.5 speed, it would travel 1 unit in 2.0 seconds
+        /// 1.0 / 0.5 = 2.0
+
+        return 1.0f / speed;
     }
 }

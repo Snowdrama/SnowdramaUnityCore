@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Scene management setup contains 3 parts -->
+<!-- Normal Scenes: The game's actual normal content. -->
+<!-- Wrapper Scenes: Scenes that are loaded when a child scene is loaded -->
+<!-- Required Scenes: Always loaded never removed, used for things like loading/scene management/music etc. -->
+
+<!-- The initail scene is listed here so that we can be sure that in a build we start in a specific place -->
+<Game initial-scene="MainMenuScene">
+    <!-- First we define all required scenes these are ALWAYS loaded no matter what-->
+    <RequiredScene name="CameraScene"></RequiredScene>
+    <RequiredScene name="TransitionScene"></RequiredScene>
+    <RequiredScene name="SceneControllerScene"></RequiredScene>
+    <RequiredScene name="MusicManagerScene"></RequiredScene>
+
+    <!-- Wrapper scenes cannot be loaded with the GoToScene method --> 
+    <!-- but if a child scene is loaded the wrapper should also be loaded -->
+    
+    <!-- Save Manager lives above the data scene and strictly only manages saves -->
+    <WrapperScene name="SaveGameManager"> 
+        <!-- The main menu would use SaveGameManager to tell it to load save 1/2/3 etc -->
+        <!-- Then would peek into the save to load GameHub -->
+        <Scene name="MainMenuScene"></Scene>
+
+        <!-- On start GameDataScene tries to get a copy of the data from SaveGameManger -->
+        <!-- GameDataScene is holds all temp data changes to the save data -->
+        <!-- If at any time the player saves, then GameDataScene pushes that data into SaveGameManager -->
+        <WrapperScene name="GameDataScene"> 
+            <!-- These are the specific game scenes the player interacts with -->
+            <!-- They are loaded with SceneController.GoToScene("Level1"); -->
+            <Scene name="GameHub"></Scene> <!---->
+            <Scene name="Level1"></Scene>
+            <Scene name="Level2"></Scene>
+        </WrapperScene>
+
+        <!-- Game over scene is wrapped in SaveGameManager so you can load a save on death -->
+        <!-- Loading the save then again peeks into the save to transition to the scene in the save -->
+        <Scene name="GameOverScene"></Scene>
+        <Scene name="GameWinScene"></Scene>
+    </WrapperScene>
+</Game>
+
+
+<Game initial-scene="MainMenuScene">
+    <!-- Required -->
+    <RequiredScene name="GlobalRequiredScene"></RequiredScene>
+
+    <!-- Game -->
+    <WrapperScene name="SaveGameManager" reload-if-scene-exists="false"> 
+        <!-- Main Menu -->
+        <Scene name="MainMenuScene" reload-if-scene-exists="true"></Scene>
+
+        <!-- Main Game -->
+        <WrapperScene name="GameDataScene" reload-if-scene-exists="false"> 
+            <Scene name="GameHub" reload-if-scene-exists="true">
+                <AllowedTransition name="ImageFade"></AllowedTransition>
+            </Scene>
+            <Scene name="Level1" reload-if-scene-exists="true">
+                <AllowedTransition name="Level1Transition"></AllowedTransition>
+            </Scene>
+            <Scene name="Level2" reload-if-scene-exists="true">
+                <AllowedTransition name="Level2Transition"></AllowedTransition>
+            </Scene>
+            <Scene name="GameOverScene" reload-if-scene-exists="true"></Scene> 
+            <Scene name="GameWinScene" reload-if-scene-exists="true"></Scene>
+        </WrapperScene>
+    </WrapperScene>
+
+</Game>
+
+
+
+<Game initial-scene="MainMenuScene">
+    <WrapperScene name="SceneDependency1" reload-if-scene-exists="false"> 
+        <WrapperScene name="SceneDependency2" reload-if-scene-exists="false"> 
+            <Scene name="DependsOn1And2" reload-if-scene-exists="true"></Scene>
+        </WrapperScene>
+    </WrapperScene>
+    <WrapperScene name="SceneDependency2" reload-if-scene-exists="false">
+        <WrapperScene name="SceneDependency3" reload-if-scene-exists="false">
+            <Scene name="DependsOn2And3" reload-if-scene-exists="true"></Scene>
+        </WrapperScene>
+    </WrapperScene>
+</Game>

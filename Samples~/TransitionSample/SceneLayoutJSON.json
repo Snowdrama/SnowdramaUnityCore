@@ -1,0 +1,59 @@
+{
+    "DefaultSceneName":"MainMenuScene",
+    "RequiredScenes": ["RequiredScene"],
+    "WrapperScenes":[
+        { "Name":"SaveGameManager", "ReloadIfSceneExists": false , "Dependencies":[] },
+        { 
+            "Name":"GameDataManager", 
+            "ReloadIfSceneExists": false,
+            "Dependencies":[
+                "SaveGameManager"
+            ]
+        }
+    ],
+    "Scenes":[
+        {
+            "Name":"MainMenuScene",
+            "ReloadIfSceneExists": true, 
+            "Dependencies":[
+                "SaveGameManager"
+            ], 
+            "AllowedTransitions":[
+                "SwirlTransition"
+            ]
+        }, 
+        {
+            "Name":"GameHub",
+            "ReloadIfSceneExists": true,
+            "Dependencies":[
+                "SaveGameManager",
+                "GameDataManager"
+            ], 
+            "AllowedTransitions":[
+                "PixelateTransition"
+            ]
+        }, 
+        {
+            "Name":"Level1",
+            "ReloadIfSceneExists": true,
+            "Dependencies":[
+                "SaveGameManager",
+                "GameDataManager"
+            ], 
+            "AllowedTransitions":[
+                "CheckerboardTransition"
+            ]
+        }, 
+        {
+            "Name":"Level2",
+            "ReloadIfSceneExists": true,
+            "Dependencies":[
+                "SaveGameManager",
+                "GameDataManager"
+            ], 
+            "AllowedTransitions":[
+                "CheckerboardTransition"
+            ]
+        }
+    ]
+}
