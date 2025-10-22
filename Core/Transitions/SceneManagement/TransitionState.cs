@@ -11,7 +11,7 @@
         StartLoad,
         WaitingForLoad,
         FakeTimeBuffer,
-        RevealingScene,
+        ShowingScene,
         End,
     }
 }

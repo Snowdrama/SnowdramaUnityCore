@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ScreneTransitionEffect
+  m_Name: PixelateCutoffTransition
   m_Shader: {fileID: 4800000, guid: e7a42557fb8ce3944bab8c72e6b9fe46, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: c8861c325256c5044bd7fafbb50c079d, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -64,7 +64,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PatternTex:
-        m_Texture: {fileID: 2800000, guid: 1c81ceea659aba64d88c6c46f24eca81, type: 3}
+        m_Texture: {fileID: 2800000, guid: b309a7f9095211242b33fb7230895f0b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TransTex:
@@ -75,7 +75,7 @@ Material:
     - _CutoffSteps: 1923
     m_Floats:
     - _BumpScale: 1
-    - _Cutoff: 0
+    - _Cutoff: -0.0020098728
     - _CutoffSteps: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -99,8 +99,9 @@ Material:
     - _UseTransitionTexture: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _MaskColor: {r: 0, g: 0, b: 0, a: 1}
     - _TintColor: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

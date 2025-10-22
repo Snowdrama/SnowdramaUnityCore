@@ -1,7 +1,5 @@
 using UnityEngine;
 
-//this object is simply used as a storage for a key that lets us load a scene
-
 [CreateAssetMenu(fileName = "SceneTransitionKey", menuName = "Snowdrama/Transitions/SceneTransitionKey")]
 public class SceneController_TransitionKeyObject : ScriptableObject
 {
@@ -9,6 +7,6 @@ public class SceneController_TransitionKeyObject : ScriptableObject
     public string SceneName { get { return _sceneName; } }
     public void GoToScene()
     {
-        SceneControllerJSONTest.GoToScene(_sceneName);
+        SceneController.GoToScene(_sceneName);
     }
 }

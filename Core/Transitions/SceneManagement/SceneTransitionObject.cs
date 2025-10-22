@@ -4,18 +4,6 @@ using UnityEngine;
 
 namespace Snowdrama.Transition
 {
-    [System.Serializable]
-    [CreateAssetMenu(fileName = "SceneTransitionObject", menuName = "Snowdrama/Transitions/Scene Transition")]
-    public class SceneTransitionObject : ScriptableObject
-    {
-        [SerializeField] private SceneTransition sceneTransition;
-
-        public void TransitionToThis()
-        {
-            Debug.Log($"[{this.name}]: Going To Scene");
-            SceneController.StartTransition(sceneTransition);
-        }
-    }
     public enum SceneTransitionMode
     {
 

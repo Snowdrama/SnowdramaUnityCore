@@ -1,616 +1,613 @@
-﻿using System;
+using Codice.Client.BaseCommands.WkStatus.Printers;
+using Snowdrama.Transition;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using UnityEngine.PlayerLoop;
-using Snowdrama.Core;
 
-namespace Snowdrama.Transition
+public class SceneController : MonoBehaviour
 {
-    public class SceneController : MonoBehaviour
+    //transition related
+    private static string TransitionHubName = "TransitionDriver"; //this is the default name
+    private static MessageHub TransitionMessageHub;
+    private static StartHideTransitionMessage StartHideTransitionMessage;
+    private static StartShowTransitionMessage StartShowTransitionMessage;
+    private static SetAllowedTransitionsMessage SetAllowedTransitionsMessage;
+
+    public static List<string> RequiredScenes = new List<string>();
+    public static Dictionary<string, WrapperSceneData> WrapperScenes = new Dictionary<string, WrapperSceneData>();
+    public static Dictionary<string, SceneData> Scenes = new Dictionary<string, SceneData>();
+
+    // Settings load
+    public static SceneControllerOptions sceneControllerOptions;
+    public static SceneManagementData sceneManagementData;
+
+    //Current state
+    public static List<string> loadedScenes_Required = new List<string>();
+    public static List<string> loadedScenes_Normal = new List<string>();
+    public static List<string> loadedScenes_Wrappers = new List<string>();
+
+    //Target Set
+    public static List<string> targetScenes_Normal = new List<string>();
+    public static List<string> targetScenes_Wrappers = new List<string>();
+
+    //calculated set
+    public static List<string> calculatedScenes_ToLoad = new List<string>();
+    public static List<string> calculatedScenes_ToUnload = new List<string>();
+    public static List<string> calculatedScenes_ToLoad_Wrappers = new List<string>();
+    public static List<string> calculatedScenes_ToUnload_Wrappers = new List<string>();
+
+    //transitions
+    public static List<string> allowedTransitionList = new List<string>();
+
+    //used only for callbacks
+    private static List<SceneTransitionAsync_LoadData> asyncLoadData = new List<SceneTransitionAsync_LoadData>();
+    private static List<SceneTransitionAsync_LoadData> asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+
+    #region Bootstrap
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void Bootstrap()
     {
-        public static List<string> requiredScenesLoaded = new List<string>();
+        sceneControllerOptions = Resources.Load<SceneControllerOptions>("SceneControllerOptions");
+        var jsonDoc = Resources.Load<TextAsset>("SceneLayoutJSON");
+        sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
 
-        public static List<string> loadedScenes_Normal = new List<string>();
-        public static List<string> loadedScenes_DontDestroyOnLoad = new List<string>();
+        RequiredScenes = sceneManagementData.RequiredScenes;
 
-        private static SceneControllerOptions sceneControllerOptions;
-
-        public static SceneTransition targetSceneTransition;
-
-        public static float transitionValue;
-        public static float transitionSpeed;
-
-        public static float fakeBufferTime;
-        //public static float transitionHideDuration;
-        //public static float transitionShowDuration;
-        //public static bool transitioning;
-
-        public static int scenesLoaded;
-        public static int scenesLoadingCount;
-        public static List<SceneTransitionAsync_LoadData> asyncLoadData;
-        public static List<SceneTransitionAsync_LoadData> asyncUnloadData;
-
-        public static TransitionState transitionState;
-
-        public struct TransitionCallbacks
+        foreach (var item in sceneManagementData.WrapperScenes)
         {
-            public Action onTransitionStarted;
-            public Action onHideStarted;
-            public Action onHideCompleted;
-            public Action onScenesLoaded;
-            public Action onShowStarted;
-            public Action onShowCompleted;
-            public Action onTransitionCompltete;
+            WrapperScenes.Add(item.Name, item);
+        }
+        foreach (var item in sceneManagementData.Scenes)
+        {
+            Scenes.Add(item.Name, item);
         }
 
-        public static TransitionCallbacks transitionCallbacks;
-
-        public static bool isTransitioning;
-
-        public static List<string> calculatedScenes_ToUnload = new List<string>();
-        public static List<string> calculatedScenes_ToLoad = new List<string>();
-        public static List<string> calculatedScenes_ToUnload_DontDestroyOnLoad = new List<string>();
-        public static List<string> calculatedScenes_ToLoad_DontDestroyOnLoad = new List<string>();
-        public static List<string> allowedTransitions;
-
-        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void Bootstrap()
+        //add all scenes from the editor as loaded
+        //loading scenes this way lets us launch from editor
+        //without starting fromt the main scene
+        for (int i = 0; i < SceneManager.sceneCount; i++)
         {
-            //add all scenes from the editor as loaded.
-            for (int i = 0; i < SceneManager.sceneCount; i++)
+            var scene = SceneManager.GetSceneAt(i);
+            //first check if it's a required scene
+            DebugLog($"[SceneControllerDebug] Loading into scene: {scene.name}");
+            if (RequiredScenes.Contains(scene.name))
             {
-                var scene = SceneManager.GetSceneAt(i);
-                if (!loadedScenes_Normal.Contains(scene.name))
+                //if it is add it here so we don't load it again
+                loadedScenes_Required.Add(scene.name);
+            }
+            else if (WrapperScenes.ContainsKey(scene.name))
+            {
+                //if it is add it here so we don't load it again
+                loadedScenes_Wrappers.Add(scene.name);
+            }
+            else if (Scenes.ContainsKey(scene.name))
+            {
+                if (loadedScenes_Normal.Count <= 0)
                 {
+                    //if it is add it here so we don't load it again
                     loadedScenes_Normal.Add(scene.name);
                 }
-            }
-
-            //load required scenes
-            LoadRequiredScenes();
-
-
-            //TODO: We need to check into this it seems to be causing issues
-            //TODO: For now this needs to be added to the required scene and put manually into the loop
-            //not using the inserter...
-            //var loopInserter = UnityPlayerLoopInserter.GetCurrent();            
-            //loopInserter.InsertAfter(typeof(Update), typeof(SceneController), UpdateTransition);
-            //loopInserter.Flush();
-        }
-
-        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        public static void AfterSceneLoad()
-        {
-            if (loadedScenes_Normal.Count > 1)
-            {
-                //unload each scene except scene index 0
-                for (int i = 0; i < loadedScenes_Normal.Count; i++)
+                else
                 {
-                    if (i != 0)
-                    {
-                        DebugLog($"Unloading Excess Scene {loadedScenes_Normal[i]}", sceneControllerOptions.showConsoleMessages);
-                        SceneManager.UnloadSceneAsync(loadedScenes_Normal[i]);
-                    }
+                    //if it's the second normal scene
+                    //we're going to force unload it so we don't break things
+                    SceneManager.UnloadSceneAsync(scene.name);
                 }
             }
         }
 
-
-
-        public void Update()
+        //then we load all the required scenes since they need to load and never get unloaded
+        foreach (var sceneName in RequiredScenes)
         {
-            SceneController.UpdateTransition();
-        }
-
-        public static void UpdateTransition()
-        {
-            switch (transitionState)
+            //only load it if we didn't start the editor with the scene
+            if (!loadedScenes_Required.Contains(sceneName))
             {
-                case TransitionState.None:
-                    break;
-
-                case TransitionState.Start:
-                    transitionCallbacks.onHideStarted?.Invoke();
-                    transitionState = TransitionState.HidingScene;
-                    break;
-                case TransitionState.HidingScene:
-                    if (targetSceneTransition.hideSceneDuration > 0)
-                    {
-                        transitionSpeed = 1.0f / targetSceneTransition.hideSceneDuration;
-                        transitionValue += Time.unscaledDeltaTime * transitionSpeed;
-                        if (transitionValue >= 1.0f)
-                        {
-                            transitionValue = 1.0f;
-                            transitionCallbacks.onHideCompleted?.Invoke();
-                            transitionState = TransitionState.SceneHidden;
-                        }
-                    }
-                    else
-                    {
-                        //if it's 0 it should be instant
-                        transitionValue = 1.0f;
-                        transitionCallbacks.onHideCompleted?.Invoke();
-                        transitionState = TransitionState.SceneHidden;
-                    }
-                    break;
-
-                case TransitionState.SceneHidden:
-                    CalculateScenesToChange();
-                    transitionState = TransitionState.StartUnload;
-                    break;
-                case TransitionState.StartUnload:
-                    UnloadScenes(calculatedScenes_ToUnload);
-                    UnloadDoNotDestroyScenes(calculatedScenes_ToUnload_DontDestroyOnLoad);
-                    transitionState = TransitionState.WaitingforUnload;
-                    break;
-                case TransitionState.WaitingforUnload:
-                    var incomplteteUnloads = asyncUnloadData.Where(x => x.complete == false).ToList();
-                    if (incomplteteUnloads.Count == 0)
-                    {
-                        transitionState = TransitionState.StartLoad;
-                    }
-                    break;
-                case TransitionState.StartLoad:
-                    Debug.Log("StartLoad");
-                    LoadScenes(calculatedScenes_ToLoad);
-                    LoadScenesDontDestroy(calculatedScenes_ToLoad_DontDestroyOnLoad);
-                    transitionState = TransitionState.WaitingForLoad;
-                    break;
-
-                case TransitionState.WaitingForLoad:
-                    var incomplteteLoads = asyncLoadData.Where(x => x.complete == false).ToList();
-                    if (incomplteteLoads.Count == 0)
-                    {
-                        transitionCallbacks.onScenesLoaded?.Invoke();
-                        transitionState = TransitionState.FakeTimeBuffer;
-                    }
-                    break;
-                case TransitionState.FakeTimeBuffer:
-                    if (targetSceneTransition.fakeLoadBufferTime > 0)
-                    {
-                        transitionSpeed = 1.0f / targetSceneTransition.fakeLoadBufferTime;
-                        fakeBufferTime += Time.unscaledDeltaTime * transitionSpeed;
-                        if (fakeBufferTime >= 1.0f)
-                        {
-                            fakeBufferTime = 0;
-                            transitionState = TransitionState.RevealingScene;
-                            transitionCallbacks.onShowStarted?.Invoke();
-                        }
-                    }
-                    else
-                    {
-                        //if it's 0 it should be instant
-                        fakeBufferTime = 0;
-                        transitionState = TransitionState.RevealingScene;
-                        transitionCallbacks.onShowStarted?.Invoke();
-                    }
-                    break;
-                case TransitionState.RevealingScene:
-                    if (targetSceneTransition.showSceneDuration > 0)
-                    {
-                        transitionSpeed = 1.0f / targetSceneTransition.showSceneDuration;
-                        transitionValue -= Time.unscaledDeltaTime * transitionSpeed;
-                        if (transitionValue <= 0.0f)
-                        {
-                            transitionValue = 0.0f;
-                            transitionCallbacks.onShowCompleted?.Invoke();
-                            transitionState = TransitionState.End;
-                        }
-                    }
-                    else
-                    {
-                        //if it's 0 it should be instant
-                        transitionValue = 0.0f;
-                        transitionCallbacks.onShowCompleted?.Invoke();
-                        transitionState = TransitionState.End;
-                    }
-                    break;
-
-                case TransitionState.End:
-                    transitionCallbacks.onTransitionCompltete?.Invoke();
-                    transitionState = TransitionState.None;
-                    isTransitioning = false;
-                    break;
+                LoadScene_Required(sceneName);
             }
         }
 
-        public static void StartTransition(SceneTransition setSceneTransition)
+        //we'll assume if a normal scene is loaded it's the main scene so calculate any missing scenes
+        for (int i = 0; i < loadedScenes_Normal.Count; i++)
         {
-            if (!isTransitioning)
+            if (Scenes.ContainsKey(loadedScenes_Normal[i]))
             {
-                isTransitioning = true;
-                transitionValue = 0;
-                allowedTransitions = setSceneTransition.allowedTransitionNames;
-                targetSceneTransition = setSceneTransition;
-                transitionCallbacks.onTransitionStarted?.Invoke();
-                transitionState = TransitionState.Start;
-            }
-            else
-            {
-                Debug.LogError("Currently in a transition! Can't transition again!");
+                CalculateTargetState(loadedScenes_Normal[i]);
             }
         }
+        //now that we've gotten our target scene layout
+        //we should calculate the changes needed
+        CalculateSceneChanges(true);
 
-        public static void CalculateScenesToChange()
-        {
-            asyncLoadData = new List<SceneTransitionAsync_LoadData>();
-            asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+        //finally we will use the calculated states to load the scenes
+        //this is in case the current loaded scene has dependencies
 
-            switch (targetSceneTransition.transitionMode)
-            {
-                case SceneTransitionMode.Normal:
-                    calculatedScenes_ToUnload = new List<string>(loadedScenes_Normal);
-                    calculatedScenes_ToLoad = new List<string>();
-                    calculatedScenes_ToUnload_DontDestroyOnLoad = new List<string>();
-                    calculatedScenes_ToLoad_DontDestroyOnLoad = new List<string>();
-
-                    //loop over each scene in the force unload.
-                    for (int i = 0; i < targetSceneTransition.doNotDestroyScenesToUnload.Count; i++)
-                    {
-                        //if we've marked it as don't destroy on load
-                        if (loadedScenes_DontDestroyOnLoad.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
-                        {
-                            //add it to this list to make sure to force destroy it. 
-                            calculatedScenes_ToUnload_DontDestroyOnLoad.Add(targetSceneTransition.doNotDestroyScenesToUnload[i]);
-                        }
-                    }
-
-                    for (int i = 0; i < targetSceneTransition.scenes.Count; i++)
-                    {
-                        var newScene = targetSceneTransition.scenes[i];
-
-                        //if we have a scene loaded and it's marked to be loaded again
-                        if (loadedScenes_Normal.Contains(newScene.SceneName) && calculatedScenes_ToUnload.Contains(newScene.SceneName))
-                        {
-                            //check if we want to reload
-                            if (!newScene.reloadIfAlreadyExists)
-                            {
-                                //we don't want to reload, stop the unload
-                                DebugLogWarning($"Preventing Unload of Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
-                                calculatedScenes_ToUnload.Remove(newScene.SceneName);
-                                continue;
-                            }
-                            else
-                            {
-                                //And we DO want to reload. don't stop the unload AND add to reload.
-                                DebugLogWarning($"Reloading Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
-                                if (newScene.dontDestroyOnLoad)
-                                {
-                                    calculatedScenes_ToLoad_DontDestroyOnLoad.Add(newScene.SceneName);
-                                }
-                                else
-                                {
-                                    calculatedScenes_ToLoad.Add(newScene.SceneName);
-                                }
-                            }
-                        }
-                        else if (loadedScenes_DontDestroyOnLoad.Contains(newScene.SceneName))
-                        {
-                            //the scene is already loaded as a don't destroy on load scene
-                            if (!newScene.reloadIfAlreadyExists)
-                            {
-                                //we want to reload so we want to unload it as well as load it again.
-                                calculatedScenes_ToUnload_DontDestroyOnLoad.Add(newScene.SceneName);
-                                calculatedScenes_ToLoad_DontDestroyOnLoad.Add(newScene.SceneName);
-                            }
-                            //otherwise it's already loaded... so don't load it again.
-                        }
-                        else
-                        {
-                            //scene isn't already loaded so load it.
-                            DebugLogWarning($"Loading New Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
-                            if (newScene.dontDestroyOnLoad)
-                            {
-                                calculatedScenes_ToLoad_DontDestroyOnLoad.Add(newScene.SceneName);
-                            }
-                            else
-                            {
-                                calculatedScenes_ToLoad.Add(newScene.SceneName);
-                            }
-                        }
-                    }
-
-                    break;
-                case SceneTransitionMode.Additively:
-                    calculatedScenes_ToUnload = new List<string>();
-                    calculatedScenes_ToLoad = new List<string>();
-                    calculatedScenes_ToUnload_DontDestroyOnLoad = new List<string>();
-                    calculatedScenes_ToLoad_DontDestroyOnLoad = new List<string>();
-
-                    //loop over each scene in the force unload.
-                    for (int i = 0; i < targetSceneTransition.doNotDestroyScenesToUnload.Count; i++)
-                    {
-                        //if we've marked it as don't destroy on load
-                        if (loadedScenes_DontDestroyOnLoad.Contains(targetSceneTransition.doNotDestroyScenesToUnload[i]))
-                        {
-                            //add it to this list to make sure to force destroy it. 
-                            calculatedScenes_ToUnload_DontDestroyOnLoad.Add(targetSceneTransition.doNotDestroyScenesToUnload[i]);
-                        }
-                    }
-
-                    for (int i = 0; i < targetSceneTransition.scenes.Count; i++)
-                    {
-                        var newScene = targetSceneTransition.scenes[i];
-                        if (loadedScenes_Normal.Contains(newScene.SceneName))
-                        {
-                            //if the scene is already loaded
-                            if (newScene.reloadIfAlreadyExists)
-                            {
-                                //during addative we can choose to reload
-                                //if we do than we need to explicityly unload AND reload
-                                DebugLogWarning($"Reloading Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
-                                calculatedScenes_ToUnload.Add(newScene.SceneName);
-                                if (newScene.dontDestroyOnLoad)
-                                {
-                                    calculatedScenes_ToLoad_DontDestroyOnLoad.Add(newScene.SceneName);
-                                }
-                                else
-                                {
-                                    calculatedScenes_ToLoad.Add(newScene.SceneName);
-                                }
-                            }
-                            else
-                            {
-                                DebugLogWarning($"Doing Nothing for Scene {newScene.SceneName} since it's already loaded and reloading is not set", sceneControllerOptions.showConsoleMessages);
-                            }
-                        }
-                        else
-                        {
-                            //scene isn't already loaded so load it.
-                            DebugLogWarning($"Loading New Scene {newScene.SceneName}", sceneControllerOptions.showConsoleMessages);
-                            if (newScene.dontDestroyOnLoad)
-                            {
-                                calculatedScenes_ToLoad_DontDestroyOnLoad.Add(newScene.SceneName);
-                            }
-                            else
-                            {
-                                calculatedScenes_ToLoad.Add(newScene.SceneName);
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
-
-        public static bool IsSceneLoaded(string findSceneName)
-        {
-            if (loadedScenes_Normal.Contains(findSceneName))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsDontDestroySceneIsLoaded(string findSceneName)
-        {
-            if (loadedScenes_DontDestroyOnLoad.Contains(findSceneName))
-            {
-                return true;
-            }
-            return false;
-        }
-
-
-        #region Load Functions
-        public static void LoadScenes(List<string> scenesToLoad)
-        {
-            for (int i = 0; i < scenesToLoad.Count; i++)
-            {
-                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
-                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
-                asyncOperation.completed += LoadSceneComplete;
-                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToLoad[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-        public static void LoadScenesDontDestroy(List<string> scenesToLoad)
-        {
-            for (int i = 0; i < scenesToLoad.Count; i++)
-            {
-                Debug.LogWarning($"Loading Scene {scenesToLoad[i]}");
-                var asyncOperation = SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
-                asyncOperation.completed += LoadSceneDontDestroyComplete;
-                asyncLoadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToLoad[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-        #endregion
-
-        #region Unload Functions
-
-        public static void UnloadScenes(List<string> scenesToUnload)
-        {
-            for (int i = 0; i < scenesToUnload.Count; i++)
-            {
-                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
-                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
-                asyncOperation.completed += UnloadSceneComplete;
-                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToUnload[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-        public static void UnloadDoNotDestroyScenes(List<string> scenesToUnload)
-        {
-            for (int i = 0; i < scenesToUnload.Count; i++)
-            {
-                DebugLog($"Unloading Scene {scenesToUnload[i]}", sceneControllerOptions.showConsoleMessages);
-                var asyncOperation = SceneManager.UnloadSceneAsync(scenesToUnload[i]);
-                asyncOperation.completed += UnloadSceneDoNotDestroyComplete;
-                asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
-                {
-                    sceneName = scenesToUnload[i],
-                    asyncOperation = asyncOperation,
-                    complete = false,
-                });
-            }
-        }
-        #endregion
-
-        #region Load Complete Callbacks
-        private static void LoadSceneComplete(AsyncOperation obj)
-        {
-            for (int i = 0; i < asyncLoadData.Count; i++)
-            {
-                //PLEASE let this work
-                if (asyncLoadData[i].asyncOperation == obj)
-                {
-                    DebugLogWarning($"Load Complete for Scene {asyncLoadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
-                    asyncLoadData[i].complete = true;
-                    if (!loadedScenes_Normal.Contains(asyncLoadData[i].sceneName))
-                    {
-                        loadedScenes_Normal.Add(asyncLoadData[i].sceneName);
-                    }
-                }
-            }
-        }
-        private static void LoadSceneDontDestroyComplete(AsyncOperation obj)
-        {
-            for (int i = 0; i < asyncLoadData.Count; i++)
-            {
-                if (asyncLoadData[i].asyncOperation == obj)
-                {
-                    DebugLogWarning($"Load Dont Destroy Complete for Scene {asyncLoadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
-                    asyncLoadData[i].complete = true;
-                    if (!loadedScenes_DontDestroyOnLoad.Contains(asyncLoadData[i].sceneName))
-                    {
-                        loadedScenes_DontDestroyOnLoad.Add(asyncLoadData[i].sceneName);
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region Unload Complete Callbacks
-        private static void UnloadSceneComplete(AsyncOperation obj)
-        {
-            for (int i = 0; i < asyncUnloadData.Count; i++)
-            {
-                if (asyncUnloadData[i].asyncOperation == obj)
-                {
-                    DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
-                    asyncUnloadData[i].complete = true;
-
-                    if (loadedScenes_Normal.Contains(asyncUnloadData[i].sceneName))
-                    {
-                        loadedScenes_Normal.Remove(asyncUnloadData[i].sceneName);
-                    }
-                }
-            }
-        }
-        private static void UnloadSceneDoNotDestroyComplete(AsyncOperation obj)
-        {
-            for (int i = 0; i < asyncUnloadData.Count; i++)
-            {
-                if (asyncUnloadData[i].asyncOperation == obj)
-                {
-                    DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}", sceneControllerOptions.showConsoleMessages);
-                    asyncUnloadData[i].complete = true;
-
-                    if (loadedScenes_DontDestroyOnLoad.Contains(asyncUnloadData[i].sceneName))
-                    {
-                        loadedScenes_DontDestroyOnLoad.Remove(asyncUnloadData[i].sceneName);
-                    }
-                }
-            }
-        }
-        #endregion
-
-
-
-        #region RequiredScenes
-        public static void LoadRequiredScenes()
-        {
-
-            var requredSceneListObject = Resources.Load<RequiredSceneListObject>("RequiredSceneList");
-            sceneControllerOptions = Resources.Load<SceneControllerOptions>("SceneControllerOptions");
-
-            if (sceneControllerOptions == null)
-            {
-                sceneControllerOptions = ScriptableObject.CreateInstance<SceneControllerOptions>();
-            }
-
-            if (requredSceneListObject != null)
-            {
-                for (int i = 0; i < requredSceneListObject.listOfRequiredSceneNames.Count; i++)
-                {
-                    var requiredScene = requredSceneListObject.listOfRequiredSceneNames[i];
-
-                    if (requiredScene.dontDestroyOnLoad)
-                    {
-                        if (!loadedScenes_Normal.Contains(requiredScene.sceneName) && !loadedScenes_DontDestroyOnLoad.Contains(requiredScene.sceneName))
-                        {
-                            //add it if it's not already in the lists. 
-                            SceneManager.LoadSceneAsync(requiredScene.sceneName, LoadSceneMode.Additive);
-                        }
-
-                        //we don't want the don't destroy scene in the regular loaded scenes list
-                        if (loadedScenes_Normal.Contains(requiredScene.sceneName))
-                        {
-                            loadedScenes_Normal.Remove(requiredScene.sceneName);
-                        }
-                        if (!loadedScenes_DontDestroyOnLoad.Contains(requiredScene.sceneName))
-                        {
-                            loadedScenes_DontDestroyOnLoad.Add(requiredScene.sceneName);
-                        }
-                    }
-                    else
-                    {
-                        if (!loadedScenes_Normal.Contains(requiredScene.sceneName))
-                        {
-                            loadedScenes_Normal.Add(requiredScene.sceneName);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                DebugLogWarning("No Required Scene List asset named 'RequiredSceneList' is in" +
-                    " the Resources folder. If there are no Required scenes please place a " +
-                    "SceneControllerOptions object in the Resources folder and check Hide Warnings",
-                    !sceneControllerOptions.hideRequiredSceneWarning);
-            }
-
-        }
-        #endregion
-
-        #region Debug
-        public static void DebugLog(string log, bool enableFlag = false, GameObject target = null)
-        {
-            if (enableFlag)
-            {
-                Debug.Log(log, target);
-            }
-        }
-        public static void DebugLogWarning(string log, bool enableFlag = false, GameObject target = null)
-        {
-            if (enableFlag)
-            {
-                Debug.LogWarning(log, target);
-            }
-        }
-        public static void DebugLogError(string log, bool enableFlag = false, GameObject target = null)
-        {
-            if (enableFlag)
-            {
-                Debug.LogError(log, target);
-            }
-        }
-        #endregion
-
+        LoadCalculatedScenes();
     }
+    #endregion
+
+    #region Game Functions
+    public static void GoToScene(string sceneName)
+    {
+        CalculateTargetState(sceneName);
+        CalculateSceneChanges(false);
+        SetAllowedTransitionsMessage?.Dispatch(allowedTransitionList);
+        StartHideTransitionMessage?.Dispatch(OnSceneHideComplete, 1.0f);
+    }
+
+    public static void OnSceneHideComplete()
+    {
+        //When the scene is hidden we actually load the scenes
+        LoadCalculatedScenes();
+        //then start showing
+        StartShowTransitionMessage?.Dispatch(OnSceneShowComplete, 1.0f);
+    }
+
+    public static void OnSceneShowComplete()
+    {
+        //We're done!
+    }
+
+    private void OnEnable()
+    {
+
+        TransitionMessageHub = Messages.GetHub(TransitionHubName);
+        StartHideTransitionMessage = TransitionMessageHub.Get<StartHideTransitionMessage>();
+        StartShowTransitionMessage = TransitionMessageHub.Get<StartShowTransitionMessage>();
+        SetAllowedTransitionsMessage = TransitionMessageHub.Get<SetAllowedTransitionsMessage>();
+    }
+
+    private void OnDisable()
+    {
+        TransitionMessageHub.Return<StartHideTransitionMessage>();
+        TransitionMessageHub.Return<StartShowTransitionMessage>();
+        TransitionMessageHub.Return<SetAllowedTransitionsMessage>();
+        Messages.ReturnHub(TransitionHubName);
+    }
+
+
+    #endregion
+
+    #region Scene State Calculation
+    private static void CalculateTargetState(string requestedSceneToLoad)
+    {
+        //clear the target state
+        targetScenes_Normal.Clear();
+        targetScenes_Wrappers.Clear();
+
+        DebugLog($"Calculating Target State for {requestedSceneToLoad}");
+        if (!Scenes.ContainsKey(requestedSceneToLoad))
+        {
+            DebugLogError($"Scene {requestedSceneToLoad} Does not exist, cannot load wrapper");
+            var output = "Scenes that exist: ";
+            foreach (var scene in Scenes)
+            {
+                output += $" {scene.Key} | ";
+            }
+            DebugLogError($"{output}");
+            return;
+        }
+
+        var targetScene = Scenes.Where(x => x.Value.Name == requestedSceneToLoad).FirstOrDefault();
+
+        allowedTransitionList = targetScene.Value.AllowedTransitions;
+
+
+        DebugLog($"Getting target scene: {targetScene}");
+
+        //the normal scene we want is this one
+        targetScenes_Normal.Add(targetScene.Value.Name);
+
+
+        DebugLog($"Starting to get dependencies:");
+        //then we add in all the target dependencies
+        foreach (var wrapper in targetScene.Value.Dependencies)
+        {
+            DebugLog($"Loading Dependency: {wrapper}");
+            var wrapperData = WrapperScenes[wrapper];
+            if (!targetScenes_Wrappers.Contains(wrapper))
+            {
+                targetScenes_Wrappers.Add(wrapper);
+            }
+            if (wrapperData.Dependencies.Count > 0)
+            {
+                DebugLog($"Dependency {wrapper} has {wrapperData.Dependencies.Count} more Dependencies");
+                LoadDependencies(wrapperData, ref targetScenes_Wrappers);
+            }
+        }
+    }
+
+    private static void CalculateSceneChanges(bool startup = false)
+    {
+        //now we're going to compare the target scenes to the existing ones
+        calculatedScenes_ToLoad.Clear();
+        calculatedScenes_ToLoad_Wrappers.Clear();
+        calculatedScenes_ToUnload.Clear();
+        calculatedScenes_ToUnload_Wrappers.Clear();
+
+        if (!startup)
+        {
+            //first we assume we want all our scenes to be loaded
+            foreach (var targetScene in targetScenes_Normal)
+            {
+                if (!calculatedScenes_ToLoad.Contains(targetScene))
+                {
+                    calculatedScenes_ToLoad.Add(targetScene);
+                }
+            }
+
+            foreach (var loadedSceneName in loadedScenes_Normal)
+            {
+                var loadedSceneData = Scenes[loadedSceneName];
+
+                //is this scene already loaded? And are we trying to load it again
+                if (calculatedScenes_ToLoad.Contains(loadedSceneName))
+                {
+                    DebugLogWarning($"Trying to load scene {loadedSceneName} but it's already loaded. " +
+                        $"Do we want to Reload? {loadedSceneData.ReloadIfSceneExists}");
+
+                    //check if we want to reload the scene
+                    if (loadedSceneData.ReloadIfSceneExists)
+                    {
+                        DebugLogWarning($"We DO want to reload");
+                        //unload and then also reload the scene
+                        calculatedScenes_ToUnload.Add(loadedSceneName);
+                        calculatedScenes_ToLoad.Add(loadedSceneName);
+                    }
+                    else
+                    {
+                        //we are already loaded so do nothing
+                        DebugLogWarning($"Nope so remove us from the load list");
+                        calculatedScenes_ToLoad.Remove(loadedSceneName);
+                    }
+                }
+                else
+                {
+                    //we aren't in target scenes so we're unloading
+                    DebugLogWarning($"Scene {loadedSceneName} is loaded but we don't want it anymore, Unloading.");
+                    calculatedScenes_ToUnload.Add(loadedSceneName);
+                }
+            }
+        }
+
+        foreach (var targetScene in targetScenes_Wrappers)
+        {
+            if (!calculatedScenes_ToLoad_Wrappers.Contains(targetScene))
+            {
+                calculatedScenes_ToLoad_Wrappers.Add(targetScene);
+            }
+        }
+
+        //then check our existing wrappers
+        foreach (var loadedSceneName_Wrapper in loadedScenes_Wrappers)
+        {
+            var loadedSceneData_Wrapper = WrapperScenes[loadedSceneName_Wrapper];
+            //first are we trying to load this scene?
+            if (calculatedScenes_ToLoad_Wrappers.Contains(loadedSceneName_Wrapper))
+            {
+                DebugLogWarning($"Trying to load scene {loadedSceneName_Wrapper} but it's already loaded. " +
+                    $"Do we want to Reload? {loadedSceneData_Wrapper.ReloadIfSceneExists}");
+                //check if we want to reload the scene
+                if (loadedSceneData_Wrapper.ReloadIfSceneExists)
+                {
+                    DebugLogWarning($"We DO want to reload");
+                    //unload and then also reload the scene
+                    calculatedScenes_ToUnload_Wrappers.Add(loadedSceneName_Wrapper);
+                    calculatedScenes_ToLoad_Wrappers.Add(loadedSceneName_Wrapper);
+                }
+                else
+                {
+                    //we are already loaded so do nothing
+                    DebugLogWarning($"Nope so remove us from the load list");
+                    calculatedScenes_ToLoad_Wrappers.Remove(loadedSceneName_Wrapper);
+                }
+            }
+            else
+            {
+                //we aren't in target scenes so we're unloading
+                calculatedScenes_ToUnload_Wrappers.Add(loadedSceneName_Wrapper);
+            }
+        }
+    }
+
+    private static void LoadDependencies(WrapperSceneData wrapperData, ref List<string> dependencyList)
+    {
+        foreach (var dependency in wrapperData.Dependencies)
+        {
+            if (!dependencyList.Contains(dependency))
+            {
+                dependencyList.Add(dependency);
+            }
+            var nestedWrapper = WrapperScenes[dependency];
+
+            if (nestedWrapper.Dependencies.Count > 0)
+            {
+                LoadDependencies(nestedWrapper, ref dependencyList);
+            }
+        }
+    }
+
+    private static void LoadCalculatedScenes()
+    {
+        //first let's unload any scenes that need to be unloaded
+        UnloadScenes_Normal(calculatedScenes_ToUnload);
+        UnloadScenes_Wrappers(calculatedScenes_ToUnload_Wrappers);
+
+        //then load the scenes that we need to load
+        LoadScenes_Normal(calculatedScenes_ToLoad);
+        LoadScenes_Wrappers(calculatedScenes_ToLoad_Wrappers);
+    }
+    #endregion
+
+    #region Load Functions
+    private static void LoadScenes_Normal(List<string> scenesToLoad)
+    {
+        for (int i = 0; i < scenesToLoad.Count; i++)
+        {
+            LoadScene_Normal(scenesToLoad[i]);
+        }
+    }
+    private static void LoadScenes_Wrappers(List<string> scenesToLoad)
+    {
+        for (int i = 0; i < scenesToLoad.Count; i++)
+        {
+            LoadScene_Wrapper(scenesToLoad[i]);
+        }
+    }
+
+    private static void LoadScene_Normal(string sceneToLoad)
+    {
+        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+        asyncOperation.completed += LoadScene_Normal_Complete;
+        asyncLoadData.Add(new SceneTransitionAsync_LoadData()
+        {
+            sceneName = sceneToLoad,
+            asyncOperation = asyncOperation,
+            complete = false,
+        });
+    }
+    private static void LoadScene_Wrapper(string sceneToLoad)
+    {
+        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+        asyncOperation.completed += LoadScene_Wrappers_Complete;
+        asyncLoadData.Add(new SceneTransitionAsync_LoadData()
+        {
+            sceneName = sceneToLoad,
+            asyncOperation = asyncOperation,
+            complete = false,
+        });
+    }
+    private static void LoadScene_Required(string sceneToLoad)
+    {
+        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+        asyncOperation.completed += LoadScene_Required_Complete;
+        asyncLoadData.Add(new SceneTransitionAsync_LoadData()
+        {
+            sceneName = sceneToLoad,
+            asyncOperation = asyncOperation,
+            complete = false,
+        });
+    }
+    #endregion
+
+    #region Unload Functions
+
+    private static void UnloadScenes_Normal(List<string> scenesToUnload)
+    {
+        for (int i = 0; i < scenesToUnload.Count; i++)
+        {
+            UnloadScene_Normal(scenesToUnload[i]);
+        }
+    }
+    private static void UnloadScenes_Wrappers(List<string> scenesToUnload)
+    {
+        for (int i = 0; i < scenesToUnload.Count; i++)
+        {
+            UnloadScene_Wrappers(scenesToUnload[i]);
+        }
+    }
+    //private static void UnloadScenes_Required(List<string> scenesToUnload)
+    //{
+    //    for (int i = 0; i < scenesToUnload.Count; i++)
+    //    {
+    //        UnloadScene_Required(scenesToUnload[i]);
+    //    }
+    //}
+
+    private static void UnloadScene_Normal(string sceneToUnload)
+    {
+        DebugLog($"Unloading Scene {sceneToUnload}");
+        var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+        if (asyncOperation == null)
+        {
+            DebugLogError($"Tried to load scene {sceneToUnload} but the asyncOperation is null, likely because scene isn't loaded");
+            return;
+        }
+        asyncOperation.completed += UnloadSceneComplete;
+        asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
+        {
+            sceneName = sceneToUnload,
+            asyncOperation = asyncOperation,
+            complete = false,
+        });
+    }
+    private static void UnloadScene_Wrappers(string sceneToUnload)
+    {
+        DebugLog($"Unloading Scene {sceneToUnload}");
+        var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+        asyncOperation.completed += UnloadScene_Wrapper_Complete;
+        asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
+        {
+            sceneName = sceneToUnload,
+            asyncOperation = asyncOperation,
+            complete = false,
+        });
+    }
+    //private static void UnloadScene_Required(string sceneToUnload)
+    //{
+    //    DebugLog($"Unloading Scene {sceneToUnload}");
+    //    var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+    //    asyncOperation.completed += UnloadScene_Wrapper_Complete;
+    //    asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
+    //    {
+    //        sceneName = sceneToUnload,
+    //        asyncOperation = asyncOperation,
+    //        complete = false,
+    //    });
+    //}
+    #endregion
+
+    #region Load Complete Callbacks
+    private static void LoadScene_Normal_Complete(AsyncOperation obj)
+    {
+        for (int i = 0; i < asyncLoadData.Count; i++)
+        {
+            //PLEASE let this work
+            if (asyncLoadData[i].asyncOperation == obj)
+            {
+                DebugLogWarning($"LoadScene_Normal_Complete for Scene {asyncLoadData[i].sceneName}");
+                asyncLoadData[i].complete = true;
+                if (!loadedScenes_Normal.Contains(asyncLoadData[i].sceneName))
+                {
+                    loadedScenes_Normal.Add(asyncLoadData[i].sceneName);
+                }
+            }
+        }
+    }
+    private static void LoadScene_Wrappers_Complete(AsyncOperation obj)
+    {
+        for (int i = 0; i < asyncLoadData.Count; i++)
+        {
+            if (asyncLoadData[i].asyncOperation == obj)
+            {
+                DebugLogWarning($"LoadScene_Wrappers_Complete for Scene {asyncLoadData[i].sceneName}");
+                asyncLoadData[i].complete = true;
+                if (!loadedScenes_Wrappers.Contains(asyncLoadData[i].sceneName))
+                {
+                    loadedScenes_Wrappers.Add(asyncLoadData[i].sceneName);
+                }
+            }
+        }
+    }
+    private static void LoadScene_Required_Complete(AsyncOperation obj)
+    {
+        for (int i = 0; i < asyncLoadData.Count; i++)
+        {
+            if (asyncLoadData[i].asyncOperation == obj)
+            {
+                DebugLogWarning($"LoadScene_Required_Complete for Scene {asyncLoadData[i].sceneName}");
+                asyncLoadData[i].complete = true;
+                if (!loadedScenes_Required.Contains(asyncLoadData[i].sceneName))
+                {
+                    loadedScenes_Required.Add(asyncLoadData[i].sceneName);
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Unload Complete Callbacks
+    private static void UnloadSceneComplete(AsyncOperation obj)
+    {
+        for (int i = 0; i < asyncUnloadData.Count; i++)
+        {
+            if (asyncUnloadData[i].asyncOperation == obj)
+            {
+                DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
+                asyncUnloadData[i].complete = true;
+
+                if (loadedScenes_Normal.Contains(asyncUnloadData[i].sceneName))
+                {
+                    loadedScenes_Normal.Remove(asyncUnloadData[i].sceneName);
+                }
+            }
+        }
+    }
+    private static void UnloadScene_Wrapper_Complete(AsyncOperation obj)
+    {
+        for (int i = 0; i < asyncUnloadData.Count; i++)
+        {
+            if (asyncUnloadData[i].asyncOperation == obj)
+            {
+                DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
+                asyncUnloadData[i].complete = true;
+
+                if (loadedScenes_Wrappers.Contains(asyncUnloadData[i].sceneName))
+                {
+                    loadedScenes_Wrappers.Remove(asyncUnloadData[i].sceneName);
+                }
+            }
+        }
+    }
+    //private static void UnloadScene_Required_Complete(AsyncOperation obj)
+    //{
+    //    for (int i = 0; i < asyncUnloadData.Count; i++)
+    //    {
+    //        if (asyncUnloadData[i].asyncOperation == obj)
+    //        {
+    //            DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
+    //            asyncUnloadData[i].complete = true;
+
+    //            if (loadedScenes_Required.Contains(asyncUnloadData[i].sceneName))
+    //            {
+    //                loadedScenes_Required.Remove(asyncUnloadData[i].sceneName);
+    //            }
+    //        }
+    //    }
+    //}
+    #endregion
+
+    #region Debug
+    private static void DebugLog(string log, GameObject target = null)
+    {
+        if (sceneControllerOptions.showConsoleMessages)
+        {
+            DebugLog(log, target);
+        }
+    }
+    private static void DebugLogWarning(string log, GameObject target = null)
+    {
+        if (sceneControllerOptions.showConsoleMessages)
+        {
+            DebugLogWarning(log, target);
+        }
+    }
+    private static void DebugLogError(string log, GameObject target = null)
+    {
+        if (sceneControllerOptions.showConsoleMessages)
+        {
+            DebugLogError(log, target);
+        }
+    }
+    #endregion
+}
+
+[System.Serializable]
+public struct SceneManagementData
+{
+    public string DefaultSceneName;
+    public List<string> RequiredScenes;
+    public List<WrapperSceneData> WrapperScenes;
+    public List<SceneData> Scenes;
+}
+
+[System.Serializable]
+public struct SceneData
+{
+    public string Name;
+    public bool ReloadIfSceneExists;
+    public List<string> Dependencies;
+    public List<string> AllowedTransitions;
+}
+
+[System.Serializable]
+public struct WrapperSceneData
+{
+    public string Name;
+    public bool ReloadIfSceneExists;
+    public List<string> Dependencies;
 }
