@@ -51,11 +51,10 @@ namespace Snowdrama.Transition
 
 
     [System.Serializable]
-
     public class SceneTransitionAsync_LoadData
     {
         public string sceneName;
         public AsyncOperation asyncOperation;
-        public bool complete = false;
+        public bool complete;
     }
 }

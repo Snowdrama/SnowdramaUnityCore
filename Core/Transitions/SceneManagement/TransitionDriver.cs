@@ -7,9 +7,8 @@ using UnityEngine.UI;
 
 namespace Snowdrama.Transition
 {
-    public class SetAllowedTransitionsMessage : AMessage<List<string>> { }
-    public class StartHideTransitionMessage : AMessage<Action, float> { }
-    public class StartShowTransitionMessage : AMessage<Action, float> { }
+    public class StartHideTransitionMessage : AMessage<float, float, List<string>, Action, Action> { }
+    public class StartShowTransitionMessage : AMessage<float, Action> { }
     [ExecuteAlways]
     public class TransitionDriver : MonoBehaviour
     {
@@ -18,26 +17,22 @@ namespace Snowdrama.Transition
 
         private StartHideTransitionMessage StartHideTransitionMessage;
         private StartShowTransitionMessage StartShowTransitionMessage;
-        private SetAllowedTransitionsMessage SetAllowedTransitionsMessage;
 
-        [SerializeField]
-        private GameObject transitionCanvas;
+        [SerializeField] private GameObject transitionCanvas;
+        [SerializeField] private Transition currentTransition;
 
-        [SerializeField]
-        private bool pauseTimeDuringTransition = false;
 
-        [SerializeField]
+        [SerializeField] private bool pauseTimeDuringTransition = false;
+
         private Dictionary<string, Transition> transitions = new Dictionary<string, Transition>();
-        [SerializeField]
-        private Transition currentTransition;
 
         [SerializeField] private TransitionState state;
 
         [Header("Debug")]
-        [SerializeField, Range(0, 1)] private float transitionValue;
+        [SerializeField, Range(0, 1)] private float debugTransitionValue;
         [SerializeField, EditorReadOnly] private float transitionSpeed;
         [SerializeField, EditorReadOnly] private List<string> debugTransitionNameKeys = new List<string>();
-        [SerializeField, EditorReadOnly] private List<string> currentAllowedTransitions;
+        //[SerializeField, EditorReadOnly] private List<string> currentAllowedTransitions;
 
         private static SceneTransitionCallbacks transitionCallbacks;
         private void OnEnable()
@@ -45,29 +40,25 @@ namespace Snowdrama.Transition
             TransitionMessageHub = Messages.GetHub(MessageHubName);
             StartHideTransitionMessage = TransitionMessageHub.Get<StartHideTransitionMessage>();
             StartShowTransitionMessage = TransitionMessageHub.Get<StartShowTransitionMessage>();
-            SetAllowedTransitionsMessage = TransitionMessageHub.Get<SetAllowedTransitionsMessage>();
 
-            StartHideTransitionMessage.AddListener(StartHideScreen);
-            StartShowTransitionMessage.AddListener(StartShowScreen);
-            SetAllowedTransitionsMessage.AddListener(SetAllowedTransitions);
+            StartHideTransitionMessage.AddListener(HideScene);
+            StartShowTransitionMessage.AddListener(ShowScreen);
         }
 
         private void OnDisable()
         {
-            StartHideTransitionMessage.RemoveListener(StartHideScreen);
-            StartShowTransitionMessage.RemoveListener(StartShowScreen);
-            SetAllowedTransitionsMessage.RemoveListener(SetAllowedTransitions);
+            StartHideTransitionMessage.RemoveListener(HideScene);
+            StartShowTransitionMessage.RemoveListener(ShowScreen);
             TransitionMessageHub.Return<StartHideTransitionMessage>();
             TransitionMessageHub.Return<StartShowTransitionMessage>();
-            TransitionMessageHub.Return<SetAllowedTransitionsMessage>();
             Messages.ReturnHub(MessageHubName);
         }
 
         private void Start()
         {
             FindTransitions();
-            transitionCanvas?.SetActive(false);
-            currentTransition?.gameObject?.SetActive(false);
+            //transitionCanvas?.SetActive(false);
+            //currentTransition?.gameObject?.SetActive(false);
         }
         private void OnValidate()
         {
@@ -123,56 +114,69 @@ namespace Snowdrama.Transition
         }
 
 
-        private void ChooseTransition(List<string> allowedTransitions)
+        private Transition ChooseTransition(List<string> allowedTransitions)
         {
             if (allowedTransitions.Count == 0)
             {
                 //if we don't allow any choose at random
-                currentTransition = transitions.GetRandom().Value;
+                return transitions.GetRandom().Value;
             }
             else
             {
                 //otherwise get a random one from the list
                 var listOfAllowedTransitions = transitions.Where(x => allowedTransitions.Contains(x.Key)).ToList();
-                currentTransition = listOfAllowedTransitions.GetRandom().Value;
+                return listOfAllowedTransitions.GetRandom().Value;
             }
         }
 
-        public void SetAllowedTransitions(List<string> allowedTransitions)
+        private async void HideScene(
+            float hideTime,
+            float fakeLoadTime,
+            List<string> allowedTransitions,
+            Action sceneHiddenCallback,
+            Action fakeLoadComplete
+        )
         {
-            currentAllowedTransitions = allowedTransitions;
-        }
+            currentTransition = ChooseTransition(allowedTransitions);
 
-        public async void StartHideScreen(Action onSceneHidden, float hideTime)
-        {
-            ChooseTransition(currentAllowedTransitions);
-
-            await HideScene(hideTime); //wait until the scene is hidden
-            onSceneHidden?.Invoke(); //call the allback
-        }
-        private async Awaitable HideScene(float hideTime)
-        {
+            //activate the transition and canvas
             transitionCanvas?.SetActive(true);
-            currentTransition?.gameObject?.SetActive(true);
-            transitionValue = 0.0f;
+            currentTransition?.gameObject.SetActive(true);
+
+            float currentHideTime = hideTime;
+            float speed = hideTime.CreateSpeedFromTime();
+            float transitionValue = 0.0f;
+
             while (transitionValue < 1.0f)
             {
-                state = TransitionState.HidingScene;
-                transitionValue += Time.deltaTime * hideTime.CreateSpeedFromTime();
+                transitionValue += Time.deltaTime * speed;
                 currentTransition?.UpdateTransition(transitionValue, true);
                 await Awaitable.NextFrameAsync();
             }
+
+            sceneHiddenCallback?.Invoke();
+
+            while (fakeLoadTime > 0.0f)
+            {
+                fakeLoadTime -= Time.deltaTime;
+                await Awaitable.NextFrameAsync();
+            }
+
+            fakeLoadComplete?.Invoke();
         }
 
-        public async void StartShowScreen(Action onSceneShown, float showTime)
+        public async void ShowScreen(
+            float showTime,
+            Action sceneShownCallback
+        )
         {
-            await ShowScene(showTime);
-            onSceneShown?.Invoke();
-        }
+            float currentShowTime = showTime;
+            float speed = showTime.CreateSpeedFromTime();
+            float transitionValue = 1.0f;
 
-        private async Awaitable ShowScene(float showTime)
-        {
-            transitionValue = 1.0f;
+            transitionCanvas?.SetActive(true);
+            currentTransition?.gameObject.SetActive(true);
+
             while (transitionValue > 0.0f)
             {
                 state = TransitionState.ShowingScene;
@@ -182,14 +186,20 @@ namespace Snowdrama.Transition
             }
             transitionCanvas?.SetActive(false);
             currentTransition?.gameObject?.SetActive(false);
+
+            sceneShownCallback?.Invoke();
         }
 
         private void Update()
         {
-            if (!Application.isPlaying)
+            if (Application.isPlaying)
+            {
+                //currentTransition?.gameObject?.SetActive(true);
+            }
+            else if (!Application.isPlaying)
             {
                 //This is debug plz just force visible
-                if (transitionValue > 0)
+                if (debugTransitionValue > 0)
                 {
                     transitionCanvas?.SetActive(true);
                     currentTransition?.gameObject?.SetActive(true);
@@ -199,7 +209,7 @@ namespace Snowdrama.Transition
                     transitionCanvas?.SetActive(false);
                     currentTransition?.gameObject?.SetActive(false);
                 }
-                currentTransition?.UpdateTransition(transitionValue, (state == TransitionState.HidingScene) ? true : false);
+                currentTransition?.UpdateTransition(debugTransitionValue, (state == TransitionState.HidingScene) ? true : false);
             }
         }
     }

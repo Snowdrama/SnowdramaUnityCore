@@ -13,7 +13,6 @@ public class SceneController : MonoBehaviour
     private static MessageHub TransitionMessageHub;
     private static StartHideTransitionMessage StartHideTransitionMessage;
     private static StartShowTransitionMessage StartShowTransitionMessage;
-    private static SetAllowedTransitionsMessage SetAllowedTransitionsMessage;
 
     public static List<string> RequiredScenes = new List<string>();
     public static Dictionary<string, WrapperSceneData> WrapperScenes = new Dictionary<string, WrapperSceneData>();
@@ -42,8 +41,30 @@ public class SceneController : MonoBehaviour
     public static List<string> allowedTransitionList = new List<string>();
 
     //used only for callbacks
-    private static List<SceneTransitionAsync_LoadData> asyncLoadData = new List<SceneTransitionAsync_LoadData>();
-    private static List<SceneTransitionAsync_LoadData> asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+    public static List<SceneTransitionAsync_LoadData> asyncLoadData = new List<SceneTransitionAsync_LoadData>();
+    public static List<SceneTransitionAsync_LoadData> asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+
+    public static List<string> WaitingToLoad = new List<string>();
+    public static void WaitAFuckingMinute(string name)
+    {
+        if (WaitingToLoad.Contains(name))
+        {
+            Debug.LogError($"Object {name} asked scene controller to wait more than once! Ignoring...");
+            return;
+        }
+
+        WaitingToLoad.Add(name);
+    }
+
+    public static void OkayImGoodNow(string name)
+    {
+        if (!WaitingToLoad.Contains(name))
+        {
+            Debug.LogError($"Object {name} was never asked to wait for the scene to load");
+            return;
+        }
+        WaitingToLoad.Remove(name);
+    }
 
     #region Bootstrap
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -132,21 +153,36 @@ public class SceneController : MonoBehaviour
     {
         CalculateTargetState(sceneName);
         CalculateSceneChanges(false);
-        SetAllowedTransitionsMessage?.Dispatch(allowedTransitionList);
-        StartHideTransitionMessage?.Dispatch(OnSceneHideComplete, 1.0f);
+        StartHideTransitionMessage?.Dispatch(1.0f, 1.0f, allowedTransitionList, SceneHideComplete, FakeLoadComplete);
     }
 
-    public static void OnSceneHideComplete()
+    public static void SceneHideComplete()
     {
-        //When the scene is hidden we actually load the scenes
+        //load the calculated scenes
         LoadCalculatedScenes();
-        //then start showing
-        StartShowTransitionMessage?.Dispatch(OnSceneShowComplete, 1.0f);
     }
 
-    public static void OnSceneShowComplete()
+    public static async void FakeLoadComplete()
+    {
+        //wait until we have loaded/unloaded all scenes
+        while (asyncUnloadData.Count > 0 && asyncLoadData.Count > 0)
+        {
+            await Awaitable.NextFrameAsync();
+        }
+
+        while (WaitingToLoad.Count > 0)
+        {
+            await Awaitable.NextFrameAsync();
+        }
+
+        //then start showing
+        StartShowTransitionMessage?.Dispatch(1.0f, SceneShowComplete);
+    }
+
+    public static void SceneShowComplete()
     {
         //We're done!
+        //TODO: Add any cleanup stuff here...
     }
 
     private void OnEnable()
@@ -155,14 +191,12 @@ public class SceneController : MonoBehaviour
         TransitionMessageHub = Messages.GetHub(TransitionHubName);
         StartHideTransitionMessage = TransitionMessageHub.Get<StartHideTransitionMessage>();
         StartShowTransitionMessage = TransitionMessageHub.Get<StartShowTransitionMessage>();
-        SetAllowedTransitionsMessage = TransitionMessageHub.Get<SetAllowedTransitionsMessage>();
     }
 
     private void OnDisable()
     {
         TransitionMessageHub.Return<StartHideTransitionMessage>();
         TransitionMessageHub.Return<StartShowTransitionMessage>();
-        TransitionMessageHub.Return<SetAllowedTransitionsMessage>();
         Messages.ReturnHub(TransitionHubName);
     }
 
@@ -358,7 +392,7 @@ public class SceneController : MonoBehaviour
 
     private static void LoadScene_Normal(string sceneToLoad)
     {
-        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        DebugLogWarning($"LoadScene_Normal {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Normal_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -370,7 +404,7 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Wrapper(string sceneToLoad)
     {
-        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        DebugLogWarning($"LoadScene_Wrapper {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Wrappers_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -382,7 +416,7 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Required(string sceneToLoad)
     {
-        DebugLogWarning($"Loading Scene {sceneToLoad}");
+        DebugLogWarning($"LoadScene_Required {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Required_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -410,6 +444,7 @@ public class SceneController : MonoBehaviour
             UnloadScene_Wrappers(scenesToUnload[i]);
         }
     }
+
     //private static void UnloadScenes_Required(List<string> scenesToUnload)
     //{
     //    for (int i = 0; i < scenesToUnload.Count; i++)
@@ -477,11 +512,14 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+        asyncLoadData = asyncLoadData.Where(x => x.complete == false).ToList();
     }
     private static void LoadScene_Wrappers_Complete(AsyncOperation obj)
     {
+        DebugLogWarning($"LoadScene_Wrappers_Complete! asyncLoadData.Count = {asyncLoadData.Count}");
         for (int i = 0; i < asyncLoadData.Count; i++)
         {
+            DebugLogWarning($"LoadScene_Wrappers_Complete Comparing {asyncLoadData[i].sceneName} to obj");
             if (asyncLoadData[i].asyncOperation == obj)
             {
                 DebugLogWarning($"LoadScene_Wrappers_Complete for Scene {asyncLoadData[i].sceneName}");
@@ -492,6 +530,7 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+        asyncLoadData = asyncLoadData.Where(x => x.complete == false).ToList();
     }
     private static void LoadScene_Required_Complete(AsyncOperation obj)
     {
@@ -507,6 +546,8 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+        //remove completed scenes from list
+        asyncLoadData = asyncLoadData.Where(x => x.complete == false).ToList();
     }
     #endregion
 
@@ -526,6 +567,7 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+        asyncUnloadData = asyncUnloadData.Where(x => x.complete == false).ToList();
     }
     private static void UnloadScene_Wrapper_Complete(AsyncOperation obj)
     {
@@ -542,6 +584,7 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+        asyncUnloadData = asyncUnloadData.Where(x => x.complete == false).ToList();
     }
     //private static void UnloadScene_Required_Complete(AsyncOperation obj)
     //{
@@ -558,6 +601,7 @@ public class SceneController : MonoBehaviour
     //            }
     //        }
     //    }
+    //    asyncUnloadData = asyncUnloadData.Where(x => x.complete == false).ToList();
     //}
     #endregion
 
@@ -566,21 +610,21 @@ public class SceneController : MonoBehaviour
     {
         if (sceneControllerOptions.showConsoleMessages)
         {
-            DebugLog(log, target);
+            Debug.Log(log, target);
         }
     }
     private static void DebugLogWarning(string log, GameObject target = null)
     {
         if (sceneControllerOptions.showConsoleMessages)
         {
-            DebugLogWarning(log, target);
+            Debug.LogWarning(log, target);
         }
     }
     private static void DebugLogError(string log, GameObject target = null)
     {
         if (sceneControllerOptions.showConsoleMessages)
         {
-            DebugLogError(log, target);
+            Debug.LogError(log, target);
         }
     }
     #endregion
@@ -602,6 +646,8 @@ public struct SceneData
     public bool ReloadIfSceneExists;
     public List<string> Dependencies;
     public List<string> AllowedTransitions;
+    public float transitionTime;
+    public float transitionFakeLoadTime;
 }
 
 [System.Serializable]

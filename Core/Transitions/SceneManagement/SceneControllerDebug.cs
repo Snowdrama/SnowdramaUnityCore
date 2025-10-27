@@ -7,59 +7,69 @@ namespace Snowdrama.Transition
 {
     public class SceneControllerDebug : MonoBehaviour
     {
-        public List<string> RequiredScenes;
-        public List<WrapperSceneData> WrapperScenes;
-        public List<SceneData> Scenes;
+        [SerializeField] private List<string> RequiredScenes;
+        [SerializeField] private List<WrapperSceneData> WrapperScenes;
+        [SerializeField] private List<SceneData> Scenes;
 
         [Header("Transition Info")]
-        public TransitionState transitionState;
-        public float transitionValue;
-        public float transitionSpeed;
-        public SceneTransition sceneTransition;
-        public bool transitioning;
+        [SerializeField] private TransitionState transitionState;
+        [SerializeField] private float transitionValue;
+        [SerializeField] private float transitionSpeed;
+        [SerializeField] private SceneTransition sceneTransition;
+        [SerializeField] private bool transitioning;
 
         [Header("Currently Loaded Scenes")]
-        public List<string> loadedScenes_Normal;
-        public List<string> loadedScenes_Wrapper;
-        public List<string> loadedScenes_Required;
+        [SerializeField] private List<string> loadedScenes_Normal;
+        [SerializeField] private List<string> loadedScenes_Wrapper;
+        [SerializeField] private List<string> loadedScenes_Required;
 
         [Header("Target Scenes")]
-        public List<string> targetScenes_Normal;
-        public List<string> targetScenes_Wrapper;
+        [SerializeField] private List<string> targetScenes_Normal;
+        [SerializeField] private List<string> targetScenes_Wrapper;
 
         [Header("Loading Next")]
-        public List<string> calculatedScenes_ToLoad;
-        public List<string> calculatedScenes_ToLoad_Wrappers;
+        [SerializeField] private List<string> calculatedScenes_ToLoad;
+        [SerializeField] private List<string> calculatedScenes_ToLoad_Wrappers;
 
         [Header("Unloading Next")]
-        public List<string> calculatedScenes_ToUnload;
-        public List<string> calculatedScenes_ToUnload_Wrappers;
+        [SerializeField] private List<string> calculatedScenes_ToUnload;
+        [SerializeField] private List<string> calculatedScenes_ToUnload_Wrappers;
 
+        [Header("Async Data")]
+        [SerializeField] private List<SceneTransitionAsync_LoadData> asyncLoadData = new List<SceneTransitionAsync_LoadData>();
+        [SerializeField] private List<SceneTransitionAsync_LoadData> asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+
+        [Header("Waiting To Load")]
+        [SerializeField] private List<string> WaitingToLoad = new List<string>();
         //basically take all static things and make them debugable by
         //displaying them in the editor at runtime;
         private void Update()
         {
-            RequiredScenes = global::SceneController.RequiredScenes;
-            WrapperScenes = global::SceneController.WrapperScenes.Values.ToList();
-            Scenes = global::SceneController.Scenes.Values.ToList();
+            RequiredScenes = SceneController.RequiredScenes;
+            WrapperScenes = SceneController.WrapperScenes.Values.ToList();
+            Scenes = SceneController.Scenes.Values.ToList();
 
             //transitionState = SceneControllerJSONTest.transitionState;
             //transitionValue = SceneControllerJSONTest.transitionValue;
             //sceneTransition = SceneControllerJSONTest.targetSceneTransition;
             //transitionSpeed = SceneControllerJSONTest.transitionSpeed;
 
-            loadedScenes_Normal = global::SceneController.loadedScenes_Normal;
-            loadedScenes_Wrapper = global::SceneController.loadedScenes_Wrappers;
-            loadedScenes_Required = global::SceneController.loadedScenes_Required;
+            loadedScenes_Normal = SceneController.loadedScenes_Normal;
+            loadedScenes_Wrapper = SceneController.loadedScenes_Wrappers;
+            loadedScenes_Required = SceneController.loadedScenes_Required;
 
-            targetScenes_Normal = global::SceneController.targetScenes_Normal;
-            targetScenes_Wrapper = global::SceneController.targetScenes_Wrappers;
+            targetScenes_Normal = SceneController.targetScenes_Normal;
+            targetScenes_Wrapper = SceneController.targetScenes_Wrappers;
 
-            calculatedScenes_ToLoad = global::SceneController.calculatedScenes_ToLoad;
-            calculatedScenes_ToLoad_Wrappers = global::SceneController.calculatedScenes_ToLoad_Wrappers;
+            calculatedScenes_ToLoad = SceneController.calculatedScenes_ToLoad;
+            calculatedScenes_ToLoad_Wrappers = SceneController.calculatedScenes_ToLoad_Wrappers;
 
-            calculatedScenes_ToUnload = global::SceneController.calculatedScenes_ToUnload;
-            calculatedScenes_ToUnload_Wrappers = global::SceneController.calculatedScenes_ToUnload_Wrappers;
+            calculatedScenes_ToUnload = SceneController.calculatedScenes_ToUnload;
+            calculatedScenes_ToUnload_Wrappers = SceneController.calculatedScenes_ToUnload_Wrappers;
+
+            asyncLoadData = SceneController.asyncLoadData;
+            asyncLoadData = SceneController.asyncUnloadData;
+            WaitingToLoad = SceneController.WaitingToLoad;
         }
     }
 }

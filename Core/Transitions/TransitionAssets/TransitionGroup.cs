@@ -83,7 +83,7 @@ namespace Snowdrama.Transition
         [SerializeField] private List<TransitionGroupElement> transitionElements;
 
 
-        private void OnValidate()
+        public override void OnValidate()
         {
             foreach (var item in transitionElements)
             {
