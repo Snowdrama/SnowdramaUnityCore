@@ -650,15 +650,46 @@ public class SceneController : MonoBehaviour
                     Name = "SaveGameScene",
                     ReloadIfSceneExists = false,
                     Dependencies = new List<string>(){}
-                }
+                },
                 new WrapperSceneData()
                 {
                     Name = "GameDataScene",
                     ReloadIfSceneExists = false,
-                    Dependencies = new List<string>(){}
+                    Dependencies = new List<string>()
+                    {
+                        "SaveGameScene",
+                    }
                 }
             },
-            Scenes = new List<SceneData>(),
+            Scenes = new List<SceneData>()
+            {
+                new SceneData()
+                {
+                    Name = "MainMenuScene",
+                    ReloadIfSceneExists = true,
+                    Dependencies = new List<string>()
+                    {
+                        "SaveGameScene",
+                    },
+                    AllowedTransitions = new List<string>(),
+                    transitionTime = 0.5f,
+                    transitionFakeLoadTime = 0.5f,
+
+                },
+                new SceneData()
+                {
+                    Name = "Game",
+                    ReloadIfSceneExists = true,
+                    Dependencies = new List<string>()
+                    {
+                        "SaveGameScene",
+                        "GameDataScene",
+                    },
+                    AllowedTransitions = new List<string>(),
+                    transitionTime = 0.5f,
+                    transitionFakeLoadTime = 0.5f,
+                },
+            },
         };
 
         var dataString = JsonUtility.ToJson(defaultData, true);
