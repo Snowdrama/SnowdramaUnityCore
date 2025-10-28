@@ -74,6 +74,9 @@ public class SceneController : MonoBehaviour
     {
         var jsonDoc = Resources.Load<TextAsset>("SceneLayoutJSON");
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
+        RequiredScenes.Clear();
+        WrapperScenes.Clear();
+        Scenes.Clear();
 
         RequiredScenes = sceneManagementData.RequiredScenes;
 
