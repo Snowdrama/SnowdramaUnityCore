@@ -1,10 +1,13 @@
 using Codice.Client.BaseCommands.WkStatus.Printers;
 using Snowdrama.Transition;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using static Codice.Client.BaseCommands.Import.Commit;
 
 public class SceneController : MonoBehaviour
 {
@@ -19,7 +22,6 @@ public class SceneController : MonoBehaviour
     public static Dictionary<string, SceneData> Scenes = new Dictionary<string, SceneData>();
 
     // Settings load
-    public static SceneControllerOptions sceneControllerOptions;
     public static SceneManagementData sceneManagementData;
 
     //Current state
@@ -70,7 +72,6 @@ public class SceneController : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
     {
-        sceneControllerOptions = Resources.Load<SceneControllerOptions>("SceneControllerOptions");
         var jsonDoc = Resources.Load<TextAsset>("SceneLayoutJSON");
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
 
@@ -608,31 +609,75 @@ public class SceneController : MonoBehaviour
     #region Debug
     private static void DebugLog(string log, GameObject target = null)
     {
-        if (sceneControllerOptions.showConsoleMessages)
+        if (sceneManagementData.showConsoleMessages)
         {
             Debug.Log(log, target);
         }
     }
     private static void DebugLogWarning(string log, GameObject target = null)
     {
-        if (sceneControllerOptions.showConsoleMessages)
+        if (sceneManagementData.showConsoleMessages)
         {
             Debug.LogWarning(log, target);
         }
     }
     private static void DebugLogError(string log, GameObject target = null)
     {
-        if (sceneControllerOptions.showConsoleMessages)
+        if (sceneManagementData.showConsoleMessages)
         {
             Debug.LogError(log, target);
         }
     }
     #endregion
+
+#if UNITY_EDITOR
+
+    [MenuItem("Assets/Create/Snowdrama/Transitions/Create Scene Controller JSON")]
+    public static void CreateSceneJSON()
+    {
+        SceneManagementData defaultData = new SceneManagementData()
+        {
+            showConsoleMessages = true,
+            DefaultSceneName = "MainMenuScene",
+            RequiredScenes = new List<string>()
+            {
+                "RequiredScene",
+            },
+            WrapperScenes = new List<WrapperSceneData>()
+            {
+                new WrapperSceneData()
+                {
+                    Name = "SaveGameScene",
+                    ReloadIfSceneExists = false,
+                    Dependencies = new List<string>(){}
+                }
+                new WrapperSceneData()
+                {
+                    Name = "GameDataScene",
+                    ReloadIfSceneExists = false,
+                    Dependencies = new List<string>(){}
+                }
+            },
+            Scenes = new List<SceneData>(),
+        };
+
+        var dataString = JsonUtility.ToJson(defaultData, true);
+
+        var selected = Selection.activeObject;
+        Debug.Log(selected);
+        var path = AssetDatabase.GetAssetPath(selected);
+        Debug.Log(path);
+
+        File.WriteAllText($"{path}/SceneLayoutJSON.json", dataString);
+        AssetDatabase.Refresh();
+    }
+#endif
 }
 
 [System.Serializable]
 public struct SceneManagementData
 {
+    public bool showConsoleMessages;
     public string DefaultSceneName;
     public List<string> RequiredScenes;
     public List<WrapperSceneData> WrapperScenes;
