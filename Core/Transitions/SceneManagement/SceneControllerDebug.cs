@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Snowdrama.Transition
 {
+    [ExecuteAlways]
     public class SceneControllerDebug : MonoBehaviour
     {
         [SerializeField] private List<string> RequiredScenes;
