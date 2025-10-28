@@ -78,6 +78,10 @@ public class SceneController : MonoBehaviour
         WrapperScenes.Clear();
         Scenes.Clear();
 
+        loadedScenes_Required.Clear();
+        loadedScenes_Wrappers.Clear();
+        loadedScenes_Normal.Clear();
+
         RequiredScenes = sceneManagementData.RequiredScenes;
 
         foreach (var item in sceneManagementData.WrapperScenes)
