@@ -21,8 +21,7 @@ namespace Snowdrama.Transition
         [SerializeField] private GameObject transitionCanvas;
         [SerializeField] private Transition currentTransition;
 
-
-        [SerializeField] private bool pauseTimeDuringTransition = false;
+        //[SerializeField] private bool pauseTimeDuringTransition = false;
 
         private Dictionary<string, Transition> transitions = new Dictionary<string, Transition>();
 

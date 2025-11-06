@@ -7,7 +7,7 @@ namespace Snowdrama.CellularAutomata
     {
         [Header("Stretched Noise Settings")]
         [Range(0f, 1f)]
-        [Tooltip("Overall chance for any given line to be drawn.")]
+        [Tooltip("Overall chance for any given text to be drawn.")]
         public float density = 0.3f;
 
         [Min(1)]
@@ -19,7 +19,7 @@ namespace Snowdrama.CellularAutomata
         public int maxLength = 10;
 
         [Range(0f, 1f)]
-        [Tooltip("Chance for each step to wobble slightly from a straight line.")]
+        [Tooltip("Chance for each step to wobble slightly from a straight text.")]
         public float wobbleChance = 0.1f;
 
         [Min(0)]
