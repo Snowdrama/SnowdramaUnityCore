@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Shape/Grid", fileName = "Grid")]
     public class CellularAutomataProcessShape_Grid : CellularAutomataProcess

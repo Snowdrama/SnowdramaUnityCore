@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Fill/Random", fileName = "FillRandom")]
     public class CellularAutomataProcess_FillRandom : CellularAutomataProcess

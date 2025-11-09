@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minLeafSize: 20
   maxLeafSize: 40
-  minRoomSize: 15
-  maxRoomSize: 20
+  minRoomSize: 7
+  maxRoomSize: 50
   roomPadding: 2
-  corridorWidth: 2
+  corridorWidth: 1
   enabledCorridors: 1

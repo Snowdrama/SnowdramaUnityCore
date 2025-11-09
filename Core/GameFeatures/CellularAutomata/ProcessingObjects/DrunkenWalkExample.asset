@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77758c01770f31345923766db3bc2231, type: 3}
   m_Name: DrunkenWalkExample
   m_EditorClassIdentifier: 
-  minSteps: 10000
-  maxSteps: 50000
+  minSteps: 50
+  maxSteps: 300
   useLastWalkEnd: 0
-  walkStartPercent: {x: 0.5, y: 0.5}
+  walkStartPercent: {x: 0.1, y: 0.5}

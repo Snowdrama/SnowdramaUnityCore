@@ -1,0 +1,42 @@
+#Intro
+    @bg forest
+    @music calm_theme
+
+    Alice: It's such a beautiful day!
+    Bob: Indeed, the weather is perfect for a walk.
+
+    //variable set example:
+    $gold = 20
+
+    !if gold < 10
+        Gold is less than 10
+    !elseif gold > 20
+        Gold is more than 20!
+    !else
+        Gold is somewhere between 10 and 20
+
+    -> Go to the river 
+        Bob: The river I guess sounds okay. 
+        => RiverScene 
+    ->choice Explore the ruins 
+        Alice: Okay let's go to the ruins 
+        => RiverScene
+
+    
+    %2 This has a chance to be said
+    % This also has a chance to be said
+    % Each has a chance of 1 except the first line
+    % Which has a slightly higher chance to be said
+
+    //once the jump returns we end up here regardless
+    Alice: Wasn't that fun!
+
+#RiverScene
+    Alice: The river is peaceful. I could stay here all day.
+    @music river_theme
+    @return //goes back to the last jump or ends if there's no last jump
+
+#RuinsScene
+    Bob: These ruins look ancient... maybe too ancient.
+    @music mystery_theme
+    @return //goes back to the last jump or ends if there's no last jump

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     using System.Collections.Generic;
     using UnityEngine;

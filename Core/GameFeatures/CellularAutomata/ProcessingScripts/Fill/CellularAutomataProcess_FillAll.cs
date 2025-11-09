@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Fill/All", fileName = "FillAll")]
     public class CellularAutomataProcess_FillAll : CellularAutomataProcess

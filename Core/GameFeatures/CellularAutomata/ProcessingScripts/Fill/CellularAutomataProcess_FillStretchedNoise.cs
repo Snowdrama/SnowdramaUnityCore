@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/StretchedNoise", fileName = "StretchedNoise")]
     public class CellularAutomataProcess_StretchedNoise : CellularAutomataProcess

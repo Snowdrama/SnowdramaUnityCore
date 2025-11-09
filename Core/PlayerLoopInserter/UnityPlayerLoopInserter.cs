@@ -9,7 +9,7 @@ using UnityEngine.LowLevel;
 //Originally written by Vengarioth
 // https://www.github.com/Vengarioth
 
-namespace Snowdrama.Core
+namespace Snowdrama
 {
     public struct UnityPlayerLoopInserter
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snowdrama.Spline
+namespace Snowdrama
 {
     [ExecuteAlways]
     public class Spline : MonoBehaviour

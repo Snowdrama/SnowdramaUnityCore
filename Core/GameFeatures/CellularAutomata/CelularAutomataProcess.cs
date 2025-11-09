@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     public abstract class CellularAutomataProcess : ScriptableObject
     {

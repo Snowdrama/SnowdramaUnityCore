@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CustomEditor(typeof(CellularAutomata))]
     public class CellularAutomataEditor : Editor

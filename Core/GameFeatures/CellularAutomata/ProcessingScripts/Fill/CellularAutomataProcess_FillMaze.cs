@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Snowdrama.CellularAutomata
+namespace Snowdrama
 {
     [CreateAssetMenu(menuName = "Snowdrama/CellularAutomata/Process/Fill/Maze", fileName = "FillMaze")]
     public class CellularAutomataProcess_Maze : CellularAutomataProcess

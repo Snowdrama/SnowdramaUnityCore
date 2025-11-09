@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Snowdrama.Spline
+namespace Snowdrama
 {
     [CustomEditor(typeof(Spline))]
     public class SplineEditor : Editor

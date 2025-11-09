@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Snowdrama.Core
+namespace Snowdrama
 {
     public class Noise : MonoBehaviour
     {

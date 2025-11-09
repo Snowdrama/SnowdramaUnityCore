@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Snowdrama.Spline
+namespace Snowdrama
 {
     [RequireComponent(typeof(Transform))]
     [ExecuteAlways]
