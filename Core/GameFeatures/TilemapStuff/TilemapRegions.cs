@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -8,6 +9,8 @@ public class TilemapRegions : MonoBehaviour
     [SerializeField] private Dictionary<int, List<Vector2Int>> tileRegions = new Dictionary<int, List<Vector2Int>>();
     [SerializeField] private bool drawRegionIdZero; //TODO: We'll see
 
+    [Header("Debug")]
+    [SerializeField] private List<int> regions = new List<int>();
     public void SetRegionTilePositions(int regionId, List<Vector2Int> tilePositions)
     {
         if (!tileRegions.ContainsKey(regionId))
@@ -18,6 +21,7 @@ public class TilemapRegions : MonoBehaviour
         {
             tileRegions[regionId] = tilePositions;
         }
+        UpdateDebug();
     }
 
     public void SetRegionTile(int regionID, TileBase tileToSet)
@@ -29,5 +33,12 @@ public class TilemapRegions : MonoBehaviour
                 tilemap.SetTile((Vector3Int)pos, tileToSet);
             }
         }
+        UpdateDebug();
+    }
+
+    public void UpdateDebug()
+    {
+        regions.Clear();
+        regions = tileRegions.Keys.ToList();
     }
 }

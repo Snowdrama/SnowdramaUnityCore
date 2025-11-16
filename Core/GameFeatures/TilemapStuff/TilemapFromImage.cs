@@ -2,6 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+
+
+[System.Serializable]
+public struct IndexedTile
+{
+    public int index;
+    public TileBase tileBase;
+}
+
 [ExecuteInEditMode]
 public class TilemapFromImage : MonoBehaviour
 {
@@ -15,7 +24,8 @@ public class TilemapFromImage : MonoBehaviour
     private Dictionary<Color, int> colorRegionIds = new Dictionary<Color, int>();
     private Dictionary<int, List<Vector2Int>> colorPositions = new Dictionary<int, List<Vector2Int>>();
 
-    [SerializeField] private List<TileBase> tiles = new List<TileBase>();
+    [SerializeField] private List<IndexedTile> tilesList = new List<IndexedTile>();
+    private Dictionary<int, TileBase> tiles = new Dictionary<int, TileBase>();
 
     [Header("Debug")]
     [SerializeField, EditorReadOnly] private List<Color> colors = new List<Color>();
@@ -23,11 +33,25 @@ public class TilemapFromImage : MonoBehaviour
     {
         if (run)
         {
+            tiles.Clear();
+            foreach (var tile in tilesList)
+            {
+                if (!tiles.ContainsKey(tile.index))
+                {
+                    tiles.Add(tile.index, tile.tileBase);
+                }
+                else
+                {
+                    Debug.LogError($"Has Duplicate Key: {tile.index} Skipping");
+                }
+            }
+
 
             run = false;
 
             int index = 0;
-            for (int y = 0; y < palette.height; y++)
+
+            for (int y = palette.height; y > 0; y--)
             {
                 for (int x = 0; x < palette.width; x++)
                 {
@@ -64,25 +88,22 @@ public class TilemapFromImage : MonoBehaviour
                 if (colorPositions.ContainsKey((int)colorIndex))
                 {
                     regions.SetRegionTilePositions(colorIndex, colorPositions[colorIndex]);
-                    if (colorIndex >= 0 && colorIndex < tiles.Count)
+                    if (tiles.ContainsKey(colorIndex))
                     {
-                        if (tiles[colorIndex] != null)
-                        {
-                            regions.SetRegionTile(colorIndex, tiles[colorIndex]);
-                        }
-                        else
-                        {
-
-                            regions.SetRegionTile(colorIndex, null);
-                        }
+                        regions.SetRegionTile(colorIndex, tiles[colorIndex]);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Tried using tile index {colorIndex} but no tiles assigned");
+                        regions.SetRegionTile(colorIndex, null);
                     }
                 }
             }
 
             colors.Clear();
-            foreach (var item in colorRegionIds.Keys)
+            foreach (var item in colorRegionIds)
             {
-                colors.Add(item);
+                colors.Add(item.Key);
             }
         }
     }
