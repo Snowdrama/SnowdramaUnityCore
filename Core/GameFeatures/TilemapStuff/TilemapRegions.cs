@@ -62,7 +62,7 @@ public class TilemapRegions : MonoBehaviour
 
     public int GetTile(Vector2 position)
     {
-        Vector2 localPos = (Vector2)this.transform.position - position;
+        Vector2 localPos = position - (Vector2)this.transform.position;
         Vector2Int tilePos = new Vector2Int(Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y));
 
         return regionByPosition[tilePos];
