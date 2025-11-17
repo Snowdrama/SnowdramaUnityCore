@@ -7,6 +7,7 @@ public class TilemapRegions : MonoBehaviour
 {
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private Dictionary<int, List<Vector2Int>> tileRegions = new Dictionary<int, List<Vector2Int>>();
+    private Dictionary<Vector2Int, int> regionByPosition = new Dictionary<Vector2Int, int>();
     [SerializeField] private bool drawRegionIdZero; //TODO: We'll see
 
     public void ClearTiles()
@@ -26,12 +27,15 @@ public class TilemapRegions : MonoBehaviour
     {
         if (!tileRegions.ContainsKey(regionId))
         {
-            tileRegions.Add(regionId, tilePositions);
+            tileRegions.Add(regionId, new List<Vector2Int>());
         }
-        else
+
+        foreach (var tile in tilePositions)
         {
-            tileRegions[regionId] = tilePositions;
+            tileRegions[regionId].Add(tile);
+            regionByPosition.Add(tile, regionId);
         }
+
         UpdateDebug();
     }
 
@@ -53,5 +57,14 @@ public class TilemapRegions : MonoBehaviour
     {
         debugRegions.Clear();
         debugRegions = tileRegions.Keys.ToList();
+    }
+
+
+    public int GetTile(Vector2 position)
+    {
+        Vector2 localPos = (Vector2)this.transform.position - position;
+        Vector2Int tilePos = new Vector2Int(Mathf.FloorToInt(localPos.x), Mathf.FloorToInt(localPos.y));
+
+        return regionByPosition[tilePos];
     }
 }
