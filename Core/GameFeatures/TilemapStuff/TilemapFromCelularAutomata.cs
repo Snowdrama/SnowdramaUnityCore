@@ -10,6 +10,7 @@ namespace Snowdrama
         [SerializeField] private CellularAutomata cellularAutomata;
         [SerializeField] private bool invertCells;
         [SerializeField] private bool run;
+        [SerializeField] private bool clear;
 
         [SerializeField] private TilemapRegions regions;
 
@@ -26,9 +27,18 @@ namespace Snowdrama
         // Update is called once per frame
         private void Update()
         {
+            if (clear)
+            {
+                clear = false;
+                regions.ClearTiles();
+            }
             if (run)
             {
                 run = false;
+                regions.ClearTiles();
+
+
+
                 var cells = cellularAutomata.GetTileData();
 
                 cellPositions.Clear();

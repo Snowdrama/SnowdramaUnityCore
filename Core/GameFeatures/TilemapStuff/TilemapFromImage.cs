@@ -20,6 +20,7 @@ public class TilemapFromImage : MonoBehaviour
     [SerializeField] private TilemapRegions regions;
 
     [SerializeField] private bool run;
+    [SerializeField] private bool clear;
 
     private Dictionary<Color, int> colorRegionIds = new Dictionary<Color, int>();
     private Dictionary<int, List<Vector2Int>> colorPositions = new Dictionary<int, List<Vector2Int>>();
@@ -31,6 +32,11 @@ public class TilemapFromImage : MonoBehaviour
     [SerializeField, EditorReadOnly] private List<Color> colors = new List<Color>();
     private void Update()
     {
+        if (clear)
+        {
+            clear = false;
+            regions.ClearTiles();
+        }
         if (run)
         {
             tiles.Clear();
@@ -46,8 +52,9 @@ public class TilemapFromImage : MonoBehaviour
                 }
             }
 
-
             run = false;
+
+            regions.ClearTiles();
 
             int index = 0;
 
