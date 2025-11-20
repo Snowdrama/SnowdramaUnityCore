@@ -5,26 +5,17 @@ using UnityEngine.Tilemaps;
 namespace Snowdrama
 {
     [ExecuteAlways]
-    public class TilemapFromCelularAutomata : MonoBehaviour
+    public class TilemapRegionsFromCelularAutomata : MonoBehaviour
     {
         [SerializeField] private CellularAutomata cellularAutomata;
         [SerializeField] private bool invertCells;
         [SerializeField] private bool run;
         [SerializeField] private bool clear;
-
         [SerializeField] private TilemapRegions regions;
-
         [SerializeField] private TileBase tileBlack;
         [SerializeField] private TileBase tileWhite;
         private Dictionary<int, List<Vector2Int>> cellPositions = new Dictionary<int, List<Vector2Int>>();
 
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        private void Start()
-        {
-
-        }
-
-        // Update is called once per frame
         private void Update()
         {
             if (clear)
@@ -36,8 +27,6 @@ namespace Snowdrama
             {
                 run = false;
                 regions.ClearTiles();
-
-
 
                 var cells = cellularAutomata.GetTileData();
 
@@ -62,26 +51,26 @@ namespace Snowdrama
                 }
                 foreach (var item in cellPositions)
                 {
-                    regions.SetRegionTilePositions(item.Key, item.Value);
+                    regions.AddTilePositionToRegion(item.Key, item.Value);
                 }
 
                 //since there's only enabled or disabled
                 if (tileBlack != null)
                 {
-                    regions.SetRegionTile(1, tileBlack);
+                    regions.SetAllRegionPositionsToTile(1, tileBlack);
                 }
                 else
                 {
-                    regions.SetRegionTile(1, null);
+                    regions.SetAllRegionPositionsToTile(1, null);
                 }
 
                 if (tileWhite != null)
                 {
-                    regions.SetRegionTile(0, tileWhite);
+                    regions.SetAllRegionPositionsToTile(0, tileWhite);
                 }
                 else
                 {
-                    regions.SetRegionTile(0, null);
+                    regions.SetAllRegionPositionsToTile(0, null);
                 }
             }
         }

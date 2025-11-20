@@ -73,7 +73,9 @@ public class SceneController : MonoBehaviour
     private static void Bootstrap()
     {
         var jsonDoc = Resources.Load<TextAsset>("SceneLayoutJSON");
+        Debug.Log(jsonDoc.text);
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
+        Debug.Log($"Loading Scene Management Data, Debug: {sceneManagementData.ShowConsoleMessages}");
         RequiredScenes.Clear();
         WrapperScenes.Clear();
         Scenes.Clear();
@@ -372,13 +374,13 @@ public class SceneController : MonoBehaviour
 
     private static void LoadCalculatedScenes()
     {
-        //first let's unload any scenes that need to be unloaded
+        //first let's unload any scenes that need to be 
         UnloadScenes_Normal(calculatedScenes_ToUnload);
         UnloadScenes_Wrappers(calculatedScenes_ToUnload_Wrappers);
 
         //then load the scenes that we need to load
-        LoadScenes_Normal(calculatedScenes_ToLoad);
         LoadScenes_Wrappers(calculatedScenes_ToLoad_Wrappers);
+        LoadScenes_Normal(calculatedScenes_ToLoad);
     }
     #endregion
 
@@ -440,16 +442,20 @@ public class SceneController : MonoBehaviour
 
     private static void UnloadScenes_Normal(List<string> scenesToUnload)
     {
+        DebugLogWarning($"Number of Scenes to Unload: {scenesToUnload.Count}");
         for (int i = 0; i < scenesToUnload.Count; i++)
         {
+            DebugLogWarning($"Unloading: {scenesToUnload[i]}");
             UnloadScene_Normal(scenesToUnload[i]);
         }
     }
-    private static void UnloadScenes_Wrappers(List<string> scenesToUnload)
+    private static void UnloadScenes_Wrappers(List<string> wrappersToUnload)
     {
-        for (int i = 0; i < scenesToUnload.Count; i++)
+        DebugLogWarning($"Number of Wrapper Scenes to Unload: {wrappersToUnload.Count}");
+        for (int i = 0; i < wrappersToUnload.Count; i++)
         {
-            UnloadScene_Wrappers(scenesToUnload[i]);
+            DebugLogWarning($"Unloading: {wrappersToUnload[i]}");
+            UnloadScene_Wrappers(wrappersToUnload[i]);
         }
     }
 
@@ -467,7 +473,8 @@ public class SceneController : MonoBehaviour
         var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
         if (asyncOperation == null)
         {
-            DebugLogError($"Tried to load scene {sceneToUnload} but the asyncOperation is null, likely because scene isn't loaded");
+            Debug.LogError($"Tried to unload scene {sceneToUnload} but the asyncOperation is null, " +
+                $"likely because scene isn't loaded");
             return;
         }
         asyncOperation.completed += UnloadSceneComplete;
@@ -480,8 +487,16 @@ public class SceneController : MonoBehaviour
     }
     private static void UnloadScene_Wrappers(string sceneToUnload)
     {
-        DebugLog($"Unloading Scene {sceneToUnload}");
+        Scene scene = SceneManager.GetSceneByName(sceneToUnload);
         var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
+        if (asyncOperation == null)
+        {
+            Debug.LogError($"Tried to unload a wrapper scene {sceneToUnload} but the asyncOperation is null, " +
+                $"likely because scene isn't loaded." +
+                $"Note that you can not start the editor with 'Wrapper' scenes due to initial unloading." +
+                $"Please remove any wrapper scenes from the hierarchy before starting the editor!");
+            return;
+        }
         asyncOperation.completed += UnloadScene_Wrapper_Complete;
         asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
         {
@@ -616,21 +631,21 @@ public class SceneController : MonoBehaviour
     #region Debug
     private static void DebugLog(string log, GameObject target = null)
     {
-        if (sceneManagementData.showConsoleMessages)
+        if (sceneManagementData.ShowConsoleMessages)
         {
             Debug.Log(log, target);
         }
     }
     private static void DebugLogWarning(string log, GameObject target = null)
     {
-        if (sceneManagementData.showConsoleMessages)
+        if (sceneManagementData.ShowConsoleMessages)
         {
             Debug.LogWarning(log, target);
         }
     }
     private static void DebugLogError(string log, GameObject target = null)
     {
-        if (sceneManagementData.showConsoleMessages)
+        if (sceneManagementData.ShowConsoleMessages)
         {
             Debug.LogError(log, target);
         }
@@ -644,7 +659,7 @@ public class SceneController : MonoBehaviour
     {
         SceneManagementData defaultData = new SceneManagementData()
         {
-            showConsoleMessages = true,
+            ShowConsoleMessages = true,
             DefaultSceneName = "MainMenuScene",
             RequiredScenes = new List<string>()
             {
@@ -715,7 +730,7 @@ public class SceneController : MonoBehaviour
 [System.Serializable]
 public struct SceneManagementData
 {
-    public bool showConsoleMessages;
+    public bool ShowConsoleMessages;
     public string DefaultSceneName;
     public List<string> RequiredScenes;
     public List<WrapperSceneData> WrapperScenes;

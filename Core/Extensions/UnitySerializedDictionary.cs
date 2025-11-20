@@ -7,7 +7,6 @@ using System.Linq;
 public class UnitySerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 {
     [SerializeField] private List<SerializedDictionaryKVPProps<TKey, TValue>> dictionaryList = new();
-
     public UnitySerializedDictionary() : base() { }
     public UnitySerializedDictionary(int capacity) : base(capacity) { }
     void ISerializationCallbackReceiver.OnBeforeSerialize()
