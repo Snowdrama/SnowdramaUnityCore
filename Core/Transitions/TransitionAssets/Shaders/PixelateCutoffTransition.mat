@@ -75,7 +75,7 @@ Material:
     - _CutoffSteps: 1923
     m_Floats:
     - _BumpScale: 1
-    - _Cutoff: -0.0024787667
+    - _Cutoff: -0.007877892
     - _CutoffSteps: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0

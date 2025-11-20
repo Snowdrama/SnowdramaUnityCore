@@ -11,6 +11,15 @@ public class GameDataStruct
     public Dictionary<int, float> floatData = new Dictionary<int, float>();
     public Dictionary<int, double> doubleData = new Dictionary<int, double>();
     public Dictionary<int, string> stringData = new Dictionary<int, string>();
+
+    //TODO: Add save/load images with B64 encoding? Save game screenshot images?
+    //public Dictionary<int, string> imageData = new Dictionary<int, string>();
+
+    //TODO: Add save/load images using byte arrays? Save game screenshot images?
+    //public Dictionary<int, byte[]> imageDataBytes = new Dictionary<int, byte[]>();
+
+    //TODO: Add save/load structs generically? 
+    //public Dictionary<Type, Dictionary<int, Object>> structData = new Dictionary<Type, Dictionary<int, System.Object>>()
 }
 public class GameData : MonoBehaviour
 {
@@ -155,6 +164,10 @@ public class GameData : MonoBehaviour
         return value;
     }
     #endregion
+
+    //TODO: Add save/load images with B64 encoding? Save game screenshot images?
+    //TODO: Add save/load images using byte arrays? Save game screenshot images?
+    //TODO: Add save/load structs generically? 
 
     public static GameDataStruct GetGameData()
     {

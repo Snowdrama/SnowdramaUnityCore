@@ -10,7 +10,7 @@ public class LoadGameDataFromSlotButton : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        this.GetComponent<Button>().onClick.AddListener(Save);
+        this.GetComponent<Button>().onClick.AddListener(Load);
     }
 
     public void SetButtonInfo(int saveSlotId, string saveName)
@@ -19,12 +19,12 @@ public class LoadGameDataFromSlotButton : MonoBehaviour
         saveNameText.text = saveName;
     }
 
-    public void Save()
+    public void Load()
     {
         if (SaveManager.CanLoadSave(saveSlot))
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Would you like to load Save {saveSlot}",
+                $"Would you like to load Load {saveSlot}",
                 new ModalButtonData()
                 {
                     text = "Yes",

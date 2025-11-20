@@ -51,15 +51,15 @@ public class SaveManager : MonoBehaviour
 
         foreach (SaveGameInfo file in saveDataInfo.saveLocations.Values)
         {
-            Debug.Log($"Found Save: {file.name} {file.filePath}");
+            Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
         foreach (SaveGameInfo file in saveDataInfo.autoSaveLocations.Values)
         {
-            Debug.Log($"Found Save: {file.name} {file.filePath}");
+            Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
-        Debug.Log("Loading Save 0");
+        Debug.Log("Loading Load 0");
         //load save 0 by default in case we're testing
         LoadSave(saveDataInfo.currentSaveIndex);
     }
@@ -90,7 +90,7 @@ public class SaveManager : MonoBehaviour
         }
 
         //can we find the save?
-        Debug.Log($"Loading Save From: {saveDataInfo.saveLocations[saveSlot].filePath}");
+        Debug.Log($"Loading Load From: {saveDataInfo.saveLocations[saveSlot].filePath}");
         if (File.Exists(saveDataInfo.saveLocations[saveSlot].filePath))
         {
             var saveToLoad = saveDataInfo.saveLocations[saveSlot].filePath;
@@ -160,18 +160,18 @@ public class SaveManager : MonoBehaviour
         return index;
     }
 
-    public static bool SaveGame(GameDataStruct gameData, bool force = false, string saveName = null)
+    public static bool SaveGame(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
     {
-        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName);
+        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
 
-    public static bool SaveGameToNewSlot(GameDataStruct gameData, bool force = false, string saveName = null)
+    public static bool SaveGameToNewSlot(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
     {
         saveDataInfo.currentSaveIndex = GetUnusedSaveSlot();
-        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName);
+        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
 
-    public static bool SaveGame(int saveSlot, GameDataStruct gameData, bool force = false, string saveName = null)
+    public static bool SaveGame(int saveSlot, GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
     {
         ValidateDirectories();
 
@@ -192,10 +192,10 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Creating new save info");
         var newSaveInfo = new SaveGameInfo()
         {
-            name = $"Name? IDK... Save {saveSlot}",
-            dateModified = DateTime.Now.Date.ToString("yyyy/MM/dd hh:mm:ss"),
+            name = (!string.IsNullOrEmpty(saveName)) ? saveName : $"Save {saveSlot}",
+            dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
-            version = "0.01f",
+            version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
         };
         Debug.Log(newSaveInfo);
         if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
@@ -249,6 +249,43 @@ public class SaveManager : MonoBehaviour
 
         SaveInfoFile();
     }
+
+    public static bool DeleteSaveGame(int saveSlot, bool force = false)
+    {
+        if (saveDataInfo.saveLocations == null)
+        {
+            Debug.LogError("Somehow saveLocations is null");
+            return false;
+        }
+        if (saveDataInfo.saveLocations.Values.Count == 0)
+        {
+            Debug.LogError("No saves found");
+            return false;
+        }
+
+        if (saveDataInfo.saveLocations.Values.Count < saveSlot)
+        {
+            Debug.LogError("Tried to load a save slot that doesn't exist");
+            return false;
+        }
+
+        if (force == false)
+        {
+            return false;
+        }
+
+        if (File.Exists($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json"))
+        {
+            File.Delete($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json");
+        }
+        saveDataInfo.saveLocations.Remove(saveSlot);
+        SaveInfoFile();
+        return true;
+    }
+
+
+
+
 
     private static void SaveInfoFile()
     {

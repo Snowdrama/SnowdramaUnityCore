@@ -16,7 +16,13 @@ public class SaveGameListDisplay : MonoBehaviour
         foreach (var kvp in saveDataStruct.saveLocations)
         {
             var go = Instantiate(buttonPrefab, buttonContainer, false);
-            go.GetComponent<LoadGameDataFromSlotButton>().SetButtonInfo(kvp.Key, $"Save {kvp.Key}: {kvp.Value.name}");
+            go.GetComponent<ISaveButton>().SetButtonInfo(kvp.Key, $"{kvp.Value.name}");
         }
     }
+}
+
+
+public interface ISaveButton
+{
+    void SetButtonInfo(int saveSlot, string saveName);
 }

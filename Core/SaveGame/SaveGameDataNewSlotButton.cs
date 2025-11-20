@@ -9,8 +9,6 @@ public class SaveGameDataNewSlotButton : MonoBehaviour
 
     private void Save()
     {
-        SaveManager.SaveGameToNewSlot(GameData.GetGameData(), true);
-
         if (SaveManager.SaveGameToNewSlot(GameData.GetGameData(), true))
         {
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
