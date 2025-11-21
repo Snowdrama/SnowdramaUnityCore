@@ -23,6 +23,8 @@ public class SaveGameInfo
     public string filePath;
 }
 
+public class SaveGameListChanged : AMessage { }
+
 public class SaveManager : MonoBehaviour
 {
     private static GameDataStruct loadedSave = new GameDataStruct();
@@ -83,7 +85,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        if (saveDataInfo.saveLocations.Values.Count < saveSlot)
+        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
         {
             Debug.LogError("Tried to load a save slot that doesn't exist");
             return false;
@@ -102,6 +104,7 @@ public class SaveManager : MonoBehaviour
 
             saveDataInfo.currentSaveIndex = saveSlot;
             SaveInfoFile();
+            Messages.GetOnce<SaveGameListChanged>().Dispatch();
             return true;
         }
 
@@ -121,7 +124,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        if (saveDataInfo.saveLocations.Values.Count < saveSlot)
+        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
         {
             Debug.LogError("Tried to load a save slot that doesn't exist");
             return false;
@@ -206,11 +209,12 @@ public class SaveManager : MonoBehaviour
         {
             saveDataInfo.saveLocations[saveSlot] = newSaveInfo;
         }
-        SaveInfoFile();
-
         Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         File.WriteAllText(filePath, fileContents);
+
+        SaveInfoFile();
+        Messages.GetOnce<SaveGameListChanged>().Dispatch();
 
         return true;
     }
@@ -246,8 +250,8 @@ public class SaveManager : MonoBehaviour
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.currentAutoSaveIndex}.json";
         File.WriteAllText(filePath, fileContents);
-
         SaveInfoFile();
+        Messages.GetOnce<SaveGameListChanged>().Dispatch();
     }
 
     public static bool DeleteSaveGame(int saveSlot, bool force = false)
@@ -263,7 +267,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        if (saveDataInfo.saveLocations.Values.Count < saveSlot)
+        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
         {
             Debug.LogError("Tried to load a save slot that doesn't exist");
             return false;
@@ -274,12 +278,14 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
+        Debug.Log($"Deleting file:{Application.persistentDataPath}/Saves/Save{saveSlot}.json");
         if (File.Exists($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json"))
         {
             File.Delete($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json");
         }
         saveDataInfo.saveLocations.Remove(saveSlot);
         SaveInfoFile();
+        Messages.GetOnce<SaveGameListChanged>().Dispatch();
         return true;
     }
 

@@ -56,5 +56,6 @@ public class SaveGame_OverwriteSaveButton : MonoBehaviour, ISaveButton
     {
         this.saveSlot = saveSlot;
         this.saveName = saveName;
+        saveButtonText.text = saveName;
     }
 }
