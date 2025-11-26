@@ -20,12 +20,12 @@ namespace Snowdrama.Transition
         [SerializeField] private bool transitioning;
 
         [Header("Currently Loaded Scenes")]
-        [SerializeField] private List<string> loadedScenes_Normal;
+        [SerializeField] private string loadedScenes_Normal;
         [SerializeField] private List<string> loadedScenes_Wrapper;
         [SerializeField] private List<string> loadedScenes_Required;
 
         [Header("Target Scenes")]
-        [SerializeField] private List<string> targetScenes_Normal;
+        [SerializeField] private string targetScenes_Normal;
         [SerializeField] private List<string> targetScenes_Wrapper;
 
         [Header("Loading Next")]
@@ -55,11 +55,11 @@ namespace Snowdrama.Transition
             //sceneTransition = SceneControllerJSONTest.targetSceneTransition;
             //transitionSpeed = SceneControllerJSONTest.transitionSpeed;
 
-            loadedScenes_Normal = SceneController.loadedScenes_Normal;
+            loadedScenes_Normal = SceneController.loadedScene_Current;
             loadedScenes_Wrapper = SceneController.loadedScenes_Wrappers;
             loadedScenes_Required = SceneController.loadedScenes_Required;
 
-            targetScenes_Normal = SceneController.targetScenes_Normal;
+            targetScenes_Normal = SceneController.targetScene_Next;
             targetScenes_Wrapper = SceneController.targetScenes_Wrappers;
 
             calculatedScenes_ToLoad = SceneController.calculatedScenes_ToLoad;

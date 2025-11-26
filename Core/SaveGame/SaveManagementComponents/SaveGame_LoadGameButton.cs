@@ -4,35 +4,42 @@ using UnityEngine.UI;
 
 public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
 {
-    private int saveSlot;
-    private string saveName;
+    private SaveGameInfo saveGameInfo;
 
-    [SerializeField] private Button loadButton;
-    [SerializeField] private Button deleteButton;
+    [SerializeField] private Button LoadButton;
+    [SerializeField] private Button DeleteButton;
     [SerializeField] private TMP_Text loadButtonText;
+
+    [SerializeField] private float LoadButton_DisableTime = 0.0f;
+    [SerializeField] private float LoadButtonCancel_DisableTime = 0.0f;
+
+    [SerializeField] private float DeleteButton_DisableTime = 1.0f;
+    [SerializeField] private float DeleteButtonCancel_DisableTime = 0.0f;
+
+    [SerializeField] private float Error_DisableTime = 0.0f;
     private void Start()
     {
-        loadButton.onClick.AddListener(TryLoad);
-        deleteButton.onClick.AddListener(DeleteSave);
+        LoadButton.onClick.AddListener(TryLoad);
+        DeleteButton.onClick.AddListener(DeleteSave);
     }
 
     public void TryLoad()
     {
-        if (SaveManager.CanLoadSave(saveSlot))
+        if (SaveManager.CanLoadSave(saveGameInfo.saveSlot, saveGameInfo.isAutoSave))
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Would you like to load:\n{saveName}",
+                $"Would you like to load:\n{saveGameInfo.name}",
                 new ModalButtonData()
                 {
                     text = "Yes",
                     pressCallback = LoadGame,
-                    disableTime = 2.0f,
+                    disableTime = LoadButton_DisableTime,
                 },
                 new ModalButtonData()
                 {
                     text = "No",
                     pressCallback = null,
-                    disableTime = 0.0f,
+                    disableTime = LoadButtonCancel_DisableTime,
                 }
             );
         }
@@ -44,7 +51,7 @@ public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
                 {
                     text = "Ok",
                     pressCallback = null,
-                    disableTime = 2.0f,
+                    disableTime = Error_DisableTime,
                 }
             );
         }
@@ -52,38 +59,37 @@ public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
 
     private void LoadGame()
     {
-        SaveManager.LoadSave(saveSlot);
+        SaveManager.LoadSave(saveGameInfo.saveSlot, saveGameInfo.isAutoSave);
     }
 
 
     private void DeleteSave()
     {
         Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-            $"Are you sure you want to delete the save?\n{saveName}",
+            $"Are you sure you want to delete the save?\n{saveGameInfo.name}",
             new ModalButtonData()
             {
                 text = "Yes",
                 pressCallback = ForceDelete,
-                disableTime = 2.0f,
+                disableTime = DeleteButton_DisableTime,
             },
             new ModalButtonData()
             {
                 text = "No",
                 pressCallback = null,
-                disableTime = 0.0f,
+                disableTime = DeleteButtonCancel_DisableTime,
             }
         );
     }
 
     private void ForceDelete()
     {
-        SaveManager.DeleteSaveGame(saveSlot, true);
+        SaveManager.DeleteSaveGame(saveGameInfo.saveSlot, saveGameInfo.isAutoSave, true);
         Destroy(this.gameObject);
     }
-    public void SetButtonInfo(int saveSlot, string saveName)
+    public void SetButtonInfo(SaveGameInfo saveGameInfo)
     {
-        this.saveSlot = saveSlot;
-        this.saveName = saveName;
-        loadButtonText.text = saveName;
+        this.saveGameInfo = saveGameInfo;
+        loadButtonText.text = $"{saveGameInfo.name} - {saveGameInfo.dateModified}";
     }
 }

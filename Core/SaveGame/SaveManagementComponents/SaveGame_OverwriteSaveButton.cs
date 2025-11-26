@@ -4,58 +4,53 @@ using UnityEngine.UI;
 
 public class SaveGame_OverwriteSaveButton : MonoBehaviour, ISaveButton
 {
-    private int saveSlot;
-    private string saveName;
+    private SaveGameInfo saveGameInfo;
 
-    [SerializeField] private Button saveButton;
-    [SerializeField] private Button deleteButton;
+    [SerializeField] private Button SaveButton;
+    [SerializeField] private Button DeleteButton;
     [SerializeField] private TMP_Text saveButtonText;
+    [SerializeField] private float DeleteButton_DisableTime = 1.0f;
+    [SerializeField] private float DeleteCancelButton_DisableTime = 0.0f;
 
-    public void SetSaveInfo(int saveSlot, string saveName)
-    {
-        this.saveName = saveName;
-        this.saveSlot = saveSlot;
-        saveButtonText.text = saveName;
-    }
     private void Start()
     {
-        saveButton.onClick.AddListener(OpenModal);
-        deleteButton.onClick.AddListener(DeleteSave);
+        SaveButton.onClick.AddListener(OpenModal);
+        DeleteButton.onClick.AddListener(DeleteSave);
     }
 
     private void OpenModal()
     {
-        Messages.GetOnce<SaveGame_OverwriteSaveModalMessage>().Dispatch(saveSlot, saveName);
+        Messages.GetOnce<SaveGame_OverwriteSaveModalMessage>().Dispatch(saveGameInfo);
     }
     private void DeleteSave()
     {
         Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-            $"Are you sure you want to delete the save?\n {saveName}",
+            $"Are you sure you want to delete the save?\n {saveGameInfo.name}",
             new ModalButtonData()
             {
                 text = "Yes",
                 pressCallback = ForceDelete,
-                disableTime = 2.0f,
+                disableTime = DeleteButton_DisableTime,
             },
             new ModalButtonData()
             {
                 text = "No",
                 pressCallback = null,
-                disableTime = 0.0f,
+                disableTime = DeleteCancelButton_DisableTime,
             }
         );
     }
 
     private void ForceDelete()
     {
-        SaveManager.DeleteSaveGame(saveSlot, true);
+        SaveManager.DeleteSaveGame(saveGameInfo.saveSlot, saveGameInfo.isAutoSave, true);
         Destroy(this.gameObject);
     }
 
-    public void SetButtonInfo(int saveSlot, string saveName)
+    public void SetButtonInfo(SaveGameInfo saveInfo)
     {
-        this.saveSlot = saveSlot;
-        this.saveName = saveName;
-        saveButtonText.text = saveName;
+
+        this.saveGameInfo = saveInfo;
+        saveButtonText.text = $"{saveGameInfo.name} - {saveGameInfo.dateModified}";
     }
 }

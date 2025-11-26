@@ -23,6 +23,7 @@ public struct ModalButtonData
 public class ModalConfirmation : MonoBehaviour
 {
     [SerializeField] private GameObject modalPanel;
+    [SerializeField] private GameObject DarkBackground;
     [SerializeField] private TMP_Text modalText;
     [SerializeField] private Button cancelButton;
     [SerializeField] private TMP_Text cancelButtonText;
@@ -76,11 +77,13 @@ public class ModalConfirmation : MonoBehaviour
             cancelButtonText.text = $"{cancel.text}";
         }
         modalPanel.SetActive(true);
+        DarkBackground?.SetActive(true);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
         modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
         cancelButton.onClick.AddListener(CancelPressed);
         okButton.onClick.AddListener(OkPressed);
     }
@@ -89,12 +92,14 @@ public class ModalConfirmation : MonoBehaviour
     {
         cancel.pressCallback?.Invoke();
         modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 
     private void OkPressed()
     {
         ok.pressCallback?.Invoke();
         modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 
     // Update is called once per frame

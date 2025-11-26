@@ -1,3 +1,4 @@
+using Codice.CM.WorkspaceServer.Tree;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,16 @@ public class SaveDataStruct
 [System.Serializable]
 public class SaveGameInfo
 {
+    public int saveSlot;
     public string name;
     public string version;
     public string dateModified;
     public string filePath;
+    public bool isAutoSave;
 }
 
-public class SaveGameListChanged : AMessage { }
+public class SaveGameListChangedMessage : AMessage { }
+public class SaveGameLoadedMessage : AMessage<GameDataStruct> { }
 
 public class SaveManager : MonoBehaviour
 {
@@ -62,9 +66,11 @@ public class SaveManager : MonoBehaviour
             Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
+#if UNITY_EDITOR
         Debug.Log("Loading Load 0");
         //load save 0 by default in case we're testing
-        LoadSave(saveDataInfo.currentSaveIndex);
+        LoadSave(saveDataInfo.currentSaveIndex, false, false);
+#endif
     }
 
     public static SaveDataStruct GetSaveList()
@@ -72,137 +78,111 @@ public class SaveManager : MonoBehaviour
         return saveDataInfo;
     }
 
-    public static bool LoadSave(int saveSlot)
+    #region Load Game
+    public static bool CanLoadSave(int saveSlot, bool autoSave)
     {
-        ValidateDirectories();
-        if (saveDataInfo.saveLocations == null)
+        Debug.Log($"Loading an Auto Save: {autoSave}");
+        if ((!autoSave && saveDataInfo.saveLocations == null) ||
+            (autoSave && saveDataInfo.autoSaveLocations == null))
         {
-            Debug.LogError("Somehow saveLocations is null");
+            Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if (saveDataInfo.saveLocations.Values.Count == 0)
+        if ((!autoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
+            (autoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
         {
-            Debug.LogError("No saves found");
+            Debug.LogError($"No saves found, " +
+                $"AutoSave.Count: {saveDataInfo.saveLocations.Values.Count} " +
+                $"SaveCount: {saveDataInfo.saveLocations.Values.Count}");
             return false;
         }
 
-        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
+        if ((!autoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
+            (autoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
         {
-            Debug.LogError("Tried to load a save slot that doesn't exist");
+            Debug.LogError($"Failed to load, IsAutoSave: {autoSave} SaveSlot: {saveSlot}");
             return false;
         }
 
+        string expectedPath = "";
         //can we find the save?
-        Debug.Log($"Loading From: {saveDataInfo.saveLocations[saveSlot].filePath}");
-        if (File.Exists(saveDataInfo.saveLocations[saveSlot].filePath))
+        if (autoSave)
         {
-            var saveToLoad = saveDataInfo.saveLocations[saveSlot].filePath;
-            var fileContents = File.ReadAllText(saveToLoad);
-
-            Debug.Log($"Loading file from {saveToLoad}");
-            Debug.Log(fileContents);
-            loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(fileContents, settings);
-
-            saveDataInfo.currentSaveIndex = saveSlot;
-            SaveInfoFile();
-            Messages.GetOnce<SaveGameListChanged>().Dispatch();
-            return true;
+            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+        }
+        else
+        {
+            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
         }
 
-        return false;
-    }
-
-    public static bool CanLoadSave(int saveSlot)
-    {
-        if (saveDataInfo.saveLocations == null)
-        {
-            Debug.LogError("Somehow saveLocations is null");
-            return false;
-        }
-        if (saveDataInfo.saveLocations.Values.Count == 0)
-        {
-            Debug.LogError("No saves found");
-            return false;
-        }
-
-        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
-        {
-            Debug.LogError("Tried to load a save slot that doesn't exist");
-            return false;
-        }
-
-        if (File.Exists(saveDataInfo.saveLocations[saveSlot].filePath))
+        if (File.Exists(expectedPath))
         {
             return true;
         }
         return false;
     }
-
-    public static bool LoadAutoSave(int saveSlot)
+    public static bool LoadSave(int saveSlot, bool isAutoSave, bool autoLoadScene = true)
     {
         ValidateDirectories();
-        if (saveDataInfo.autoSaveLocations == null)
+        Debug.Log($"Loading an Save: {isAutoSave}");
+        if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
+            (isAutoSave && saveDataInfo.autoSaveLocations == null))
         {
-            Debug.LogError("Somehow autoSaveLocations is null");
+            Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if (saveDataInfo.autoSaveLocations.Values.Count == 0)
+        if ((!isAutoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
+            (isAutoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
         {
-            Debug.LogError("No auto saves found");
-            return false;
-        }
-
-        if (!saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
-        {
-            Debug.LogError("Tried to load an auto save slot that doesn't exist");
+            Debug.LogError("No saves found");
             return false;
         }
 
-        //can we find the save?
-        Debug.Log($"Loading Auto Save From: {saveDataInfo.autoSaveLocations[saveSlot].filePath}");
-        if (File.Exists(saveDataInfo.autoSaveLocations[saveSlot].filePath))
+        if ((!isAutoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
+            (isAutoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
         {
-            var autoSaveToLoad = saveDataInfo.autoSaveLocations[saveSlot].filePath;
-            var fileContents = File.ReadAllText(autoSaveToLoad);
+            Debug.LogError("Tried to load an save slot that doesn't exist");
+            return false;
+        }
 
-            Debug.Log($"Loading file from {autoSaveToLoad}");
+        string expectedPath = "";
+        if (isAutoSave)
+        {
+            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+        }
+        else
+        {
+            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
+        }
+        Debug.Log($"Loading Save From: {expectedPath}");
+
+
+        if (File.Exists(expectedPath))
+        {
+            var savePathToLoad = expectedPath;
+            var fileContents = File.ReadAllText(savePathToLoad);
+
+            Debug.Log($"Loading file from {savePathToLoad}");
             Debug.Log(fileContents);
             loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(fileContents, settings);
+
+            //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
+            if (autoLoadScene == true && loadedSave != null && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
+            {
+                Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
+                SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
+            }
 
             saveDataInfo.currentAutoSaveIndex = saveSlot;
             SaveInfoFile();
-            Messages.GetOnce<SaveGameListChanged>().Dispatch();
+            Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(loadedSave);
+            Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
             return true;
         }
 
         return false;
     }
-    public static bool CanLoadAutoSave(int saveSlot)
-    {
-        if (saveDataInfo.autoSaveLocations == null)
-        {
-            Debug.LogError("Somehow autoSaveLocations is null");
-            return false;
-        }
-        if (saveDataInfo.autoSaveLocations.Values.Count == 0)
-        {
-            Debug.LogError("No saves found");
-            return false;
-        }
-
-        if (!saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
-        {
-            Debug.LogError("Tried to load a save slot that doesn't exist");
-            return false;
-        }
-
-        if (File.Exists(saveDataInfo.autoSaveLocations[saveSlot].filePath))
-        {
-            return true;
-        }
-        return false;
-    }
-
+    #endregion
 
     public static int GetUnusedSaveSlot()
     {
@@ -230,7 +210,7 @@ public class SaveManager : MonoBehaviour
         return index;
     }
 
-    public static bool SaveGame(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
+    public static bool SaveGameToCurrentSlot(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
     {
         return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
@@ -262,12 +242,15 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Creating new save info");
         var newSaveInfo = new SaveGameInfo()
         {
+            saveSlot = saveSlot,
             name = (!string.IsNullOrEmpty(saveName)) ? saveName : $"Save {saveSlot}",
             dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
+            isAutoSave = false,
         };
         Debug.Log(newSaveInfo);
+
         if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
         {
             saveDataInfo.saveLocations.Add(saveSlot, newSaveInfo);
@@ -276,12 +259,15 @@ public class SaveManager : MonoBehaviour
         {
             saveDataInfo.saveLocations[saveSlot] = newSaveInfo;
         }
+
+        gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
+
         Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         File.WriteAllText(filePath, fileContents);
 
         SaveInfoFile();
-        Messages.GetOnce<SaveGameListChanged>().Dispatch();
+        Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
 
         return true;
     }
@@ -299,25 +285,31 @@ public class SaveManager : MonoBehaviour
         if (unusedSlot >= 10)
         {
             //we couldn't find a slot.
-            var listOfAutoSaves = saveDataInfo.autoSaveLocations.OrderBy(x => x.Value.dateModified).ToList();
+            var listOfAutoSaves = saveDataInfo.autoSaveLocations.OrderBy(x => x.Value.dateModified).ToArray();
 
             foreach (var item in listOfAutoSaves)
             {
-                Debug.LogError($"AutoSave[{item.Key}]: {item.Value.dateModified}");
+                Debug.Log($"AutoSave[{item.Key}]: {item.Value.dateModified}");
             }
+            Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
 
             //get the oldest key and use that auto save key:
-            saveDataInfo.currentAutoSaveIndex = listOfAutoSaves.First().Key;
+            saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
             //arbitrary loop on auto save 10.
             saveDataInfo.currentAutoSaveIndex = saveDataInfo.currentAutoSaveIndex % 10;
 
-            Debug.LogWarning($"Adding a new Auto Save - Oldest is: {saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
+
+            Debug.LogWarning($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
+                $"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
 
         }
         else
         {
             saveDataInfo.currentAutoSaveIndex = unusedSlot;
         }
+
+
+        gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
 
         //create the file contents
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
@@ -327,10 +319,12 @@ public class SaveManager : MonoBehaviour
         Debug.Log($"Auto Save[{saveDataInfo.currentAutoSaveIndex}]: {filePath}");
         var autoSaveInfo = new SaveGameInfo()
         {
+            saveSlot = saveDataInfo.currentAutoSaveIndex,
             name = $"Autosave {saveDataInfo.currentAutoSaveIndex}",
             dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
+            isAutoSave = true,
         };
 
         if (!saveDataInfo.autoSaveLocations.ContainsKey(saveDataInfo.currentAutoSaveIndex))
@@ -343,25 +337,28 @@ public class SaveManager : MonoBehaviour
         }
 
         SaveInfoFile();
-        Messages.GetOnce<SaveGameListChanged>().Dispatch();
+        Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
     }
 
-    public static bool DeleteSaveGame(int saveSlot, bool force = false)
+    public static bool DeleteSaveGame(int saveSlot, bool isAutoSave, bool force = false)
     {
-        if (saveDataInfo.saveLocations == null)
+        if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
+            (isAutoSave && saveDataInfo.autoSaveLocations == null))
         {
-            Debug.LogError("Somehow saveLocations is null");
+            Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if (saveDataInfo.saveLocations.Values.Count == 0)
+        if ((!isAutoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
+            (isAutoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
         {
             Debug.LogError("No saves found");
             return false;
         }
 
-        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
+        if ((!isAutoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
+            (isAutoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
         {
-            Debug.LogError("Tried to load a save slot that doesn't exist");
+            Debug.LogError("Tried to load an save slot that doesn't exist");
             return false;
         }
 
@@ -370,20 +367,33 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        Debug.Log($"Deleting file:{Application.persistentDataPath}/Saves/Save{saveSlot}.json");
-        if (File.Exists($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json"))
+        string expectedPath = "";
+        if (isAutoSave)
         {
-            File.Delete($"{Application.persistentDataPath}/Saves/Save{saveSlot}.json");
+            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
         }
-        saveDataInfo.saveLocations.Remove(saveSlot);
+        else
+        {
+            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
+        }
+
+        Debug.Log($"Deleting file:{expectedPath}");
+        if (File.Exists(expectedPath))
+        {
+            File.Delete(expectedPath);
+        }
+        if (isAutoSave)
+        {
+            saveDataInfo.autoSaveLocations.Remove(saveSlot);
+        }
+        else
+        {
+            saveDataInfo.saveLocations.Remove(saveSlot);
+        }
         SaveInfoFile();
-        Messages.GetOnce<SaveGameListChanged>().Dispatch();
+        Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
         return true;
     }
-
-
-
-
 
     private static void SaveInfoFile()
     {

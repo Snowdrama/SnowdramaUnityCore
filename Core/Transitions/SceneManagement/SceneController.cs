@@ -26,12 +26,12 @@ public class SceneController : MonoBehaviour
 
     //Current state
     public static List<string> loadedScenes_Required = new List<string>();
-    public static List<string> loadedScenes_Normal = new List<string>();
     public static List<string> loadedScenes_Wrappers = new List<string>();
+    public static string loadedScene_Current = "";
 
     //Target Set
-    public static List<string> targetScenes_Normal = new List<string>();
     public static List<string> targetScenes_Wrappers = new List<string>();
+    public static string targetScene_Next = "";
 
     //calculated set
     public static List<string> calculatedScenes_ToLoad = new List<string>();
@@ -82,7 +82,7 @@ public class SceneController : MonoBehaviour
 
         loadedScenes_Required.Clear();
         loadedScenes_Wrappers.Clear();
-        loadedScenes_Normal.Clear();
+        loadedScene_Current = null;
 
         RequiredScenes = sceneManagementData.RequiredScenes;
 
@@ -115,10 +115,10 @@ public class SceneController : MonoBehaviour
             }
             else if (Scenes.ContainsKey(scene.name))
             {
-                if (loadedScenes_Normal.Count <= 0)
+                if (string.IsNullOrEmpty(loadedScene_Current))
                 {
                     //if it is add it here so we don't load it again
-                    loadedScenes_Normal.Add(scene.name);
+                    loadedScene_Current = scene.name;
                 }
                 else
                 {
@@ -140,12 +140,9 @@ public class SceneController : MonoBehaviour
         }
 
         //we'll assume if a normal scene is loaded it's the main scene so calculate any missing scenes
-        for (int i = 0; i < loadedScenes_Normal.Count; i++)
+        if (!string.IsNullOrEmpty(loadedScene_Current) && Scenes.ContainsKey(loadedScene_Current))
         {
-            if (Scenes.ContainsKey(loadedScenes_Normal[i]))
-            {
-                CalculateTargetState(loadedScenes_Normal[i]);
-            }
+            CalculateTargetState(loadedScene_Current);
         }
         //now that we've gotten our target scene layout
         //we should calculate the changes needed
@@ -161,11 +158,21 @@ public class SceneController : MonoBehaviour
     #region Game Functions
     public static void GoToScene(string sceneName)
     {
+        if (!Scenes.ContainsKey(sceneName))
+        {
+            Debug.LogError($"Tried to load a scene named {sceneName} that's not in the Scenes List. Check the SceneLayout JSON");
+            return;
+        }
+
         CalculateTargetState(sceneName);
         CalculateSceneChanges(false);
         StartHideTransitionMessage?.Dispatch(1.0f, 1.0f, allowedTransitionList, SceneHideComplete, FakeLoadComplete);
     }
 
+    public static string GetCurrentMainScene()
+    {
+        return loadedScene_Current;
+    }
     public static void SceneHideComplete()
     {
         //load the calculated scenes
@@ -217,7 +224,7 @@ public class SceneController : MonoBehaviour
     private static void CalculateTargetState(string requestedSceneToLoad)
     {
         //clear the target state
-        targetScenes_Normal.Clear();
+        targetScene_Next = null;
         targetScenes_Wrappers.Clear();
 
         DebugLog($"Calculating Target State for {requestedSceneToLoad}");
@@ -241,7 +248,7 @@ public class SceneController : MonoBehaviour
         DebugLog($"Getting target scene: {targetScene}");
 
         //the normal scene we want is this one
-        targetScenes_Normal.Add(targetScene.Value.Name);
+        targetScene_Next = targetScene.Value.Name;
 
 
         DebugLog($"Starting to get dependencies:");
@@ -273,45 +280,39 @@ public class SceneController : MonoBehaviour
         if (!startup)
         {
             //first we assume we want all our scenes to be loaded
-            foreach (var targetScene in targetScenes_Normal)
+            if (!calculatedScenes_ToLoad.Contains(targetScene_Next))
             {
-                if (!calculatedScenes_ToLoad.Contains(targetScene))
-                {
-                    calculatedScenes_ToLoad.Add(targetScene);
-                }
+                calculatedScenes_ToLoad.Add(targetScene_Next);
             }
 
-            foreach (var loadedSceneName in loadedScenes_Normal)
+            var loadedSceneData = Scenes[loadedScene_Current];
+
+            //is this scene already loaded? And are we trying to load it again
+            if (calculatedScenes_ToLoad.Contains(loadedSceneData.Name))
             {
-                var loadedSceneData = Scenes[loadedSceneName];
+                DebugLogWarning($"Trying to load scene {loadedSceneData.Name} but it's already loaded. " +
+                    $"Do we want to Reload? {loadedSceneData.ReloadIfSceneExists}");
 
-                //is this scene already loaded? And are we trying to load it again
-                if (calculatedScenes_ToLoad.Contains(loadedSceneName))
+                //check if we want to reload the scene
+                if (loadedSceneData.ReloadIfSceneExists)
                 {
-                    DebugLogWarning($"Trying to load scene {loadedSceneName} but it's already loaded. " +
-                        $"Do we want to Reload? {loadedSceneData.ReloadIfSceneExists}");
-
-                    //check if we want to reload the scene
-                    if (loadedSceneData.ReloadIfSceneExists)
-                    {
-                        DebugLogWarning($"We DO want to reload");
-                        //unload and then also reload the scene
-                        calculatedScenes_ToUnload.Add(loadedSceneName);
-                        calculatedScenes_ToLoad.Add(loadedSceneName);
-                    }
-                    else
-                    {
-                        //we are already loaded so do nothing
-                        DebugLogWarning($"Nope so remove us from the load list");
-                        calculatedScenes_ToLoad.Remove(loadedSceneName);
-                    }
+                    DebugLogWarning($"We DO want to reload");
+                    //unload and then also reload the scene
+                    calculatedScenes_ToUnload.Add(loadedSceneData.Name);
+                    calculatedScenes_ToLoad.Add(loadedSceneData.Name);
                 }
                 else
                 {
-                    //we aren't in target scenes so we're unloading
-                    DebugLogWarning($"Scene {loadedSceneName} is loaded but we don't want it anymore, Unloading.");
-                    calculatedScenes_ToUnload.Add(loadedSceneName);
+                    //we are already loaded so do nothing
+                    DebugLogWarning($"Nope so remove us from the load list");
+                    calculatedScenes_ToLoad.Remove(loadedSceneData.Name);
                 }
+            }
+            else
+            {
+                //we aren't in target scenes so we're unloading
+                DebugLogWarning($"Scene {loadedSceneData.Name} is loaded but we don't want it anymore, Unloading.");
+                calculatedScenes_ToUnload.Add(loadedSceneData.Name);
             }
         }
 
@@ -529,9 +530,9 @@ public class SceneController : MonoBehaviour
             {
                 DebugLogWarning($"LoadScene_Normal_Complete for Scene {asyncLoadData[i].sceneName}");
                 asyncLoadData[i].complete = true;
-                if (!loadedScenes_Normal.Contains(asyncLoadData[i].sceneName))
+                if (!loadedScene_Current.Contains(asyncLoadData[i].sceneName))
                 {
-                    loadedScenes_Normal.Add(asyncLoadData[i].sceneName);
+                    loadedScene_Current = asyncLoadData[i].sceneName;
                 }
             }
         }
@@ -584,9 +585,9 @@ public class SceneController : MonoBehaviour
                 DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
                 asyncUnloadData[i].complete = true;
 
-                if (loadedScenes_Normal.Contains(asyncUnloadData[i].sceneName))
+                if (loadedScene_Current.Contains(asyncUnloadData[i].sceneName))
                 {
-                    loadedScenes_Normal.Remove(asyncUnloadData[i].sceneName);
+                    loadedScene_Current = asyncUnloadData[i].sceneName;
                 }
             }
         }

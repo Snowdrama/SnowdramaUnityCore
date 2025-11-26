@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class GameDataStruct
 {
-    public string saveName = "SaveGame";
-    public Dictionary<int, bool> boolData = new Dictionary<int, bool>();
-    public Dictionary<int, int> intData = new Dictionary<int, int>();
-    public Dictionary<int, float> floatData = new Dictionary<int, float>();
-    public Dictionary<int, double> doubleData = new Dictionary<int, double>();
-    public Dictionary<int, string> stringData = new Dictionary<int, string>();
+    public string SceneToLoadOnLoad;
+    public Dictionary<string, bool> boolData = new Dictionary<string, bool>();
+    public Dictionary<string, int> intData = new Dictionary<string, int>();
+    public Dictionary<string, float> floatData = new Dictionary<string, float>();
+    public Dictionary<string, double> doubleData = new Dictionary<string, double>();
+    public Dictionary<string, string> stringData = new Dictionary<string, string>();
 
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //public Dictionary<int, string> imageData = new Dictionary<int, string>();
@@ -33,21 +34,21 @@ public class GameData : MonoBehaviour
     #region BoolData
     public static void SetBool(string name, bool value)
     {
-        int hash = name.GetHashCode();
-        if (!data.boolData.ContainsKey(hash))
+
+        if (!data.boolData.ContainsKey(name))
         {
-            data.boolData.Add(hash, value);
+            data.boolData.Add(name, value);
         }
         else
         {
-            data.boolData[hash] = value;
+            data.boolData[name] = value;
         }
     }
 
     public static bool GetBool(string name, bool defaultValue)
     {
         bool value = defaultValue;
-        if (data.boolData.TryGetValue(name.GetHashCode(), out value))
+        if (data.boolData.TryGetValue(name, out value))
         {
             return value;
         }
@@ -58,24 +59,24 @@ public class GameData : MonoBehaviour
     #region IntData
     public static void SetInt(string name, int value)
     {
-        int hash = name.GetHashCode();
-        Debug.Log($"Setting Int for hash: {name} = {hash}");
-        if (!data.intData.ContainsKey(hash))
+
+        Debug.Log($"Setting Int for name: {name} = {name}");
+        if (!data.intData.ContainsKey(name))
         {
-            data.intData.Add(hash, value);
+            data.intData.Add(name, value);
         }
         else
         {
-            data.intData[hash] = value;
+            data.intData[name] = value;
         }
     }
 
     public static int GetInt(string name, int defaultValue)
     {
         int value = defaultValue;
-        int hash = name.GetHashCode();
-        Debug.Log($"Getting Float for hash: {name} = {hash} Has Key? {data.floatData.ContainsKey(hash)}");
-        if (data.intData.TryGetValue(hash, out value))
+
+        Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
+        if (data.intData.TryGetValue(name, out value))
         {
             Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -88,24 +89,24 @@ public class GameData : MonoBehaviour
     #region FloatData
     public static void SetFloat(string name, float value)
     {
-        int hash = name.GetHashCode();
-        Debug.Log($"Setting Float for hash: {name} = {hash}");
-        if (!data.floatData.ContainsKey(hash))
+
+        Debug.Log($"Setting Float for name: {name} = {name}");
+        if (!data.floatData.ContainsKey(name))
         {
-            data.floatData.Add(hash, value);
+            data.floatData.Add(name, value);
         }
         else
         {
-            data.floatData[hash] = value;
+            data.floatData[name] = value;
         }
     }
 
     public static float GetFloat(string name, float defaultValue)
     {
         float value = defaultValue;
-        int hash = name.GetHashCode();
-        Debug.Log($"Getting Float for hash: {name} = {hash} Has Key? {data.floatData.ContainsKey(hash)}");
-        if (data.floatData.TryGetValue(hash, out value))
+
+        Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
+        if (data.floatData.TryGetValue(name, out value))
         {
             Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -118,21 +119,21 @@ public class GameData : MonoBehaviour
     #region DoubleData
     public static void SetDouble(string name, double value)
     {
-        int hash = name.GetHashCode();
-        if (!data.doubleData.ContainsKey(hash))
+
+        if (!data.doubleData.ContainsKey(name))
         {
-            data.doubleData.Add(hash, value);
+            data.doubleData.Add(name, value);
         }
         else
         {
-            data.doubleData[hash] = value;
+            data.doubleData[name] = value;
         }
     }
 
-    public static double GetDouble(double name, double defaultValue)
+    public static double GetDouble(string name, double defaultValue)
     {
         double value = defaultValue;
-        if (data.doubleData.TryGetValue(name.GetHashCode(), out value))
+        if (data.doubleData.TryGetValue(name, out value))
         {
             return value;
         }
@@ -143,21 +144,21 @@ public class GameData : MonoBehaviour
     #region StringData
     public static void SetString(string name, string value)
     {
-        int hash = name.GetHashCode();
-        if (!data.stringData.ContainsKey(hash))
+
+        if (!data.stringData.ContainsKey(name))
         {
-            data.stringData.Add(hash, value);
+            data.stringData.Add(name, value);
         }
         else
         {
-            data.stringData[hash] = value;
+            data.stringData[name] = value;
         }
     }
 
     public static string GetString(string name, string defaultValue)
     {
         string value = defaultValue;
-        if (data.stringData.TryGetValue(name.GetHashCode(), out value))
+        if (data.stringData.TryGetValue(name, out value))
         {
             return value;
         }
@@ -168,7 +169,10 @@ public class GameData : MonoBehaviour
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //TODO: Add save/load images using byte arrays? Save game screenshot images?
     //TODO: Add save/load structs generically? 
-
+    public static void SetSceneToLoadOnLoad(string sceneName)
+    {
+        data.SceneToLoadOnLoad = sceneName;
+    }
     public static GameDataStruct GetGameData()
     {
         return data;

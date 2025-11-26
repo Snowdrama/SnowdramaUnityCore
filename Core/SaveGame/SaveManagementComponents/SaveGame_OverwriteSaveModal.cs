@@ -1,15 +1,18 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class SaveGame_OverwriteSaveModalMessage : AMessage<int, string> { }
+public class SaveGame_OverwriteSaveModalMessage : AMessage<SaveGameInfo> { }
 public class SaveGame_OverwriteSaveModal : MonoBehaviour
 {
     [SerializeField] private GameObject SaveGamePanel;
+    [SerializeField] private GameObject DarkBackground;
     [SerializeField] private TMP_InputField SaveName;
     [SerializeField] private Button SaveButton;
+    [SerializeField] private float SaveButton_DisableTime = 1.0f;
     [SerializeField] private Button CancelButton;
+    [SerializeField] private float CancelButton_DisableTime = 0.0f;
 
-    private int saveSlot = 0;
+    private SaveGameInfo saveGameInfo;
     private SaveGame_OverwriteSaveModalMessage openSavegameModal;
     private void OnEnable()
     {
@@ -29,20 +32,21 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
         Messages.Return<SaveGame_OverwriteSaveModalMessage>();
     }
 
-    private void OpenSaveModal(int saveSlot, string existingName)
+    private void OpenSaveModal(SaveGameInfo saveGameInfo)
     {
-        this.saveSlot = saveSlot;
-        if (!string.IsNullOrEmpty(existingName))
+        this.saveGameInfo = saveGameInfo;
+        if (!string.IsNullOrEmpty(saveGameInfo.name))
         {
-            SaveName.text = existingName;
+            SaveName.text = saveGameInfo.name;
         }
 
         SaveGamePanel.SetActive(true);
+        DarkBackground?.SetActive(true);
     }
 
     private void SaveToExistingSlot()
     {
-        if (!SaveManager.SaveGame(saveSlot, GameData.GetGameData(), false, SaveName.text))
+        if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameData.GetGameData(), false, SaveName.text))
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
                 "Are you sure you want to override the save?",
@@ -50,13 +54,13 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
                 {
                     text = "Yes",
                     pressCallback = ForceSave,
-                    disableTime = 2.0f,
+                    disableTime = SaveButton_DisableTime,
                 },
                 new ModalButtonData()
                 {
                     text = "No",
                     pressCallback = CancelSave,
-                    disableTime = 0.0f,
+                    disableTime = CancelButton_DisableTime,
                 }
             );
         }
@@ -64,12 +68,14 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
     public void ForceSave()
     {
-        SaveManager.SaveGame(saveSlot, GameData.GetGameData(), true, SaveName.text);
+        SaveManager.SaveGame(saveGameInfo.saveSlot, GameData.GetGameData(), true, SaveName.text);
         SaveGamePanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
     public void CancelSave()
     {
         //do nothing XD
         SaveGamePanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 }

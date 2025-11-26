@@ -432,8 +432,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5941618556390203366}
   m_HandleRect: {fileID: 5391541187883645000}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.2838096
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -664,7 +664,7 @@ RectTransform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -750,7 +750,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Snowdrama.Core::SaveGameListDisplay
   AddSaves: 1
   AddAutosaves: 1
-  saveButtonPrefab: {fileID: 6003219075566570888, guid: 41577205ed1497c419104f2b5fb9f40f, type: 3}
-  autoSaveButtonPrefab: {fileID: 5547711107916674234, guid: eedc3feb44c7b0447b8c3b671c675cba, type: 3}
+  saveButtonPrefab: {fileID: 5547711107916674234, guid: 2432dbd457a91c049ad83f1a8cd02ff4, type: 3}
   buttonContainer: {fileID: 7678646846085541552}
   buttonHeight: 25

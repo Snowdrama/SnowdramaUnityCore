@@ -5,9 +5,12 @@ public class SaveGame_CreateNewSaveModalMessage : AMessage { }
 public class SaveGame_CreateNewSaveModal : MonoBehaviour
 {
     [SerializeField] private GameObject SaveGamePanel;
+    [SerializeField] private GameObject DarkBackground;
     [SerializeField] private TMP_InputField SaveName;
     [SerializeField] private Button SaveButton;
     [SerializeField] private Button CancelButton;
+    [SerializeField] private float GameSavedNotice_DisableTime = 0.0f;
+    [SerializeField] private float Error_DisableTime = 0.0f;
 
     private SaveGame_CreateNewSaveModalMessage openSavegameModal;
     private void OnEnable()
@@ -30,6 +33,7 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
     {
         SaveName.text = "";
         SaveGamePanel.SetActive(true);
+        DarkBackground?.SetActive(true);
     }
 
     private void SaveToNewSlot()
@@ -42,7 +46,7 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
                 {
                     text = "Ok",
                     pressCallback = Complete,
-                    disableTime = 2.0f,
+                    disableTime = GameSavedNotice_DisableTime,
                 }
             );
         }
@@ -54,7 +58,7 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
                 {
                     text = "Ok",
                     pressCallback = Cancel,
-                    disableTime = 2.0f,
+                    disableTime = Error_DisableTime,
                 }
             );
         }
@@ -63,10 +67,12 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
     private void Complete()
     {
         SaveGamePanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 
     private void Cancel()
     {
         SaveGamePanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 }

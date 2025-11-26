@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class ModalNotice : MonoBehaviour
 {
     [SerializeField] private GameObject modalPanel;
+    [SerializeField] private GameObject DarkBackground;
     [SerializeField] private TMP_Text modalText;
     [SerializeField] private Button okButton;
     [SerializeField] private TMP_Text okButtonText;
@@ -50,23 +51,21 @@ public class ModalNotice : MonoBehaviour
             okButtonText.text = $"{ok.text}";
         }
         modalPanel.SetActive(true);
+        DarkBackground?.SetActive(true);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
         modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
         okButton.onClick.AddListener(OkPressed);
-    }
-
-    private void CancelPressed()
-    {
-        modalPanel.SetActive(false);
     }
 
     private void OkPressed()
     {
         ok.pressCallback?.Invoke();
         modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
     }
 
     // Update is called once per frame
