@@ -12,8 +12,8 @@ public class SaveDataStruct
 {
     public int currentSaveIndex = 0;
     public int currentAutoSaveIndex = 0;
-    public Dictionary<int, SaveGameInfo> saveLocations = new Dictionary<int, SaveGameInfo>();
-    public Dictionary<int, SaveGameInfo> autoSaveLocations = new Dictionary<int, SaveGameInfo>();
+    public Dictionary<int, SaveGameInfo> saveLocations = new();
+    public Dictionary<int, SaveGameInfo> autoSaveLocations = new();
 }
 
 [System.Serializable]
@@ -30,12 +30,19 @@ public class SaveGameInfo
 public class SaveGameListChangedMessage : AMessage { }
 public class SaveGameLoadedMessage : AMessage<GameDataStruct> { }
 
+//this gets triggered right before the game serializes
+//good to listen for this and have all objects write their data here
+public class SaveGameStartingSaveMessage : AMessage { }
+
+//this is called right after a game saved, useful for triggering things like "Save and Quit"
+public class SaveGameSavingCompletedMessage : AMessage { }
+
 public class SaveManager : MonoBehaviour
 {
-    private static GameDataStruct loadedSave = new GameDataStruct();
-    private static SaveDataStruct saveDataInfo = new SaveDataStruct();
+    private static GameDataStruct loadedSave = new();
+    private static SaveDataStruct saveDataInfo = new();
 
-    private static readonly JsonSerializerSettings settings = new JsonSerializerSettings()
+    private static readonly JsonSerializerSettings settings = new()
     {
         Formatting = Formatting.Indented,
     };
@@ -104,7 +111,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        string expectedPath = "";
+        string expectedPath;
         //can we find the save?
         if (autoSave)
         {
@@ -145,7 +152,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        string expectedPath = "";
+        string expectedPath;
         if (isAutoSave)
         {
             expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
@@ -260,7 +267,10 @@ public class SaveManager : MonoBehaviour
             saveDataInfo.saveLocations[saveSlot] = newSaveInfo;
         }
 
+        Messages.GetOnce<SaveGameStartingSaveMessage>().Dispatch();
+
         gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
+
 
         Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
@@ -269,6 +279,7 @@ public class SaveManager : MonoBehaviour
         SaveInfoFile();
         Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
 
+        Messages.GetOnce<SaveGameSavingCompletedMessage>().Dispatch();
         return true;
     }
 
@@ -296,7 +307,7 @@ public class SaveManager : MonoBehaviour
             //get the oldest key and use that auto save key:
             saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
             //arbitrary loop on auto save 10.
-            saveDataInfo.currentAutoSaveIndex = saveDataInfo.currentAutoSaveIndex % 10;
+            saveDataInfo.currentAutoSaveIndex %= 10;
 
 
             Debug.LogWarning($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
@@ -367,7 +378,7 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        string expectedPath = "";
+        string expectedPath;
         if (isAutoSave)
         {
             expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
