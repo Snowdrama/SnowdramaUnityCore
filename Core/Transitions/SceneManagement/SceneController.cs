@@ -73,6 +73,15 @@ public class SceneController : MonoBehaviour
     private static void Bootstrap()
     {
         var jsonDoc = Resources.Load<TextAsset>("SceneLayoutJSON");
+
+        if (jsonDoc == null)
+        {
+            Debug.LogError("Can't find SceneControllerJSON. " +
+                "Please use Create -> Snowdrama -> Transitions -> Create Scene ControllerJson " +
+                "to create one in the Resources folder");
+            return;
+        }
+
         Debug.Log(jsonDoc.text);
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
         Debug.Log($"Loading Scene Management Data, Debug: {sceneManagementData.ShowConsoleMessages}");
