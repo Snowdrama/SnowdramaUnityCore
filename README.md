@@ -13,6 +13,11 @@ This currently relies on Unity 6 because I use some new features introduced ther
 * Then use the https git URL: https://github.com/Snowdrama/SnowdramaUnityTransitionTools.git
 * That should be it, wait for it to install and refresh and you're good to go!
 
+# Setup
+Some tools will require some set up! Most tools use some kind of scriptable object or other resource you will find under the right click menu under Create -> Snowdrama
+
+[Check out the wiki to see more detailed instructions for some of the tools](https://github.com/Snowdrama/SnowdramaUnityTransitionTools/wiki)
+
 # List of tools
 #### (not exhaustive)
 
