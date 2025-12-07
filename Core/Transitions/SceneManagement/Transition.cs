@@ -1,9 +1,4 @@
-using JetBrains.Annotations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Snowdrama.Transition
 {
@@ -12,7 +7,7 @@ namespace Snowdrama.Transition
         [Tooltip("The Key that allows you to filter transitions when choosing to transition")]
         public string transitionName
         {
-            get { return this.gameObject.name; }
+            get { return gameObject.name; }
         }
         public abstract void UpdateTransition(float transitionValue, bool hiding);
         public virtual void OnTransitionStarted() { }

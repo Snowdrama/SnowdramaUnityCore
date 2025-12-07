@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Snowdrama.Transition
 {
@@ -69,7 +67,7 @@ namespace Snowdrama.Transition
             if (transitionCanvas == null)
             {
                 //attmpt to get the canvas if we didn't set it explicitly
-                transitionCanvas = this.transform.GetChild(0).gameObject;
+                transitionCanvas = transform.GetChild(0).gameObject;
             }
 
             transitions.Clear();
@@ -103,7 +101,7 @@ namespace Snowdrama.Transition
             }
             if (transitions.Keys.Count == 0)
             {
-                Debug.LogError($"Transition list has 0 transitions, one transition is required", this.gameObject);
+                Debug.LogError($"Transition list has 0 transitions, one transition is required", gameObject);
                 return;
             }
             if (currentTransition == null)

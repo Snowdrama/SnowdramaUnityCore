@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.4.3] - 2025-12-07
+### Changed
+- fixed some unused usings causing builds to not work
+
 ## [0.4.2] - 2025-12-07
+### Changed
 - Main fix: Can no longer start a transition until the transition is finished
 - Lots of changes, I was forgetting to do this for a while but we're going to start...
-
 
 ## [0.2.0] - 2024-04-01
 ### Changed

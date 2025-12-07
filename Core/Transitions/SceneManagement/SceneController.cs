@@ -1,13 +1,10 @@
-using Codice.Client.BaseCommands.WkStatus.Printers;
 using Snowdrama.Transition;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using static Codice.Client.BaseCommands.Import.Commit;
 
 public class SceneController : MonoBehaviour
 {

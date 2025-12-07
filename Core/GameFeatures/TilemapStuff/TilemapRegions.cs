@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.WSA;
 
 /// <summary>
 /// This class maps an integer to a region of tiles
@@ -87,8 +85,8 @@ public class TilemapRegions : MonoBehaviour
     public Vector2Int GetTilePositionFromWorldPosition(Vector2 position)
     {
         return new Vector2Int(
-            Mathf.FloorToInt(position.x - this.transform.position.x),
-            Mathf.FloorToInt(position.y - this.transform.position.y)
+            Mathf.FloorToInt(position.x - transform.position.x),
+            Mathf.FloorToInt(position.y - transform.position.y)
         );
     }
 
