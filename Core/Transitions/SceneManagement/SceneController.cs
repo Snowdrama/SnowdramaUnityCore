@@ -164,6 +164,7 @@ public class SceneController : MonoBehaviour
     }
     #endregion
 
+    private static bool IsTransitioning = false;
     #region Game Functions
     public static void GoToScene(string sceneName)
     {
@@ -172,6 +173,12 @@ public class SceneController : MonoBehaviour
             Debug.LogError($"Tried to load a scene named {sceneName} that's not in the Scenes List. Check the SceneLayout JSON");
             return;
         }
+
+        //don't do something while transitioning
+        if (IsTransitioning) { return; }
+
+        //now we're starting the transition
+        IsTransitioning = true;
 
         CalculateTargetState(sceneName);
         CalculateSceneChanges(false);
@@ -209,6 +216,7 @@ public class SceneController : MonoBehaviour
     {
         //We're done!
         //TODO: Add any cleanup stuff here...
+        IsTransitioning = false;
     }
 
     private void OnEnable()
