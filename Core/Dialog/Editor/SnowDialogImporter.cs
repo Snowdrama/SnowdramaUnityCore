@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.IO;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -12,3 +13,4 @@ public class SnowDialogImporter : ScriptedImporter
         ctx.SetMainObject(subAsset);
     }
 }
+#endif

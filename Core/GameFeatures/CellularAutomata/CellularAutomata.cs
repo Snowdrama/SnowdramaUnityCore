@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Snowdrama
 {
-    [ExecuteAlways]
     public class CellularAutomata : MonoBehaviour
     {
         [Header("Settings Object")]
