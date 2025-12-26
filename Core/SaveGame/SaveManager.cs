@@ -47,6 +47,7 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         ValidateDirectories();
+        NewGame();
         var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
         if (File.Exists(saveDataInfoPath))
         {
@@ -74,8 +75,25 @@ public class SaveManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("Loading Load 0");
         //load save 0 by default in case we're testing
+        //then we can load into any scene with the save 0 data
         LoadSave(saveDataInfo.currentSaveIndex, false, false);
 #endif
+    }
+
+    public void NewGame()
+    {
+        Debug.LogWarning($"Starting new game, loading default data!");
+        //load the default save from resources:
+        var defaultSaveJson = Resources.Load<TextAsset>("DefaultSave.jsonc");
+        if (defaultSaveJson != null)
+        {
+            Debug.LogWarning($"Loaded Default Save!: {defaultSaveJson.text}");
+        }
+        else
+        {
+            Debug.LogError($"No Default save! " +
+                $"Make sure you have a DefaultSave.jsonc in the Resources folder!");
+        }
     }
 
     public static SaveDataStruct GetSaveList()
@@ -169,10 +187,18 @@ public class SaveManager : MonoBehaviour
 
             Debug.Log($"Loading file from {savePathToLoad}");
             Debug.Log(fileContents);
-            loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(fileContents, settings);
+            try
+            {
+                loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(fileContents, settings);
+            }
+            catch (Exception)
+            {
+                Debug.LogError($"Failed to parse file contents of file at: {savePathToLoad}");
+                throw;
+            }
 
             //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
-            if (autoLoadScene == true && loadedSave != null && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
+            if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
             {
                 Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
                 SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);

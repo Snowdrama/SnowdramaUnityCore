@@ -1,17 +1,18 @@
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [System.Serializable]
-public class GameDataStruct
+public struct GameDataStruct
 {
     public string SceneToLoadOnLoad;
-    public Dictionary<string, bool> boolData = new Dictionary<string, bool>();
-    public Dictionary<string, int> intData = new Dictionary<string, int>();
-    public Dictionary<string, float> floatData = new Dictionary<string, float>();
-    public Dictionary<string, double> doubleData = new Dictionary<string, double>();
-    public Dictionary<string, string> stringData = new Dictionary<string, string>();
+    public Dictionary<string, bool> boolData;
+    public Dictionary<string, int> intData;
+    public Dictionary<string, float> floatData;
+    public Dictionary<string, double> doubleData;
+    public Dictionary<string, string> stringData;
 
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //public Dictionary<int, string> imageData = new Dictionary<int, string>();
@@ -24,7 +25,7 @@ public class GameDataStruct
 }
 public class GameData : MonoBehaviour
 {
-    private static GameDataStruct data = new GameDataStruct();
+    private static GameDataStruct data = new();
     private void Awake()
     {
         //On Awake the SaveManager should be loaded already!
@@ -45,14 +46,13 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public static bool GetBool(string name, bool defaultValue)
+    public static bool GetBool(string name, bool defaultValue = default)
     {
-        bool value = defaultValue;
-        if (data.boolData.TryGetValue(name, out value))
+        if (data.boolData.TryGetValue(name, out bool value))
         {
             return value;
         }
-        return value;
+        return defaultValue;
     }
     #endregion
 
@@ -71,12 +71,10 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public static int GetInt(string name, int defaultValue)
+    public static int GetInt(string name, int defaultValue = default)
     {
-        int value = defaultValue;
-
         Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
-        if (data.intData.TryGetValue(name, out value))
+        if (data.intData.TryGetValue(name, out int value))
         {
             Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -101,12 +99,11 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public static float GetFloat(string name, float defaultValue)
+    public static float GetFloat(string name, float defaultValue = default)
     {
-        float value = defaultValue;
 
         Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
-        if (data.floatData.TryGetValue(name, out value))
+        if (data.floatData.TryGetValue(name, out float value))
         {
             Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -130,14 +127,13 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public static double GetDouble(string name, double defaultValue)
+    public static double GetDouble(string name, double defaultValue = default)
     {
-        double value = defaultValue;
-        if (data.doubleData.TryGetValue(name, out value))
+        if (data.doubleData.TryGetValue(name, out double value))
         {
             return value;
         }
-        return value;
+        return defaultValue;
     }
     #endregion
 
@@ -155,14 +151,13 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public static string GetString(string name, string defaultValue)
+    public static string GetString(string name, string defaultValue = default)
     {
-        string value = defaultValue;
-        if (data.stringData.TryGetValue(name, out value))
+        if (data.stringData.TryGetValue(name, out string value))
         {
             return value;
         }
-        return value;
+        return defaultValue;
     }
     #endregion
 
@@ -177,4 +172,36 @@ public class GameData : MonoBehaviour
     {
         return data;
     }
+
+
+
+#if UNITY_EDITOR
+
+    [MenuItem("Snowdrama/Required/Create Default Game Data JSON")]
+    public static void CreateSceneJSON()
+    {
+        GameDataStruct defaultGameDataStruct = new()
+        {
+            SceneToLoadOnLoad = "MainMenuScene",
+            floatData = new(),
+            boolData = new(),
+            doubleData = new(),
+            intData = new(),
+            stringData = new(),
+        };
+
+        var dataString = JsonConvert.SerializeObject(defaultGameDataStruct, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+        if (!File.Exists($"Assets/Resources/DefaultSave.jsonc"))
+        {
+            File.WriteAllText($"Assets/Resources/DefaultSave.jsonc", dataString);
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
+                $"Can't overwrite DefaultSave.jsonc because it already exists. " +
+                $"If this intended please manually delete the DefaultSave.jsonc and run again");
+        }
+    }
+#endif
 }

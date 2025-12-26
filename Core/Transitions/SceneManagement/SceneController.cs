@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Snowdrama.Transition;
 using System.Collections.Generic;
 using System.IO;
@@ -9,41 +10,41 @@ using UnityEngine.SceneManagement;
 public class SceneController : MonoBehaviour
 {
     //transition related
-    private static string TransitionHubName = "TransitionDriver"; //this is the default name
+    private const string TransitionHubName = "TransitionDriver"; //this is the default name
     private static MessageHub TransitionMessageHub;
     private static StartHideTransitionMessage StartHideTransitionMessage;
     private static StartShowTransitionMessage StartShowTransitionMessage;
 
-    public static List<string> RequiredScenes = new List<string>();
-    public static Dictionary<string, WrapperSceneData> WrapperScenes = new Dictionary<string, WrapperSceneData>();
-    public static Dictionary<string, SceneData> Scenes = new Dictionary<string, SceneData>();
+    public static List<string> RequiredScenes = new();
+    public static Dictionary<string, WrapperSceneData> WrapperScenes = new();
+    public static Dictionary<string, SceneData> Scenes = new();
 
     // Settings load
     public static SceneManagementData sceneManagementData;
 
     //Current state
-    public static List<string> loadedScenes_Required = new List<string>();
-    public static List<string> loadedScenes_Wrappers = new List<string>();
+    public static List<string> loadedScenes_Required = new();
+    public static List<string> loadedScenes_Wrappers = new();
     public static string loadedScene_Current = "";
 
     //Target Set
-    public static List<string> targetScenes_Wrappers = new List<string>();
+    public static List<string> targetScenes_Wrappers = new();
     public static string targetScene_Next = "";
 
     //calculated set
-    public static List<string> calculatedScenes_ToLoad = new List<string>();
-    public static List<string> calculatedScenes_ToUnload = new List<string>();
-    public static List<string> calculatedScenes_ToLoad_Wrappers = new List<string>();
-    public static List<string> calculatedScenes_ToUnload_Wrappers = new List<string>();
+    public static List<string> calculatedScenes_ToLoad = new();
+    public static List<string> calculatedScenes_ToUnload = new();
+    public static List<string> calculatedScenes_ToLoad_Wrappers = new();
+    public static List<string> calculatedScenes_ToUnload_Wrappers = new();
 
     //transitions
-    public static List<string> allowedTransitionList = new List<string>();
+    public static List<string> allowedTransitionList = new();
 
     //used only for callbacks
-    public static List<SceneTransitionAsync_LoadData> asyncLoadData = new List<SceneTransitionAsync_LoadData>();
-    public static List<SceneTransitionAsync_LoadData> asyncUnloadData = new List<SceneTransitionAsync_LoadData>();
+    public static List<SceneTransitionAsync_LoadData> asyncLoadData = new();
+    public static List<SceneTransitionAsync_LoadData> asyncUnloadData = new();
 
-    public static List<string> WaitingToLoad = new List<string>();
+    public static List<string> WaitingToLoad = new();
     public static void WaitAFuckingMinute(string name)
     {
         if (WaitingToLoad.Contains(name))
@@ -669,75 +670,77 @@ public class SceneController : MonoBehaviour
 
 #if UNITY_EDITOR
 
-    [MenuItem("Assets/Create/Snowdrama/Transitions/Create Scene Controller JSON")]
+    [MenuItem("Snowdrama/Required/Create Scene Controller JSON")]
     public static void CreateSceneJSON()
     {
-        SceneManagementData defaultData = new SceneManagementData()
+        SceneManagementData defaultData = new()
         {
             ShowConsoleMessages = true,
             DefaultSceneName = "MainMenuScene",
-            RequiredScenes = new List<string>()
+            RequiredScenes = new()
             {
                 "RequiredScene",
             },
-            WrapperScenes = new List<WrapperSceneData>()
+            WrapperScenes = new()
             {
-                new WrapperSceneData()
+                new()
                 {
                     Name = "SaveGameScene",
                     ReloadIfSceneExists = false,
-                    Dependencies = new List<string>(){}
+                    Dependencies = new(){}
                 },
-                new WrapperSceneData()
+                new()
                 {
                     Name = "GameDataScene",
                     ReloadIfSceneExists = false,
-                    Dependencies = new List<string>()
+                    Dependencies = new()
                     {
                         "SaveGameScene",
                     }
                 }
             },
-            Scenes = new List<SceneData>()
+            Scenes = new()
             {
-                new SceneData()
+                new()
                 {
                     Name = "MainMenuScene",
                     ReloadIfSceneExists = true,
-                    Dependencies = new List<string>()
+                    Dependencies = new()
                     {
                         "SaveGameScene",
                     },
-                    AllowedTransitions = new List<string>(),
+                    AllowedTransitions = new(),
                     transitionTime = 0.5f,
                     transitionFakeLoadTime = 0.5f,
 
                 },
-                new SceneData()
+                new()
                 {
                     Name = "Game",
                     ReloadIfSceneExists = true,
-                    Dependencies = new List<string>()
+                    Dependencies = new()
                     {
                         "SaveGameScene",
                         "GameDataScene",
                     },
-                    AllowedTransitions = new List<string>(),
+                    AllowedTransitions = new(),
                     transitionTime = 0.5f,
                     transitionFakeLoadTime = 0.5f,
                 },
             },
         };
-
-        var dataString = JsonUtility.ToJson(defaultData, true);
-
-        var selected = Selection.activeObject;
-        Debug.Log(selected);
-        var path = AssetDatabase.GetAssetPath(selected);
-        Debug.Log(path);
-
-        File.WriteAllText($"{path}/SceneLayoutJSON.json", dataString);
-        AssetDatabase.Refresh();
+        var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+        if (!File.Exists($"Assets/Resources/SceneLayoutJSON.jsonc"))
+        {
+            File.WriteAllText($"Assets/Resources/SceneLayoutJSON.jsonc", dataString);
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
+                $"Can't overwrite SceneLayoutJSON.jsonc because it already exists. " +
+                $"If this intended please manually delete the SceneLayoutJSON.jsonc and run again");
+        }
     }
 #endif
 }

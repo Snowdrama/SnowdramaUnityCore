@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.4.4] - 2025-12-07
+### Changed
+- Added "Snowdrama" menu at the top
+- Added a "JSONC importer" so .jsonc files show up as text assets.
+- Added helper to Snowdrama menu to open things like Data Path and Console Log
+- Added 'Required' menu for creating required things like the Default Save and SceneLayoutJson
+- Save tools now require a DefaultSave.jsonc to be present, this lets you have a default set of data for new games. Calling SaveManager.NewGame() will create new data from the default data and set that that as the currently loaded save.
+
 ## [0.4.3] - 2025-12-07
 ### Changed
 - fixed some unused usings causing builds to not work
