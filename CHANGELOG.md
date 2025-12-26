@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [0.4.4] - 2025-12-07
+## [0.4.4] - 2025-12-26
 ### Changed
 - Added "Snowdrama" menu at the top
 - Added a "JSONC importer" so .jsonc files show up as text assets.
@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.4.3] - 2025-12-07
 ### Changed
-- fixed some unused usings causing builds to not work
+- Fixed some unused usings causing builds to not work
 
 ## [0.4.2] - 2025-12-07
 ### Changed
