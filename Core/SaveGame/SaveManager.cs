@@ -84,10 +84,11 @@ public class SaveManager : MonoBehaviour
     {
         Debug.LogWarning($"Starting new game, loading default data!");
         //load the default save from resources:
-        var defaultSaveJson = Resources.Load<TextAsset>("DefaultSave.jsonc");
+        var defaultSaveJson = Resources.Load<TextAsset>("DefaultSave");
         if (defaultSaveJson != null)
         {
             Debug.LogWarning($"Loaded Default Save!: {defaultSaveJson.text}");
+            loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(defaultSaveJson.text, settings);
         }
         else
         {
