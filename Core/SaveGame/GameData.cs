@@ -60,7 +60,7 @@ public class GameData : MonoBehaviour
     public static void SetInt(string name, int value)
     {
 
-        Debug.Log($"Setting Int for name: {name} = {name}");
+        //Debug.Log($"Setting Int for name: {name} = {name}");
         if (!data.intData.ContainsKey(name))
         {
             data.intData.Add(name, value);
@@ -73,13 +73,13 @@ public class GameData : MonoBehaviour
 
     public static int GetInt(string name, int defaultValue = default)
     {
-        Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
         if (data.intData.TryGetValue(name, out int value))
         {
-            Debug.Log($"Found Value! Returning: {value}");
+            //Debug.Log($"Found Value! Returning: {value}");
             return value;
         }
-        Debug.LogWarning($"No Value Found Returning: {value}");
+        //Debug.LogWarning($"No Value Found Returning: {value}");
         return defaultValue;
     }
     #endregion
@@ -87,8 +87,7 @@ public class GameData : MonoBehaviour
     #region FloatData
     public static void SetFloat(string name, float value)
     {
-
-        Debug.Log($"Setting Float for name: {name} = {name}");
+        //Debug.Log($"Setting Float for name: {name} = {name}");
         if (!data.floatData.ContainsKey(name))
         {
             data.floatData.Add(name, value);
@@ -101,14 +100,13 @@ public class GameData : MonoBehaviour
 
     public static float GetFloat(string name, float defaultValue = default)
     {
-
-        Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {data.floatData.ContainsKey(name)}");
         if (data.floatData.TryGetValue(name, out float value))
         {
-            Debug.Log($"Found Value! Returning: {value}");
+            //Debug.Log($"Found Value! Returning: {value}");
             return value;
         }
-        Debug.LogWarning($"No Value Found Returning: {value}");
+        //Debug.LogWarning($"No Value Found Returning: {value}");
         return defaultValue;
     }
     #endregion
