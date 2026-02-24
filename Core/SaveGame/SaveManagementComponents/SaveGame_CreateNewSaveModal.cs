@@ -38,7 +38,7 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
 
     private void SaveToNewSlot()
     {
-        if (SaveManager.SaveGameToNewSlot(GameData.GetGameData(), true, SaveName.text))
+        if (SaveManager.SaveGameToNewSlot(GameDataManager.GetGameData(), true, SaveName.text))
         {
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
                 $"Game Saved!",

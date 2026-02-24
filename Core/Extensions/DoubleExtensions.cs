@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public static class DoubleExtensions
 {
@@ -10,6 +7,41 @@ public static class DoubleExtensions
     {
         return Math.Clamp(f, min, max);
     }
+
+    public static int FloorToInt(this double val)
+    {
+        return (int)Math.Floor(val);
+    }
+
+    public static int CeilToInt(this double val)
+    {
+        return (int)Math.Ceiling(val);
+    }
+
+    public static int RoundToInt(this double val)
+    {
+        return (int)Math.Round(val);
+    }
+
+    public static double Floor(this double val)
+    {
+        return Math.Floor(val);
+    }
+
+    public static double Ceil(this double val)
+    {
+        return Math.Ceiling(val);
+    }
+
+    public static double Round(this double val)
+    {
+        return Math.Round(val);
+    }
+    public static bool InRange(this int value, int min, int max)
+    {
+        return value >= min && value <= max;
+    }
+
 
     /// <summary>
     /// Takes a Value from one range and remaps it relative to a different range.
@@ -59,38 +91,11 @@ public static class DoubleExtensions
         return (x % m + m) % m;
     }
 
-    public static int FloorToInt(this double val)
-    {
-        return (int)Math.Floor(val);
-    }
-
-    public static int CeilToInt(this double val)
-    {
-        return (int)Math.Ceiling(val);
-    }
-
-    public static int RoundToInt(this double val)
-    {
-        return (int)Math.Round(val);
-    }
-
-    public static double Floor(this double val)
-    {
-        return Math.Floor(val);
-    }
-
-    public static double Ceil(this double val)
-    {
-        return Math.Ceiling(val);
-    }
-
-    public static double Round(this double val)
-    {
-        return Math.Round(val);
-    }
-
     /// <summary>
-    /// Returns the normalized Value of the Value between min and max;
+    /// Returns the normalized Value of the Value between min and max
+    /// 
+    /// For example InverseLerp(Value = 5, min = 0, max = 10); 
+    /// will return 1, since 5 is halfway between 0 and 10
     /// </summary>
     /// <param name="value"></param>
     /// <param name="min"></param>
@@ -103,8 +108,10 @@ public static class DoubleExtensions
     }
     /// <summary>
     /// Returns the normalized Value of the Value between min and max unclamped
-    /// For example InverseLerpUnclamped(Value = 20, min = 0, max = 10); will 
-    /// return 2 since 20 is double the size of the range
+    /// 
+    /// For example InverseLerpUnclamped(Value = 20, min = 0, max = 10);
+    /// will return 2 since 20 is double the size of the range
+    /// 
     /// </summary>
     /// <param name="value"></param>
     /// <param name="min"></param>
@@ -115,11 +122,6 @@ public static class DoubleExtensions
         return (value - min) / (max - min);
 
     }
-    public static bool InRange(this int value, int min, int max)
-    {
-        return value >= min && value <= max;
-    }
-
     /// <summary>
     /// Takes a value from 0 to 1.0 and converts it to decibels.
     /// </summary>
@@ -152,7 +154,7 @@ public static class DoubleExtensions
     /// 
     /// Example:
     /// var value = 1.39f;
-    /// var rounded = value.RoundTo(0.1f); // 1.4f
+    /// var rounded = value.RoundTo(0.5f); // 1.5f
     /// </summary>
     /// <param name="value">The value to round</param>
     /// <param name="snapTarget">A target to snap to for example 0.25f</param>

@@ -26,7 +26,7 @@ public class SaveGameInfo
 }
 
 public class SaveGameListChangedMessage : AMessage { }
-public class SaveGameLoadedMessage : AMessage<GameDataStruct> { }
+public class SaveGameLoadedMessage : AMessage<GameData> { }
 
 //this gets triggered right before the game serializes
 //good to listen for this and have all objects write their data here
@@ -37,7 +37,7 @@ public class SaveGameSavingCompletedMessage : AMessage { }
 
 public class SaveManager : MonoBehaviour
 {
-    private static GameDataStruct loadedSave = new();
+    private static GameData loadedSave = new();
     private static SaveDataStruct saveDataInfo = new();
 
     private static readonly JsonSerializerSettings settings = new()
@@ -88,7 +88,7 @@ public class SaveManager : MonoBehaviour
         if (defaultSaveJson != null)
         {
             Debug.LogWarning($"Loaded Default Save!: {defaultSaveJson.text}");
-            loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(defaultSaveJson.text, settings);
+            loadedSave = JsonConvert.DeserializeObject<GameData>(defaultSaveJson.text, settings);
         }
         else
         {
@@ -190,7 +190,7 @@ public class SaveManager : MonoBehaviour
             Debug.Log(fileContents);
             try
             {
-                loadedSave = JsonConvert.DeserializeObject<GameDataStruct>(fileContents, settings);
+                loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
             }
             catch (Exception)
             {
@@ -242,18 +242,18 @@ public class SaveManager : MonoBehaviour
         return index;
     }
 
-    public static bool SaveGameToCurrentSlot(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
+    public static bool SaveGameToCurrentSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
         return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
 
-    public static bool SaveGameToNewSlot(GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
+    public static bool SaveGameToNewSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
         saveDataInfo.currentSaveIndex = GetUnusedSaveSlot();
         return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
 
-    public static bool SaveGame(int saveSlot, GameDataStruct gameData, bool force = false, string saveName = null, string version = null)
+    public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null)
     {
         ValidateDirectories();
 
@@ -308,7 +308,7 @@ public class SaveManager : MonoBehaviour
         return true;
     }
 
-    public static void AutoSave(GameDataStruct gameData, string version = null)
+    public static void AutoSave(GameData gameData, string version = null)
     {
         ValidateDirectories();
         var unusedSlot = GetUnusedAutoSaveSlot();
@@ -443,7 +443,7 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(filePath, fileContents);
     }
 
-    public static GameDataStruct GetGameData()
+    public static GameData GetGameData()
     {
         return loadedSave;
     }

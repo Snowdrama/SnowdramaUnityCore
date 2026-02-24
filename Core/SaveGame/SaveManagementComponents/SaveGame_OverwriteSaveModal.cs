@@ -46,7 +46,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
     private void SaveToExistingSlot()
     {
-        if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameData.GetGameData(), false, SaveName.text))
+        if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), false, SaveName.text))
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
                 "Are you sure you want to override the save?",
@@ -68,7 +68,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
     public void ForceSave()
     {
-        SaveManager.SaveGame(saveGameInfo.saveSlot, GameData.GetGameData(), true, SaveName.text);
+        SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text);
         SaveGamePanel.SetActive(false);
         DarkBackground?.SetActive(false);
     }

@@ -1,26 +1,25 @@
-using UnityEngine;
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Audio;
 
-public class PlaySoundMessage : AMessage<AudioClip, string, float> {}
-public class PlaySoundMessage2D : AMessage<AudioClip, Vector2, string, float> {}
-public class PlaySoundMessage3D : AMessage<AudioClip, Vector3, string, float> {}
+public class PlaySoundMessage : AMessage<AudioClip, string, float> { }
+public class PlaySoundMessage2D : AMessage<AudioClip, Vector2, string, float> { }
+public class PlaySoundMessage3D : AMessage<AudioClip, Vector3, string, float> { }
 
 public partial class MessagedSoundPool : MonoBehaviour
 {
-    [SerializeField] int audioPlayerCount = 64;
+    [SerializeField] private int audioPlayerCount = 64;
 
-    [SerializeField] bool use2DPlayers = true;
-    [SerializeField] bool use3DPlayers = true;
+    [SerializeField] private bool use2DPlayers = true;
+    [SerializeField] private bool use3DPlayers = true;
 
-    List<AudioSource> players = new List<AudioSource>();
+    private List<AudioSource> players = new List<AudioSource>();
 
-    PlaySoundMessage _playSoundMessage;
-    PlaySoundMessage3D _playSoundMessage3D;
-    PlaySoundMessage2D _playSoundMessage2D;
+    private PlaySoundMessage _playSoundMessage;
+    private PlaySoundMessage3D _playSoundMessage3D;
+    private PlaySoundMessage2D _playSoundMessage2D;
 
-    [SerializeField] AudioMixer Mixer;
+    [SerializeField] private AudioMixer Mixer;
     public void Awake()
     {
         for (int i = 0; i < audioPlayerCount; i++)
@@ -96,7 +95,7 @@ public partial class MessagedSoundPool : MonoBehaviour
                 players[i].clip = stream;
                 players[i].spatializePostEffects = false;
                 players[i].spatialBlend = 0.0f;
-                players[i].transform.position = new Vector2(0,0);
+                players[i].transform.position = new Vector2(0, 0);
                 players[i].Play();
                 return;
             }
@@ -108,7 +107,7 @@ public partial class MessagedSoundPool : MonoBehaviour
     /// <param name="stream"></param>
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
-    /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
+    /// <param name="volume">Value 0-1 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlayPositionedSound2D(AudioClip stream, Vector2 playPosition, string busName, float volume)
     {
         if (!use2DPlayers)
@@ -145,8 +144,8 @@ public partial class MessagedSoundPool : MonoBehaviour
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="playPosition"></param>
-    /// <param name="busName"></param>
-    /// <param name="volume">Value 0-100 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
+    /// <param name="busName">The name of the bus to use, if none is used</param>
+    /// <param name="volume">Value 0-1 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
     public void PlayPositionedSound3D(AudioClip stream, Vector3 playPosition, string busName, float volume)
     {
         if (!use3DPlayers)

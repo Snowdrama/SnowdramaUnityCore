@@ -24,7 +24,7 @@ public class TestTriggerAutoSave : MonoBehaviour
         if (autoSaveTime <= 0)
         {
             Debug.Log("Triggering Auto Save!");
-            SaveManager.AutoSave(GameData.GetGameData());
+            SaveManager.AutoSave(GameDataManager.GetGameData());
             autoSaveTime = autoSaveTime_Max;
         }
     }

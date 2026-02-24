@@ -9,8 +9,8 @@ public class TestGameData_SaveFloatToSave : MonoBehaviour
     private void Start()
     {
         inputField = GetComponent<TMP_InputField>();
-        var value = GameData.GetFloat(key, 0.0f);
-        Debug.Log($"Loaded {key} from GameData, Value: {value}");
+        var value = GameDataManager.GetFloat(key, 0.0f);
+        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         inputField.SetTextWithoutNotify($"{value}");
         inputField.onValueChanged.AddListener(OnChanged);
     }
@@ -20,7 +20,7 @@ public class TestGameData_SaveFloatToSave : MonoBehaviour
         float value;
         if (float.TryParse(newState, out value))
         {
-            GameData.SetFloat(key, value);
+            GameDataManager.SetFloat(key, value);
         }
     }
 }

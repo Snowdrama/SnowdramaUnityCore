@@ -9,14 +9,14 @@ public class TestGameData_SaveBoolToSave : MonoBehaviour
     private void Start()
     {
         toggle = GetComponent<Toggle>();
-        var value = GameData.GetBool(key, false);
-        Debug.Log($"Loaded {key} from GameData, Value: {value}");
+        var value = GameDataManager.GetBool(key, false);
+        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         toggle.SetIsOnWithoutNotify(value);
         toggle.onValueChanged.AddListener(OnChanged);
     }
 
     public void OnChanged(bool newState)
     {
-        GameData.SetBool(key, newState);
+        GameDataManager.SetBool(key, newState);
     }
 }

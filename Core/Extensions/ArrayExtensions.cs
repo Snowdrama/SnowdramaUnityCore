@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -83,7 +82,7 @@ public static class ArrayExtensions
         }
         return false;
     }
-    public static bool IndexInBounds<T>(this T[,] list, Vector2 index)
+    public static bool IndexInBounds<T>(this T[,] list, Vector2Int index)
     {
         if (index.x >= 0 && index.x < list.GetLength(0) && index.y >= 0 && index.y < list.GetLength(1))
         {

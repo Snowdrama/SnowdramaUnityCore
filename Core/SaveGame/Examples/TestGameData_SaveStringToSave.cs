@@ -9,14 +9,14 @@ public class TestGameData_SaveStringToSave : MonoBehaviour
     private void Start()
     {
         inputField = GetComponent<TMP_InputField>();
-        var value = GameData.GetString(key, "N/A");
-        Debug.Log($"Loaded {key} from GameData, Value: {value}");
+        var value = GameDataManager.GetString(key, "N/A");
+        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         inputField.SetTextWithoutNotify(value);
         inputField.onValueChanged.AddListener(OnChanged);
     }
 
     public void OnChanged(string newState)
     {
-        GameData.SetString(key, newState);
+        GameDataManager.SetString(key, newState);
     }
 }

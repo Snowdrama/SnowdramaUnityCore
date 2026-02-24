@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public static class ListExtensions
 {
@@ -13,7 +11,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="sourceList"></param>
     /// <returns></returns>
-    public static List<T> ShuffleList<T>(this List<T> sourceList)
+    public static IList<T> ShuffleList<T>(this IList<T> sourceList)
     {
         if (sourceList == null)
         {
@@ -37,7 +35,7 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="sourceList"></param>
     /// <returns></returns>
-    public static void ShuffleSelfMutate<T>(this List<T> sourceList)
+    public static void ShuffleSelfMutate<T>(this IList<T> sourceList)
     {
         if (sourceList == null)
         {
@@ -82,7 +80,14 @@ public static class ListExtensions
         list = list.Where(x => x != null).ToList();
     }
 
-    public static List<T> GetRandomCount<T>(this List<T> source, int count)
+    public static T GetRandom<T>(this IList<T> source)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
+
+        return source.ElementAt(UnityEngine.Random.Range(0, source.Count));
+    }
+    public static IList<T> GetRandomCount<T>(this IList<T> source, int count)
     {
         var randomizedList = source.ShuffleList();
         return randomizedList.Take(count).ToList();

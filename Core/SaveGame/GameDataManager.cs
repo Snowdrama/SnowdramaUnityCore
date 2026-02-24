@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
-public struct GameDataStruct
+public struct GameData
 {
     public string SceneToLoadOnLoad;
     public Dictionary<string, bool> boolData;
@@ -23,9 +23,9 @@ public struct GameDataStruct
     //TODO: Add save/load structs generically? 
     //public Dictionary<Type, Dictionary<int, Object>> structData = new Dictionary<Type, Dictionary<int, System.Object>>()
 }
-public class GameData : MonoBehaviour
+public class GameDataManager : MonoBehaviour
 {
-    private static GameDataStruct data = new();
+    private static GameData data = new();
     private void Awake()
     {
         //On Awake the SaveManager should be loaded already!
@@ -166,7 +166,7 @@ public class GameData : MonoBehaviour
     {
         data.SceneToLoadOnLoad = sceneName;
     }
-    public static GameDataStruct GetGameData()
+    public static GameData GetGameData()
     {
         return data;
     }
@@ -178,7 +178,7 @@ public class GameData : MonoBehaviour
     [MenuItem("Snowdrama/Required/Create Default Game Data JSON")]
     public static void CreateSceneJSON()
     {
-        GameDataStruct defaultGameDataStruct = new()
+        GameData defaultGameDataStruct = new()
         {
             SceneToLoadOnLoad = "MainMenuScene",
             floatData = new(),

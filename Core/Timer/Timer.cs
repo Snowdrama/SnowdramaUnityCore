@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Snowdrama.Timer
@@ -39,10 +37,9 @@ namespace Snowdrama.Timer
 
         [SerializeField] private float _currentTime;
         [SerializeField] private float _durationTarget;
-        [SerializeField] public bool Active { get { return active; } }
-        [SerializeField] private bool active;
+        [SerializeField] public bool Active { get; private set; }
         [SerializeField] private bool autoRestart;
-        bool paused;
+        private bool paused;
         public Timer(float time, bool autoStart = false, bool autoRestart = false)
         {
             if (time <= 0)
@@ -51,8 +48,8 @@ namespace Snowdrama.Timer
                 Debug.LogError("Time for timer needs to be greater than 0!");
             }
             _durationTarget = time;
-            _currentTime = 0;
-            active = autoStart;
+            _currentTime = _durationTarget;
+            Active = autoStart;
             this.autoRestart = autoRestart;
         }
 
@@ -67,13 +64,13 @@ namespace Snowdrama.Timer
         /// <param name="deltaTime">the delta of time passed since the last timer update</param>
         public void UpdateTime(float deltaTime)
         {
-            if (active)
+            if (Active)
             {
-                _currentTime += deltaTime;
-                if (_currentTime >= _durationTarget && active)
+                _currentTime -= deltaTime;
+                if (_currentTime <= 0)
                 {
-                    _currentTime -= _durationTarget;
-                    active = false;
+                    _currentTime += _durationTarget;
+                    Active = false;
                     if (autoRestart)
                     {
                         OnComplete?.Invoke();
@@ -81,7 +78,7 @@ namespace Snowdrama.Timer
                     }
                     else
                     {
-                        _currentTime = 0;
+                        _currentTime = _durationTarget;
                         OnComplete?.Invoke();
                     }
                 }
@@ -92,7 +89,7 @@ namespace Snowdrama.Timer
         /// </summary>
         public void Start()
         {
-            if (!active)
+            if (!Active)
             {
                 OnStart?.Invoke();
                 //the timer was paused so resume
@@ -101,7 +98,7 @@ namespace Snowdrama.Timer
                     paused = false;
                     OnResume?.Invoke();
                 }
-                active = true;
+                Active = true;
             }
         }
         /// <summary>
@@ -109,9 +106,13 @@ namespace Snowdrama.Timer
         /// </summary>
         public void Stop()
         {
-            active = false;
-            _currentTime = 0;
-            OnStop?.Invoke();
+            if (Active)
+            {
+                Debug.Log("Stopping!");
+                Active = false;
+                _currentTime = _durationTarget;
+                OnStop?.Invoke();
+            }
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace Snowdrama.Timer
         /// </summary>
         public void Pause()
         {
-            active = false;
+            Active = false;
             paused = true;
             OnPause?.Invoke();
         }
@@ -157,21 +158,18 @@ namespace Snowdrama.Timer
         /// <param name="newTime"></param>
         public void RestartTimer(float newTime = -1)
         {
-            active = true;
+            Active = true;
             OnRestart?.Invoke();
-            _currentTime = 0;
             SetNewTime(newTime);
+            _currentTime = _durationTarget;
         }
 
         public void SetNewTime(float newTime)
         {
+            //if new time is less than 0 like -1 we just use the previous time
             if (newTime > 0)
             {
                 _durationTarget = newTime;
-            }
-            else
-            {
-                throw new Exception("New Time must be greater than 0");
             }
         }
     }
