@@ -37,7 +37,7 @@ namespace Snowdrama.Timer
 
         [SerializeField] private float _currentTime;
         [SerializeField] private float _durationTarget;
-        [SerializeField] public bool Active { get; private set; }
+        public bool Active { get; private set; }
         [SerializeField] private bool autoRestart;
         private bool paused;
         public Timer(float time, bool autoStart = false, bool autoRestart = false)

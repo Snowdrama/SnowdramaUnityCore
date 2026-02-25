@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.4.7] - 2026-02-25
+- Fix to not SerializeField a field in Timer
+
 ## [0.4.6] - 2026-02-24
 - Added some function documentation for Extensions, and other tools.
 
