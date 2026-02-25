@@ -13,7 +13,6 @@ namespace Snowdrama
 
         [SerializeField]
         private bool _closed = false;
-        [SerializeField]
         public bool Closed
         {
             get
