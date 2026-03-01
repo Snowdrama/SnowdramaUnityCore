@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class LootTable<T>
 {
-    System.Random rand = new System.Random();
+    private System.Random rand = new System.Random();
     public TableList<T, double> lootTable;
 
     public double totalTableValue;
@@ -53,13 +52,30 @@ public class LootTable<T>
     /// Tail: 2
     /// Ancient Fairy Dust of Doom: 1
     /// 
-    /// Note this can be more or less than 100 but that's okay
-    /// It's not inherently a percentage.
+    /// Note this can be more or less than 100 as it's not a percentage
+    /// but a value relative to a whole so for example
     /// 
-    /// In this case you'd roll rand.Next(0, 13)
+    /// Item1 : 5
+    /// Item2 : 10
+    /// 
+    /// In this above case item2 is twice as likely to be chosen
+    /// as it has 10 oit of 15 chances to be chosen
+    /// 
+    /// So for the previous example you'd roll rand.Next(0, 13)
+    /// Since adding the bones + scales + etc is 13 total.
     /// 
     /// and then check each subsequent percent. So a 7 would get scales
     /// since the numbers represent item hit "ranges"
+    /// 
+    /// Bones hit range is 1 - 5 
+    /// Scales Hit Range is 5 - 10
+    /// Tail Hit Range is 10 - 12
+    /// Ancient Fairy Dust of Doom Hit Range is 12-13
+    /// 
+    /// We calculate this as the "final" value and seeing if it's less than the number
+    /// And we choose the first in the linear sequence
+    /// 
+    /// For example:
     /// 
     /// Bones: 7 > 5
     /// Scales: 7 > 10  <= since this is first in the linear list pick this
@@ -150,7 +166,6 @@ public class LootTable<T>
     /// Bones
     /// Bones
     /// Scales
-    /// Ancient Fairy Dust of Doom
     /// 
     /// Unlike the linear table, there is no chance to get any row in the table
     /// more than once, unless the item is on the table several times.
@@ -203,11 +218,141 @@ public class LootTable<T>
     /// by having the loot eventualy guaranteed to roll a rare 
     /// item if you get many items
     /// 
+    /// Pros of this technique: Ensures rolling will eventually get you the rare items
+    /// Cons of this technique: More expensive computationally as it requires a second table
+    /// 
     /// </summary>
     /// <returns></returns>
-    //public List<T> GetRandomDeminishing()
-    //{
-    //    throw new NotImplementedException();
-    //    return null;
-    //}
+    /// 
+    public TableList<T, double> diminishingTable;
+    public List<T> GetRandomDiminishing(int rollCount)
+    {
+        //ensure the list isn't null
+        if (diminishingTable == null)
+        {
+            diminishingTable = new TableList<T, double>(lootTable);
+        }
+
+        List<T> itemsFromLoot = new List<T>();
+
+        //do we want to throw an error here? 
+        if (rollCount <= 0)
+        {
+            return itemsFromLoot;
+        }
+
+        //roll once for each loot item we want
+        for (int i = 0; i < rollCount; i++)
+        {
+            double totalPercents = 0;
+            foreach (var lootRoll in diminishingTable)
+            {
+                totalPercents += (double)lootRoll.Right;
+            }
+
+            //roll for each of the loot we want.
+            double roll = rand.NextDouble() * totalPercents;
+
+            //current starts at 0 and adds the lootRoll value
+            double currentRoll = 0.0d;
+
+            int found = -1;
+            for (int j = 0; j < diminishingTable.Count; j++)
+            {
+                var currentItem = diminishingTable.Get(j);
+                if (roll > currentRoll && roll <= (currentRoll + currentItem.Right))
+                {
+                    itemsFromLoot.Add(currentItem.Left);
+                    found = j;
+                    break;
+                }
+                currentRoll += currentItem.Right;
+            }
+            if (found >= 0)
+            {
+                diminishingTable.RemoveAt(found);
+            }
+
+            //ensure the loot table still has items
+            if (diminishingTable.Count == 0)
+            {
+                //if not fill it back up
+                //fill the table back up
+                diminishingTable = new TableList<T, double>(lootTable);
+            }
+        }
+
+        return itemsFromLoot;
+    }
+
+    /// <summary>
+    /// Not sure if this one makes sense yet...
+    /// 
+    /// need to think about it more
+    /// 
+    /// This is like a variant of the Xenoblade table but 
+    /// is intended to include some kind of "diminishing" 
+    /// feature.
+    /// 
+    /// The only way I can see it is being like an...
+    /// increasing weight?
+    /// 
+    /// So instead of being a diminishing percent it's like..
+    /// every time you roll an item, the percent increases by
+    /// some weight... until you get the item
+    /// then it resets to it's original
+    /// 
+    /// So if the weights are
+    /// 
+    /// Bones: 80
+    /// Bones: 50
+    /// Bones: 30
+    /// Scales: 50
+    /// Scales: 20
+    /// Tail: 10
+    /// Ancient Fairy Dust of Doom: 5
+    /// 
+    /// and the percent increases by 5 every time you get the item 
+    /// in the slot, it ensures you are able to eventually guarantee
+    /// every item in the table, even the Ancient Fairy Dust of Doom.
+    /// 
+    /// As an example After 10 rolls of the full table the AFDOD 
+    /// would be a 55% chance if you didn't roll it before then. 
+    /// </summary>
+    public TableList<T, double> currentFullTable;
+    /// <summary>
+    /// We may want to do this as a list so each item can 
+    /// have a difference increase
+    /// </summary>
+    private double weightIncreasePerRoll = 5.0d;
+    public List<T> GetRandomFullTableWeightIncrease(double weightIncrease = 5.0d)
+    {
+        if (currentFullTable == null)
+        {
+            currentFullTable = new TableList<T, double>(lootTable);
+        }
+
+        List<T> itemsFromLoot = new List<T>();
+
+        for (int i = 0; i < currentFullTable.Count; i++)
+        {
+            var item = currentFullTable.Get(i);
+            //In this case it's represented as a percentage
+            if ((rand.NextDouble() * 100.0) < item.Right)
+            {
+                itemsFromLoot.Add(item.Left);
+                currentFullTable.right[i] = lootTable.right[i];
+            }
+            else
+            {
+                currentFullTable.right[i] += weightIncrease;
+            }
+        }
+
+        //roll a random value for each element in the loot table
+        foreach (var lootRoll in currentFullTable)
+        {
+        }
+        return itemsFromLoot;
+    }
 }

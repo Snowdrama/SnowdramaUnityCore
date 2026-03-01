@@ -478,10 +478,4 @@ public class SaveManager : MonoBehaviour
             Directory.CreateDirectory($"{Application.persistentDataPath}/AutoSaves");
         }
     }
-
-    private static void DeserializeGameData(string gameDataJson)
-    {
-        loadedSave = JsonConvert.DeserializeObject<GameData>(gameDataJson, settings);
-
-    }
 }

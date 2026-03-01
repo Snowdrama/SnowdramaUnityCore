@@ -19,6 +19,11 @@ public class TableList<L, R> : IEnumerable<TableListItem<L, R>>
         left = new List<L>();
         right = new List<R>();
     }
+    public TableList(TableList<L, R> other)
+    {
+        left = new List<L>(other.left);
+        right = new List<R>(other.right);
+    }
     public TableList(int initialCount)
     {
         left = new List<L>(initialCount);
@@ -31,9 +36,17 @@ public class TableList<L, R> : IEnumerable<TableListItem<L, R>>
         right.Add(rightItem);
     }
 
-    public (L, R) Get(int index)
+    public (L Left, R Right) Get(int index)
     {
         return (left[index], right[index]);
+    }
+
+    public int Count
+    {
+        get
+        {
+            return this.left.Count;
+        }
     }
 
     public L GetLeft(int index)
@@ -43,6 +56,58 @@ public class TableList<L, R> : IEnumerable<TableListItem<L, R>>
     public R GetRight(int index)
     {
         return right[index];
+    }
+
+    //public void RemoveByLeft(L itemToRemove)
+    //{
+    //    //TODO: Implement removal
+    //    if (itemToRemove == null)
+    //    {
+    //        throw new ArgumentNullException("itemToRemove cannot be null in TableList");
+    //    }
+    //    int found = -1;
+    //    for (int i = 0; i < left.Count; i++)
+    //    {
+    //        if (left[i] == itemToRemove)
+    //        {
+    //            found = i;
+    //            break;
+    //        }
+    //    }
+    //    if (found >= 0)
+    //    {
+    //        left.RemoveAt(found);
+    //        right.RemoveAt(found);
+    //    }
+    //}
+
+    //public void RemoveByRight(R itemToRemove)
+    //{
+    //    //TODO: Implement removal
+    //    if (itemToRemove == null)
+    //    {
+    //        throw new ArgumentNullException("itemToRemove cannot be null in TableList");
+    //    }
+    //    int found = -1;
+    //    for (int i = 0; i < right.Count; i++)
+    //    {
+    //        if (right[i] == itemToRemove)
+    //        {
+    //            found = i;
+    //            break;
+    //        }
+    //    }
+    //    if (found >= 0)
+    //    {
+    //        left.RemoveAt(found);
+    //        right.RemoveAt(found);
+    //    }
+    //}
+
+    public void RemoveAt(int index)
+    {
+        left.RemoveAt(index);
+        right.RemoveAt(index);
     }
 
     public IEnumerator<TableListItem<L, R>> GetEnumerator()
