@@ -26,7 +26,7 @@ public class SaveGameInfo
 }
 
 public class SaveGameListChangedMessage : AMessage { }
-public class SaveGameLoadedMessage : AMessage<GameData> { }
+public class SaveGameLoadedMessage : AMessage { }
 
 //this gets triggered right before the game serializes
 //good to listen for this and have all objects write their data here
@@ -43,6 +43,7 @@ public class SaveManager : MonoBehaviour
     private static readonly JsonSerializerSettings settings = new()
     {
         Formatting = Formatting.Indented,
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
     private void Awake()
     {
@@ -73,10 +74,27 @@ public class SaveManager : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        Debug.Log("Loading Load 0");
         //load save 0 by default in case we're testing
         //then we can load into any scene with the save 0 data
-        LoadSave(saveDataInfo.currentSaveIndex, false, false);
+        if (saveDataInfo.saveLocations.Count == 0)
+        {
+            Debug.Log("Loading DefaultSave In Editor for testing!");
+            Debug.Log("Loading DefaultSave In Editor for testing!");
+            Debug.Log("Loading DefaultSave In Editor for testing!");
+            NewGame();
+            Debug.Log($"Force Saving Save 0, Modify the save there for testing");
+            Debug.Log($"SavePath: {Application.persistentDataPath}");
+            SaveGame(0, loadedSave, true);
+        }
+        else
+        {
+            Debug.Log("Loading Save 0 In Editor for testing!");
+            Debug.Log("Loading Save 0 In Editor for testing!");
+            Debug.Log("Loading Save 0 In Editor for testing!");
+            Debug.Log($"Modify the Save0 for testing");
+            Debug.Log($"SavePath: {Application.persistentDataPath}");
+            LoadSave(0, false, false);
+        }
 #endif
     }
 
@@ -207,7 +225,7 @@ public class SaveManager : MonoBehaviour
 
             saveDataInfo.currentAutoSaveIndex = saveSlot;
             SaveInfoFile();
-            Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(loadedSave);
+            //Messages.GetOnce<SaveGameLoadedMessage>().Dispatch();
             Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
             return true;
         }
@@ -459,5 +477,11 @@ public class SaveManager : MonoBehaviour
         {
             Directory.CreateDirectory($"{Application.persistentDataPath}/AutoSaves");
         }
+    }
+
+    private static void DeserializeGameData(string gameDataJson)
+    {
+        loadedSave = JsonConvert.DeserializeObject<GameData>(gameDataJson, settings);
+
     }
 }
