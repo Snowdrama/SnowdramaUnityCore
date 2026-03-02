@@ -1,6 +1,6 @@
 {
   "name": "com.snowdrama.core",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "The core tools I use for my games. This package contains the core tools I use for my games. It is a collection of scripts, shaders, and other assets that I use to speed up my development process.",
   "displayName": "Snowdrama Core Tools",
   "unity": "6000.0",

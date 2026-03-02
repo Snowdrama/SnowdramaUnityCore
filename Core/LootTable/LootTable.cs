@@ -324,7 +324,6 @@ public class LootTable<T>
     /// We may want to do this as a list so each item can 
     /// have a difference increase
     /// </summary>
-    private double weightIncreasePerRoll = 5.0d;
     public List<T> GetRandomFullTableWeightIncrease(double weightIncrease = 5.0d)
     {
         if (currentFullTable == null)

@@ -49,7 +49,7 @@ public class SceneController : MonoBehaviour
     {
         if (WaitingToLoad.Contains(name))
         {
-            Debug.LogError($"Object {name} asked scene controller to wait more than once! Ignoring...");
+            DebugLogError($"Object {name} asked scene controller to wait more than once! Ignoring...");
             return;
         }
 
@@ -60,7 +60,7 @@ public class SceneController : MonoBehaviour
     {
         if (!WaitingToLoad.Contains(name))
         {
-            Debug.LogError($"Object {name} was never asked to wait for the scene to load");
+            DebugLogError($"Object {name} was never asked to wait for the scene to load");
             return;
         }
         WaitingToLoad.Remove(name);
@@ -74,15 +74,15 @@ public class SceneController : MonoBehaviour
 
         if (jsonDoc == null)
         {
-            Debug.LogError("Can't find SceneControllerJSON. " +
+            DebugLogError("Can't find SceneControllerJSON. " +
                 "Please use Create -> Snowdrama -> Transitions -> Create Scene ControllerJson " +
                 "to create one in the Resources folder");
             return;
         }
 
-        Debug.Log(jsonDoc.text);
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
-        Debug.Log($"Loading Scene Management Data, Debug: {sceneManagementData.ShowConsoleMessages}");
+        Debug.Log($"Loading Scene Management Data, ShowConsoleMessages? -> {sceneManagementData.ShowConsoleMessages}");
+        DebugLog(jsonDoc.text);
         RequiredScenes.Clear();
         WrapperScenes.Clear();
         Scenes.Clear();
@@ -168,7 +168,7 @@ public class SceneController : MonoBehaviour
     {
         if (!Scenes.ContainsKey(sceneName))
         {
-            Debug.LogError($"Tried to load a scene named {sceneName} that's not in the Scenes List. Check the SceneLayout JSON");
+            DebugLogError($"Tried to load a scene named {sceneName} that's not in the Scenes List. Check the SceneLayout JSON");
             return;
         }
 
@@ -489,7 +489,7 @@ public class SceneController : MonoBehaviour
         var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
         if (asyncOperation == null)
         {
-            Debug.LogError($"Tried to unload scene {sceneToUnload} but the asyncOperation is null, " +
+            DebugLogError($"Tried to unload scene {sceneToUnload} but the asyncOperation is null, " +
                 $"likely because scene isn't loaded");
             return;
         }
@@ -507,7 +507,7 @@ public class SceneController : MonoBehaviour
         var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
         if (asyncOperation == null)
         {
-            Debug.LogError($"Tried to unload a wrapper scene {sceneToUnload} but the asyncOperation is null, " +
+            DebugLogError($"Tried to unload a wrapper scene {sceneToUnload} but the asyncOperation is null, " +
                 $"likely because scene isn't loaded." +
                 $"Note that you can not start the editor with 'Wrapper' scenes due to initial unloading." +
                 $"Please remove any wrapper scenes from the hierarchy before starting the editor!");
@@ -649,21 +649,21 @@ public class SceneController : MonoBehaviour
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            Debug.Log(log, target);
+            DebugLog(log, target);
         }
     }
     private static void DebugLogWarning(string log, GameObject target = null)
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            Debug.LogWarning(log, target);
+            DebugLogWarning(log, target);
         }
     }
     private static void DebugLogError(string log, GameObject target = null)
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            Debug.LogError(log, target);
+            DebugLogError(log, target);
         }
     }
     #endregion
@@ -737,7 +737,7 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
+            DebugLogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
                 $"Can't overwrite SceneLayoutJSON.jsonc because it already exists. " +
                 $"If this intended please manually delete the SceneLayoutJSON.jsonc and run again");
         }

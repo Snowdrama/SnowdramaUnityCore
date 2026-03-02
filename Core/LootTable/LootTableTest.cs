@@ -32,12 +32,10 @@ public class LootTableTest : MonoBehaviour
         while (items.Count < 5)
         {
             currentLoop++;
-            Debug.Log($"Roll: {currentLoop}***********************");
             var weighted = lootTable.GetRandomFullTableWeightIncrease();
             for (int j = 0; j < weighted.Count; j++)
             {
                 items.Add(weighted[j]);
-                Debug.Log($"[{j}]: {weighted[j].name}");
             }
         }
     }

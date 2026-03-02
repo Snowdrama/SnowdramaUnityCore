@@ -52,25 +52,25 @@ public class SaveManager : MonoBehaviour
         var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
         if (File.Exists(saveDataInfoPath))
         {
-            Debug.Log($"Loading SaveDataInfo");
+            //Debug.Log($"Loading SaveDataInfo");
             var saveDataInfoJson = File.ReadAllText(saveDataInfoPath);
-            Debug.Log(saveDataInfoJson);
+            //Debug.Log(saveDataInfoJson);
             saveDataInfo = JsonConvert.DeserializeObject<SaveDataStruct>(saveDataInfoJson, settings);
         }
         else
         {
-            Debug.Log($"Creating New SaveDataInfo");
+            //Debug.Log($"Creating New SaveDataInfo");
             saveDataInfo = new SaveDataStruct();
         }
 
         foreach (SaveGameInfo file in saveDataInfo.saveLocations.Values)
         {
-            Debug.Log($"Found Load: {file.name} {file.filePath}");
+            //Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
         foreach (SaveGameInfo file in saveDataInfo.autoSaveLocations.Values)
         {
-            Debug.Log($"Found Load: {file.name} {file.filePath}");
+            //Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
 #if UNITY_EDITOR
@@ -78,21 +78,21 @@ public class SaveManager : MonoBehaviour
         //then we can load into any scene with the save 0 data
         if (saveDataInfo.saveLocations.Count == 0)
         {
-            Debug.Log("Loading DefaultSave In Editor for testing!");
-            Debug.Log("Loading DefaultSave In Editor for testing!");
-            Debug.Log("Loading DefaultSave In Editor for testing!");
+            //Debug.Log("Loading DefaultSave In Editor for testing!");
+            //Debug.Log("Loading DefaultSave In Editor for testing!");
+            //Debug.Log("Loading DefaultSave In Editor for testing!");
             NewGame();
-            Debug.Log($"Force Saving Save 0, Modify the save there for testing");
-            Debug.Log($"SavePath: {Application.persistentDataPath}");
+            //Debug.Log($"Force Saving Save 0, Modify the save there for testing");
+            //Debug.Log($"SavePath: {Application.persistentDataPath}");
             SaveGame(0, loadedSave, true);
         }
         else
         {
-            Debug.Log("Loading Save 0 In Editor for testing!");
-            Debug.Log("Loading Save 0 In Editor for testing!");
-            Debug.Log("Loading Save 0 In Editor for testing!");
-            Debug.Log($"Modify the Save0 for testing");
-            Debug.Log($"SavePath: {Application.persistentDataPath}");
+            //Debug.Log("Loading Save 0 In Editor for testing!");
+            //Debug.Log("Loading Save 0 In Editor for testing!");
+            //Debug.Log("Loading Save 0 In Editor for testing!");
+            //Debug.Log($"Modify the Save0 for testing");
+            //Debug.Log($"SavePath: {Application.persistentDataPath}");
             LoadSave(0, false, false);
         }
 #endif
@@ -100,12 +100,12 @@ public class SaveManager : MonoBehaviour
 
     public void NewGame()
     {
-        Debug.LogWarning($"Starting new game, loading default data!");
+        //Debug.Log($"Starting new game, loading default data!");
         //load the default save from resources:
         var defaultSaveJson = Resources.Load<TextAsset>("DefaultSave");
         if (defaultSaveJson != null)
         {
-            Debug.LogWarning($"Loaded Default Save!: {defaultSaveJson.text}");
+            //Debug.Log($"Loaded Default Save!: {defaultSaveJson.text}");
             loadedSave = JsonConvert.DeserializeObject<GameData>(defaultSaveJson.text, settings);
         }
         else
@@ -123,7 +123,7 @@ public class SaveManager : MonoBehaviour
     #region Load Game
     public static bool CanLoadSave(int saveSlot, bool autoSave)
     {
-        Debug.Log($"Loading an Auto Save: {autoSave}");
+        //Debug.Log($"Loading an Auto Save: {autoSave}");
         if ((!autoSave && saveDataInfo.saveLocations == null) ||
             (autoSave && saveDataInfo.autoSaveLocations == null))
         {
@@ -166,7 +166,7 @@ public class SaveManager : MonoBehaviour
     public static bool LoadSave(int saveSlot, bool isAutoSave, bool autoLoadScene = true)
     {
         ValidateDirectories();
-        Debug.Log($"Loading an Save: {isAutoSave}");
+        //Debug.Log($"Loading an Save: {isAutoSave}");
         if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
             (isAutoSave && saveDataInfo.autoSaveLocations == null))
         {
@@ -196,7 +196,7 @@ public class SaveManager : MonoBehaviour
         {
             expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
         }
-        Debug.Log($"Loading Save From: {expectedPath}");
+        //Debug.Log($"Loading Save From: {expectedPath}");
 
 
         if (File.Exists(expectedPath))
@@ -204,22 +204,14 @@ public class SaveManager : MonoBehaviour
             var savePathToLoad = expectedPath;
             var fileContents = File.ReadAllText(savePathToLoad);
 
-            Debug.Log($"Loading file from {savePathToLoad}");
-            Debug.Log(fileContents);
-            try
-            {
-                loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
-            }
-            catch (Exception)
-            {
-                Debug.LogError($"Failed to parse file contents of file at: {savePathToLoad}");
-                throw;
-            }
+            //Debug.Log($"Loading file from {savePathToLoad}");
+            //Debug.Log(fileContents);
+            loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
 
             //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
             if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
             {
-                Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
+                //Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
                 SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
             }
 
@@ -280,16 +272,16 @@ public class SaveManager : MonoBehaviour
         //do we have a file there already?
         bool fileExists = File.Exists(filePath);
 
-        Debug.Log($"File.Exists() = {fileExists} && force == {force}");
+        //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
 
         if (fileExists && force == false)
         {
-            Debug.LogWarning($"File.Exists() = {fileExists} && force == {force}");
+            //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
             return false;
         }
 
         //Update save info
-        Debug.Log("Creating new save info");
+        //Debug.Log("Creating new save info");
         var newSaveInfo = new SaveGameInfo()
         {
             saveSlot = saveSlot,
@@ -299,7 +291,7 @@ public class SaveManager : MonoBehaviour
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
             isAutoSave = false,
         };
-        Debug.Log(newSaveInfo);
+        //Debug.Log(newSaveInfo);
 
         if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
         {
@@ -315,7 +307,7 @@ public class SaveManager : MonoBehaviour
         gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
 
 
-        Debug.Log($"Serializing game data, writing to {filePath}");
+        //Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         File.WriteAllText(filePath, fileContents);
 
@@ -343,9 +335,9 @@ public class SaveManager : MonoBehaviour
 
             foreach (var item in listOfAutoSaves)
             {
-                Debug.Log($"AutoSave[{item.Key}]: {item.Value.dateModified}");
+                //Debug.Log($"AutoSave[{item.Key}]: {item.Value.dateModified}");
             }
-            Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
+            //Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
 
             //get the oldest key and use that auto save key:
             saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
@@ -353,8 +345,8 @@ public class SaveManager : MonoBehaviour
             saveDataInfo.currentAutoSaveIndex %= 10;
 
 
-            Debug.LogWarning($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
-                $"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
+            //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
+            //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
 
         }
         else
@@ -370,7 +362,7 @@ public class SaveManager : MonoBehaviour
         var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.currentAutoSaveIndex}.json";
         File.WriteAllText(filePath, fileContents);
 
-        Debug.Log($"Auto Save[{saveDataInfo.currentAutoSaveIndex}]: {filePath}");
+        //Debug.Log($"Auto Save[{saveDataInfo.currentAutoSaveIndex}]: {filePath}");
         var autoSaveInfo = new SaveGameInfo()
         {
             saveSlot = saveDataInfo.currentAutoSaveIndex,
@@ -431,7 +423,7 @@ public class SaveManager : MonoBehaviour
             expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
         }
 
-        Debug.Log($"Deleting file:{expectedPath}");
+        //Debug.Log($"Deleting file:{expectedPath}");
         if (File.Exists(expectedPath))
         {
             File.Delete(expectedPath);
@@ -456,7 +448,7 @@ public class SaveManager : MonoBehaviour
         var filePath = $"{Application.persistentDataPath}/save_data_info.json";
         var fileContents = JsonConvert.SerializeObject(saveDataInfo, settings);
 
-        Debug.Log($"Saving Info File! {filePath}");
+        //Debug.Log($"Saving Info File! {filePath}");
 
         File.WriteAllText(filePath, fileContents);
     }

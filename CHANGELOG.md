@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.4.9] - 2026-02-25
+- Changed GameData to allow serializing and deserializing Structs.
+
 ## [0.4.8] - 2026-02-25
 - Updated loot table to add more features
 
