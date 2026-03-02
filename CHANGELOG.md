@@ -5,22 +5,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ## [0.5.0] - 2026-03-01
+### Changed
 - Added ability to get single save info
 - Made it so it doesn't error if mainContent of a UI Route isn't set
+- Fix for dumb infinite recursive mistake in DebugLog thing in Scene Controller
+- Fixed some save modal stuff
+- Added Exit Game option to UI Router as a shortcut
 
 ## [0.4.9] - 2026-03-01
+### Changed
 - Changed GameData to allow serializing and deserializing Structs.
 
 ## [0.4.8] - 2026-02-28
+### Changed
 - Updated loot table to add more features
 
 ## [0.4.7] - 2026-02-25
+### Changed
 - Fix to not SerializeField a field in Timer
 
 ## [0.4.6] - 2026-02-24
+### Changed
 - Added some function documentation for Extensions, and other tools.
 
 ## [0.4.5] - 2025-12-26
+### Changed
 - Fixed new games not actually loading the default save into the loadedSaveSlot
 
 ## [0.4.4] - 2025-12-26
