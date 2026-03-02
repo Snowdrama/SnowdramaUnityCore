@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +7,7 @@ namespace Snowdrama.UI
     [CreateAssetMenu(fileName = "UIRouter", menuName = "Snowdrama/UI Router")]
     public class UIRouter : ScriptableObject
     {
-        Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
+        private Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
         public Stack<string> routesOpened = new Stack<string>();
 
         [Header("Debug[Don't Edit!]")]
@@ -35,7 +34,7 @@ namespace Snowdrama.UI
         }
         public bool IsRouteOpen(string routeSegment)
         {
-            if(routesOpened.Count == 0)
+            if (routesOpened.Count == 0)
             {
                 return false;
             }
@@ -160,6 +159,32 @@ namespace Snowdrama.UI
         public void UpdateDebug()
         {
             currentStack = new List<string>(routesOpened);
+        }
+
+
+
+
+        //Shortcut to use to exit the game
+        public void ExitGame()
+        {
+            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                "Are you sure you want to Exit To The Desktop?",
+                new ModalButtonData()
+                {
+                    text = "Yes",
+                    disableTime = 0.5f,
+                    pressCallback = () =>
+                    {
+                        Application.Quit();
+                    }
+                },
+                new ModalButtonData()
+                {
+                    text = "No",
+                    disableTime = 0.0f,
+                    pressCallback = null
+                }
+            );
         }
     }
 }
