@@ -40,6 +40,8 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
     {
         if (SaveManager.SaveGameToNewSlot(GameDataManager.GetGameData(), true, SaveName.text))
         {
+            SaveGamePanel.SetActive(false);
+            DarkBackground?.SetActive(false);
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
                 $"Game Saved!",
                 new ModalButtonData()
@@ -52,6 +54,8 @@ public class SaveGame_CreateNewSaveModal : MonoBehaviour
         }
         else
         {
+            SaveGamePanel.SetActive(false);
+            DarkBackground?.SetActive(false);
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
                 $"Error: Game was unable to be saved.",
                 new ModalButtonData()
