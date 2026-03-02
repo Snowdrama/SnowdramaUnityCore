@@ -457,6 +457,42 @@ public class SaveManager : MonoBehaviour
     {
         return loadedSave;
     }
+    public static bool HasSaveGame(int saveSlot, bool isAutoSave)
+    {
+        if (!isAutoSave)
+        {
+            if (saveDataInfo.saveLocations.ContainsKey(saveSlot))
+            {
+                return true;
+            }
+        }
+        else if (isAutoSave)
+        {
+            if (saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static SaveGameInfo GetSaveGameInfo(int saveSlot, bool isAutoSave)
+    {
+        if (!isAutoSave)
+        {
+            if (saveDataInfo.saveLocations.ContainsKey(saveSlot))
+            {
+                return saveDataInfo.saveLocations[saveSlot];
+            }
+        }
+        else if (isAutoSave)
+        {
+            if (saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
+            {
+                return saveDataInfo.autoSaveLocations[saveSlot];
+            }
+        }
+        return null;
+    }
 
     private static void ValidateDirectories()
     {
