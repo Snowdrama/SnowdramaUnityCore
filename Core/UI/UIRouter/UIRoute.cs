@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Snowdrama.UI
@@ -19,11 +17,11 @@ namespace Snowdrama.UI
             if (startEnabled)
             {
                 _router.OpenRoute(routeSegment);
-                mainContent.SetActive(true);
+                mainContent?.SetActive(true);
             }
             else
             {
-                mainContent.SetActive(false);
+                mainContent?.SetActive(false);
             }
         }
 
@@ -34,7 +32,7 @@ namespace Snowdrama.UI
 
         public void OpenRoute()
         {
-            mainContent.SetActive(true);
+            mainContent?.SetActive(true);
 
             if (objectToSelectOnOpen)
             {
@@ -44,7 +42,7 @@ namespace Snowdrama.UI
 
         public void CloseRoute()
         {
-            mainContent.SetActive(false);
+            mainContent?.SetActive(false);
         }
     }
 }
