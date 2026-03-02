@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 //A 2D representation of a spring
 namespace Snowdrama.Spring
 {
     public class Spring3D
     {
-        SpringList springCollection;
-        int xID;
-        int yID;
-        int zID;
-
+        private SpringList springCollection;
+        private int xID;
+        private int yID;
+        private int zID;
         public Vector3 Value
         {
             get
@@ -21,7 +18,7 @@ namespace Snowdrama.Spring
             {
                 springCollection.SetValue(xID, value.x);
                 springCollection.SetValue(yID, value.y);
-                springCollection.SetValue(zID, value.y);
+                springCollection.SetValue(zID, value.z);
             }
         }
         public Vector3 Target
@@ -34,7 +31,7 @@ namespace Snowdrama.Spring
             {
                 springCollection.SetTarget(xID, value.x);
                 springCollection.SetTarget(yID, value.y);
-                springCollection.SetTarget(zID, value.y);
+                springCollection.SetTarget(zID, value.z);
             }
         }
         public Vector3 Velocity
@@ -47,7 +44,7 @@ namespace Snowdrama.Spring
             {
                 springCollection.SetVelocity(xID, value.x);
                 springCollection.SetVelocity(yID, value.y);
-                springCollection.SetVelocity(zID, value.y);
+                springCollection.SetVelocity(zID, value.z);
             }
         }
 
