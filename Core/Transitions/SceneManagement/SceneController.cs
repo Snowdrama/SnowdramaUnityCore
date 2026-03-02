@@ -649,21 +649,21 @@ public class SceneController : MonoBehaviour
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            DebugLog(log, target);
+            Debug.Log(log, target);
         }
     }
     private static void DebugLogWarning(string log, GameObject target = null)
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            DebugLogWarning(log, target);
+            Debug.LogWarning(log, target);
         }
     }
     private static void DebugLogError(string log, GameObject target = null)
     {
         if (sceneManagementData.ShowConsoleMessages)
         {
-            DebugLogError(log, target);
+            Debug.LogError(log, target);
         }
     }
     #endregion
