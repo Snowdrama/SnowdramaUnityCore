@@ -35,6 +35,7 @@ public class SaveGameStartingSaveMessage : AMessage { }
 //this is called right after a game saved, useful for triggering things like "Save and Quit"
 public class SaveGameSavingCompletedMessage : AMessage { }
 
+
 public class SaveManager : MonoBehaviour
 {
     private static GameData loadedSave = new();

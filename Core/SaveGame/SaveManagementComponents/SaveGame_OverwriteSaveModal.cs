@@ -48,6 +48,8 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
     {
         if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), false, SaveName.text))
         {
+            SaveGamePanel.SetActive(false);
+            DarkBackground?.SetActive(false);
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
                 "Are you sure you want to override the save?",
                 new ModalButtonData()
