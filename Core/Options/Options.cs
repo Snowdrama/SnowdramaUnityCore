@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 //basically if you listen to this and only update the local copies of the value
@@ -13,6 +14,44 @@ public class OptionsData
     public Dictionary<string, float> floatValues;
     public Dictionary<string, bool> boolValues;
     public Dictionary<string, string> stringValues;
+
+    /// <summary>
+    /// Merges the 2 options together to update options if
+    /// the game is updated. Ensuring the default is set
+    /// if the options don't exist yet.
+    /// </summary>
+    /// <param name="otherData"></param>
+    public void AddUnusedOptions(OptionsData otherData)
+    {
+        foreach (var item in otherData.intValues)
+        {
+            if (!intValues.ContainsKey(item.Key))
+            {
+                intValues.Add(item.Key, item.Value);
+            }
+        }
+        foreach (var item in otherData.floatValues)
+        {
+            if (!floatValues.ContainsKey(item.Key))
+            {
+                floatValues.Add(item.Key, item.Value);
+            }
+        }
+        foreach (var item in otherData.boolValues)
+        {
+            if (!boolValues.ContainsKey(item.Key))
+            {
+                boolValues.Add(item.Key, item.Value);
+            }
+        }
+        foreach (var item in otherData.stringValues)
+        {
+            if (!stringValues.ContainsKey(item.Key))
+            {
+                stringValues.Add(item.Key, item.Value);
+            }
+        }
+    }
 }
 public class Options : MonoBehaviour
 {
@@ -47,17 +86,21 @@ public class Options : MonoBehaviour
     private static void Load()
     {
         var optionsDefaultJson = Resources.Load<TextAsset>("DefaultOptions");
-
+        var defaultSettings = JsonConvert.DeserializeObject<OptionsData>(optionsDefaultJson.text, jsonSetting);
         //check if we have a file already made
         if (File.Exists($"{Application.persistentDataPath}/options.json"))
         {
             var fileJson = File.ReadAllText($"{Application.persistentDataPath}/options.json");
             data = JsonConvert.DeserializeObject<OptionsData>(fileJson, jsonSetting);
+
+            data.AddUnusedOptions(defaultSettings);
         }
         //otherwise load the defaults
         else
         {
-            data = JsonConvert.DeserializeObject<OptionsData>(optionsDefaultJson.text, jsonSetting);
+            data = defaultSettings;
+            //we should safe the default settings.
+            Save();
         }
     }
 
@@ -265,4 +308,103 @@ public class Options : MonoBehaviour
         }
     }
     #endregion
+
+
+
+#if UNITY_EDITOR
+
+    [MenuItem("Snowdrama/Required/Create Default Options JSON")]
+    public static void CreateSceneJSON()
+    {
+        OptionsData defaultData = new()
+        {
+            intValues = new Dictionary<string, int>()
+            {
+                {
+                    "screen_setting",
+                    0 //0 should be fullscreen
+                },
+                {
+                    "screen_resolution_option",
+                    0 //0 should be 1920x1080
+                },
+            },
+            floatValues = new Dictionary<string, float>()
+            {
+                //we always want to default with some audio values
+                {
+                    "master_volume",
+                    0.5f
+                },
+                {
+                    "music_volume",
+                    0.5f
+                },
+                {
+                    "sound_volume",
+                    0.5f
+                },
+                {
+                    "voice_volume",
+                    0.5f
+                },
+                {
+                    "footstep_volume",
+                    0.5f
+                },
+                //and some basic input sensitivity stuff
+                {
+                    "mouse_sensitivity_x",
+                    1.0f
+                },
+                {
+                    "mouse_sensitivity_y",
+                    1.0f
+                },
+                {
+                    "gamepad_sensitivity_x",
+                    1.0f
+                },
+                {
+                    "gamepad_sensitivity_y",
+                    1.0f
+                },
+            },
+
+            //basic input values
+            boolValues = new Dictionary<string, bool>()
+            {
+                {
+                    "invert_x",
+                    false
+                },
+                {
+                    "invert_y",
+                    false
+                },
+                //graphics options
+                {
+                    "vsync",
+                    true
+                },
+            },
+            stringValues = new Dictionary<string, string>()
+            {
+
+            },
+        };
+        var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+        if (!File.Exists($"Assets/Resources/SceneLayoutJSON.jsonc"))
+        {
+            File.WriteAllText($"Assets/Resources/DefaultOptions.jsonc", dataString);
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
+                $"Can't overwrite SceneLayoutJSON.jsonc because it already exists. " +
+                $"If this intended please manually delete the SceneLayoutJSON.jsonc and run again");
+        }
+    }
+#endif
 }
