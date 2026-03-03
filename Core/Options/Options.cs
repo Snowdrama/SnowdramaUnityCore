@@ -396,16 +396,16 @@ public class Options : MonoBehaviour
             },
         };
         var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
-        if (!File.Exists($"Assets/Resources/SceneLayoutJSON.jsonc"))
+        if (!File.Exists($"Assets/Resources/DefaultOptions.json"))
         {
-            File.WriteAllText($"Assets/Resources/DefaultOptions.jsonc", dataString);
+            File.WriteAllText($"Assets/Resources/DefaultOptions.json", dataString);
             AssetDatabase.Refresh();
         }
         else
         {
             Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
-                $"Can't overwrite SceneLayoutJSON.jsonc because it already exists. " +
-                $"If this intended please manually delete the SceneLayoutJSON.jsonc and run again");
+                $"Can't overwrite DefaultOptions.json because it already exists. " +
+                $"If this intended please manually delete the DefaultOptions.json and run again");
         }
     }
 #endif
