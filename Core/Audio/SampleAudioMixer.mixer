@@ -55,7 +55,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Voices
+  m_Name: Voice
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 82666238fabde8748bb2424c051acbb0
   m_Children: []
@@ -84,10 +84,18 @@ AudioMixerController:
   m_EnableSuspend: 1
   m_UpdateMode: 0
   m_ExposedParameters:
+  - guid: 02689f07d979b8442b4b786e86e1e001
+    name: MasterVolume
+  - guid: faa78858577c07e42bbe5951e945b9ca
+    name: MusicVolume
   - guid: a9cfb6aaa8b40d54c9fef7171050058a
     name: MusicHighpass
   - guid: 82ff8cc5576bfa14797d0caea16afeda
     name: MusicLowpass
+  - guid: 99e580e9530975142a5731d196f2e012
+    name: SoundVolume
+  - guid: fb5f02d4af3367e49ab7c2a11f4e21dd
+    name: VoiceVolume
   m_AudioMixerGroupViews:
   - guids:
     - f7f72515ed475d544a10bde5abc178d7
@@ -175,7 +183,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Sounds
+  m_Name: Sound
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 0690bad8c5fd9f74697cf5f988c635fd
   m_Children: []

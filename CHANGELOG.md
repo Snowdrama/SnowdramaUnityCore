@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Made it so it doesn't error if mainContent of a UI Route isn't set
 - Fix for dumb infinite recursive mistake in DebugLog thing in Scene Controller
 - Fixed some save modal stuff
+- Fix to Spring 3D to use Z and not Y
 - Added Exit Game option to UI Router as a shortcut
+- Overhaul to Options system
 
 ## [0.4.9] - 2026-03-01
 ### Changed

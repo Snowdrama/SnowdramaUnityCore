@@ -1,28 +1,68 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
 [System.Serializable]
 public class AudioChannelData
 {
-    public string optionsKey = "MusicVolume";
     public string mixerChannelName = "Music";
     public float defaultValue = 1.0f;
 }
+
+
 public class AudioVolumeManager : MonoBehaviour
 {
     public AudioMixer audioMixer;
-
-    public OptionsObject options;
-
-    public List<AudioChannelData> audioChannelData = new List<AudioChannelData>();
-    void Update()
+    public UnitySerializedDictionary<string, AudioChannelData> audioChannels = new UnitySerializedDictionary<string, AudioChannelData>()
     {
-        foreach (var item in audioChannelData)
         {
-            //0 to 1 comverted logarithmically to -80 to 0 DB
-            audioMixer.SetFloat(item.mixerChannelName, options.GetFloatValue(item.optionsKey, item.defaultValue).LinearToDecibel());
+            "MasterVolume",
+            new AudioChannelData()
+            {
+                mixerChannelName = "MasterVolume",
+                defaultValue = 1.0f
+            }
+        },
+
+        {
+            "MusicVolume",
+            new AudioChannelData()
+            {
+                mixerChannelName = "MusicVolume",
+                defaultValue = 1.0f
+            }
+        },
+        {
+            "SoundVolume",
+            new AudioChannelData()
+            {
+                mixerChannelName = "SoundVolume",
+                defaultValue = 1.0f
+            }
+        },
+        {
+            "VoiceVolume",
+            new AudioChannelData()
+            {
+                mixerChannelName = "VoiceVolume",
+                defaultValue = 1.0f
+            }
+        },
+    };
+
+    private void Start()
+    {
+        foreach (var data in audioChannels)
+        {
+            Options.RegisterFloatOptionCallback(data.Key, VolumeValueChanged);
+        }
+    }
+
+    private void VolumeValueChanged(string name, float volume)
+    {
+        if (audioChannels.ContainsKey(name))
+        {
+            var chanel = audioChannels[name];
+            audioMixer.SetFloat(chanel.mixerChannelName, volume.LinearToDecibel());
         }
     }
 }
