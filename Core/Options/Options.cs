@@ -94,12 +94,14 @@ public class Options : MonoBehaviour
             data = JsonConvert.DeserializeObject<OptionsData>(fileJson, jsonSetting);
 
             data.AddUnusedOptions(defaultSettings);
+            //we should save after merging
+            Save();
         }
         //otherwise load the defaults
         else
         {
             data = defaultSettings;
-            //we should safe the default settings.
+            //we should save the default settings.
             Save();
         }
     }
