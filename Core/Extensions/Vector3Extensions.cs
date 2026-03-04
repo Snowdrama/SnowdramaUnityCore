@@ -2,6 +2,12 @@ using UnityEngine;
 
 public static class Vector3Extensions
 {
+    private static System.Random rand = new System.Random();
+    public static Vector3 RandomDirection()
+    {
+        return new Vector3(rand.Next(-1, 1), rand.Next(-1, 1)).normalized;
+    }
+
     public static Vector3Int FloorToInt(this Vector3 dir)
     {
         return new Vector3Int(Mathf.FloorToInt(dir.x), Mathf.FloorToInt(dir.y), Mathf.FloorToInt(dir.z));
