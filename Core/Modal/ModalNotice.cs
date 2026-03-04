@@ -73,7 +73,7 @@ public class ModalNotice : MonoBehaviour
     {
         if (ok.disableTime > 0)
         {
-            ok.disableTime -= Time.deltaTime;
+            ok.disableTime -= Time.unscaledDeltaTime;
             okButton.interactable = false;
             okButtonText.text = $"{ok.text} ({ok.disableTime:F1})";
             if (ok.disableTime <= 0)

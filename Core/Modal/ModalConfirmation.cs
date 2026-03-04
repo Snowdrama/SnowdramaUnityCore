@@ -107,7 +107,7 @@ public class ModalConfirmation : MonoBehaviour
     {
         if (ok.disableTime > 0)
         {
-            ok.disableTime -= Time.deltaTime;
+            ok.disableTime -= Time.unscaledDeltaTime;
             okButton.interactable = false;
             okButtonText.text = $"{ok.text} ({ok.disableTime:F1})";
             if (ok.disableTime <= 0)
@@ -119,7 +119,7 @@ public class ModalConfirmation : MonoBehaviour
 
         if (cancel.disableTime > 0)
         {
-            cancel.disableTime -= Time.deltaTime;
+            cancel.disableTime -= Time.unscaledDeltaTime;
             cancelButton.interactable = false;
             cancelButtonText.text = $"{cancel.text} ({cancel.disableTime:F1})";
             if (cancel.disableTime <= 0)
