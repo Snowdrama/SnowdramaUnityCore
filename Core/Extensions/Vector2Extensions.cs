@@ -149,4 +149,14 @@ public static class Vector2Extensions
         }
         return targetSize / size;
     }
+
+    /// <summary>
+    /// calculates the aspect ratio from the resolution
+    /// </summary>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    public static Vector2 FindAspectRatio(this Vector2 size)
+    {
+        return new Vector2();
+    }
 }
