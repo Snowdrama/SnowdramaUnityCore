@@ -5,8 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+
 ## [0.5.1] - 2026-03-04
 - Added QuaternionExtensions RandomRotation
+- Added Vector3Extension RandomDirection
+- Added Line Gizmo Simple Tool
+- Added Arrow Gizmo Simple Tool
+- Added DistributeInGrid3D Simple Tool
 - Added Vector3Extension RandomDirection
 
 ## [0.5.0] - 2026-03-01
