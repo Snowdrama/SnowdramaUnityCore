@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-04-07
+- Added/Fixed Vector3/Int Extension stuff
+- Added MoveUp/Down functions to ListExtensions
 
 ## [0.5.1] - 2026-03-04
 - Added QuaternionExtensions RandomRotation
