@@ -92,4 +92,43 @@ public static class ListExtensions
         var randomizedList = source.ShuffleList();
         return randomizedList.Take(count).ToList();
     }
+    public static void MoveUp<T>(this List<T> list, T item, int steps = 1)
+    {
+        var index = list.IndexOf(item);
+
+        // Not found or already at top
+        if (index <= 0 || steps <= 0)
+            return;
+
+        // Calculate how far we can actually move
+        var newIndex = index - steps;
+
+        // Clamp to top (index 0)
+        if (newIndex < 0)
+            newIndex = 0;
+
+        // Remove and reinsert
+        list.RemoveAt(index);
+        list.Insert(newIndex, item);
+    }
+
+    public static void MoveDown<T>(this List<T> list, T item, int steps = 1)
+    {
+        var index = list.IndexOf(item);
+
+        // Not found or already at bottom
+        if (index < 0 || index >= list.Count - 1 || steps <= 0)
+            return;
+
+        // Calculate how far we can actually move
+        var newIndex = index + steps;
+
+        // Clamp to bottom
+        if (newIndex >= list.Count)
+            newIndex = list.Count - 1;
+
+        // Remove and reinsert
+        list.RemoveAt(index);
+        list.Insert(newIndex, item);
+    }
 }
