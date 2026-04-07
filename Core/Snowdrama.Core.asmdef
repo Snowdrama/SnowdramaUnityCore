@@ -35,6 +35,11 @@
             "name": "com.unity.2d.tilemap.extras",
             "expression": "5.0.1",
             "define": "HAS_TILEMAP_EXTRAS"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.1",
+            "define": "HAS_CINEMACHINE"
         }
     ],
     "noEngineReferences": false
