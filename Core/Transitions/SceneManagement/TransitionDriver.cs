@@ -150,7 +150,7 @@ namespace Snowdrama.Transition
             currentTransition?.OnHideStarted();
             while (transitionValue < 1.0f)
             {
-                transitionValue += Time.deltaTime * speed;
+                transitionValue += Time.unscaledDeltaTime * speed;
                 currentTransition?.UpdateTransition(transitionValue, true);
                 await Awaitable.NextFrameAsync();
             }
@@ -160,7 +160,7 @@ namespace Snowdrama.Transition
 
             while (fakeLoadTime > 0.0f)
             {
-                fakeLoadTime -= Time.deltaTime;
+                fakeLoadTime -= Time.unscaledDeltaTime;
                 await Awaitable.NextFrameAsync();
             }
 
@@ -183,7 +183,7 @@ namespace Snowdrama.Transition
             while (transitionValue > 0.0f)
             {
                 state = TransitionState.ShowingScene;
-                transitionValue -= Time.deltaTime * showTime.CreateSpeedFromTime();
+                transitionValue -= Time.unscaledDeltaTime * showTime.CreateSpeedFromTime();
                 currentTransition?.UpdateTransition(transitionValue, false);
                 await Awaitable.NextFrameAsync();
             }
