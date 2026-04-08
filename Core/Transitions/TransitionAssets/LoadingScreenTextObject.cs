@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Snowdrama.Transition
@@ -6,22 +7,20 @@ namespace Snowdrama.Transition
     [CreateAssetMenu]
     public class LoadingScreenTextObject : ScriptableObject
     {
-        [SerializeField] List<string> loadingScreenText = new List<string>();
-        [SerializeField] int index = 0;
+        [SerializeField] private List<string> loadingScreenText = new List<string>();
+        [SerializeField] private int index = 0;
+        [SerializeField] private bool chooseRandom = true;
 
         public string GetLoadingScreenText()
         {
+            if (chooseRandom)
+            {
+                return loadingScreenText.GetRandom();
+            }
+
             index++;
             index %= loadingScreenText.Count;
             return loadingScreenText[index];
-        }
-        public string GetRandomString()
-        {
-            if(loadingScreenText.Count > 0)
-            {
-                return loadingScreenText[Random.Range(0, loadingScreenText.Count)];
-            }
-            return "No Loading Screen Text Today! Sorry!";
         }
     }
 }
