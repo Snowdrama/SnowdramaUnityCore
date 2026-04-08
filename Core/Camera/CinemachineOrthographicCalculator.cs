@@ -1,17 +1,15 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
-#if HAS_CINEMACHINE
-using Cinemachine;
-
 [ExecuteAlways]
-public class CinemachineVirtualOrthoCalculator : MonoBehaviour
+public class CinemachineOrthographicCalculator : MonoBehaviour
 {
     public float verticalUnits;
     public float horizontalUnits;
 
-    private CinemachineVirtualCamera cinemachineCamera;
+    private CinemachineCamera cinemachineCamera;
     private float width;
     private float height;
     private float orthoSize;
@@ -19,11 +17,11 @@ public class CinemachineVirtualOrthoCalculator : MonoBehaviour
     private float verticalUnitsOld;
     private float horizontalUnitsOld;
 
-    void Update()
+    private void Update()
     {
         if (cinemachineCamera == null)
         {
-            cinemachineCamera = this.GetComponent<CinemachineVirtualCamera>();
+            cinemachineCamera = this.GetComponent<CinemachineCamera>();
         }
         if (currentScreenSize.x != Screen.width || currentScreenSize.y != Screen.height || verticalUnits != verticalUnitsOld || horizontalUnits != horizontalUnitsOld)
         {
@@ -33,8 +31,8 @@ public class CinemachineVirtualOrthoCalculator : MonoBehaviour
             Debug.LogWarningFormat("New Resolution: [{0}, {1}]", Screen.width, Screen.height);
             currentScreenSize.x = Screen.width;
             currentScreenSize.y = Screen.height;
-            width = CalcWidth();
-            height = CalcHeight();
+            width = this.CalcWidth();
+            height = this.CalcHeight();
             orthoSize = 5.0f;
             if (width > height)
             {
@@ -45,16 +43,16 @@ public class CinemachineVirtualOrthoCalculator : MonoBehaviour
                 orthoSize = height;
             }
 
-            cinemachineCamera.m_Lens.ModeOverride = LensSettings.OverrideModes.Orthographic;
-            cinemachineCamera.m_Lens.OrthographicSize = orthoSize;
+            cinemachineCamera.Lens.ModeOverride = LensSettings.OverrideModes.Orthographic;
+            cinemachineCamera.Lens.OrthographicSize = orthoSize;
         }
     }
 
-    float CalcWidth()
+    private float CalcWidth()
     {
         return horizontalUnits * Screen.height / Screen.width * 0.5f;
     }
-    float CalcHeight()
+    private float CalcHeight()
     {
         return verticalUnits * 0.5f;
     }
@@ -64,4 +62,3 @@ public class CinemachineVirtualOrthoCalculator : MonoBehaviour
         Gizmos.DrawWireCube(this.transform.position, new Vector3(horizontalUnits, verticalUnits, 0));
     }
 }
-#endif
