@@ -147,12 +147,14 @@ namespace Snowdrama.Transition
             var speed = hideTime.CreateSpeedFromTime();
             var transitionValue = 0.0f;
 
+            currentTransition?.OnHideStarted();
             while (transitionValue < 1.0f)
             {
                 transitionValue += Time.deltaTime * speed;
                 currentTransition?.UpdateTransition(transitionValue, true);
                 await Awaitable.NextFrameAsync();
             }
+            currentTransition?.OnHideCompleted();
 
             sceneHiddenCallback?.Invoke();
 
@@ -177,6 +179,7 @@ namespace Snowdrama.Transition
             transitionCanvas?.SetActive(true);
             currentTransition?.gameObject.SetActive(true);
 
+            currentTransition?.OnShowStarted();
             while (transitionValue > 0.0f)
             {
                 state = TransitionState.ShowingScene;
@@ -184,6 +187,7 @@ namespace Snowdrama.Transition
                 currentTransition?.UpdateTransition(transitionValue, false);
                 await Awaitable.NextFrameAsync();
             }
+            currentTransition?.OnShowCompleted();
             transitionCanvas?.SetActive(false);
             currentTransition?.OnTransitionComplete();
             currentTransition?.gameObject?.SetActive(false);
