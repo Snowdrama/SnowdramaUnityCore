@@ -9,6 +9,7 @@ namespace Snowdrama.UI
     {
         private Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
         private Stack<string> routesOpened = new Stack<string>();
+        private int openRouteCount = 0;
 
         [Header("Debug[Don't Edit!]")]
         [SerializeField] private List<string> registeredRoutes = new List<string>();
@@ -21,6 +22,10 @@ namespace Snowdrama.UI
         public Stack<string> GetRoutesOpened()
         {
             return routesOpened;
+        }
+        public int GetOpenRouteCount()
+        {
+            return openRouteCount;
         }
 
         private void OnEnable()
@@ -100,6 +105,7 @@ namespace Snowdrama.UI
                 }
                 routesOpened.Push(routeSegment.ToLower());
                 routes[routeSegment.ToLower()].OpenRoute();
+                openRouteCount++;
             }
             else
             {
@@ -115,6 +121,7 @@ namespace Snowdrama.UI
                 this.CloseAll();
                 routesOpened.Push(routeSegment.ToLower());
                 routes[routeSegment.ToLower()].OpenRoute();
+                openRouteCount = 1;
             }
             else
             {
@@ -135,6 +142,8 @@ namespace Snowdrama.UI
             {
                 route.AllClosed();
             }
+
+            openRouteCount = 0;
             routesOpened.Clear();
             this.UpdateDebug();
         }
@@ -147,6 +156,7 @@ namespace Snowdrama.UI
                 if (routes.ContainsKey(rs))
                 {
                     routes[rs].CloseRoute();
+                    openRouteCount--;
                 }
                 if (routesOpened.Count > 0)
                 {
@@ -164,6 +174,7 @@ namespace Snowdrama.UI
                 {
                     route.AllClosed();
                 }
+                openRouteCount = 0;
             }
 
             this.UpdateDebug();

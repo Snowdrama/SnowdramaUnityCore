@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [0.5.4] - 2026-04-07
+## [0.5.4] - 2026-04-08
 - UIRoute now remembers the last selection until closed
 - UIRouter now uses private properties and exposes a getter for the current stack
 
