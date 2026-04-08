@@ -38,14 +38,14 @@ namespace Snowdrama.Transition
             StartHideTransitionMessage = TransitionMessageHub.Get<StartHideTransitionMessage>();
             StartShowTransitionMessage = TransitionMessageHub.Get<StartShowTransitionMessage>();
 
-            StartHideTransitionMessage.AddListener(HideScene);
-            StartShowTransitionMessage.AddListener(ShowScreen);
+            StartHideTransitionMessage.AddListener(this.HideScene);
+            StartShowTransitionMessage.AddListener(this.ShowScreen);
         }
 
         private void OnDisable()
         {
-            StartHideTransitionMessage.RemoveListener(HideScene);
-            StartShowTransitionMessage.RemoveListener(ShowScreen);
+            StartHideTransitionMessage.RemoveListener(this.HideScene);
+            StartShowTransitionMessage.RemoveListener(this.ShowScreen);
             TransitionMessageHub.Return<StartHideTransitionMessage>();
             TransitionMessageHub.Return<StartShowTransitionMessage>();
             Messages.ReturnHub(MessageHubName);
@@ -53,13 +53,13 @@ namespace Snowdrama.Transition
 
         private void Start()
         {
-            FindTransitions();
+            this.FindTransitions();
             //transitionCanvas?.SetActive(false);
             //currentTransition?.gameObject?.SetActive(false);
         }
         private void OnValidate()
         {
-            FindTransitions();
+            this.FindTransitions();
         }
 
         private void FindTransitions()
@@ -67,12 +67,12 @@ namespace Snowdrama.Transition
             if (transitionCanvas == null)
             {
                 //attmpt to get the canvas if we didn't set it explicitly
-                transitionCanvas = transform.GetChild(0).gameObject;
+                transitionCanvas = this.transform.GetChild(0).gameObject;
             }
 
             transitions.Clear();
             debugTransitionNameKeys.Clear();
-            for (int i = 0; i < transitionCanvas.transform.childCount; i++)
+            for (var i = 0; i < transitionCanvas.transform.childCount; i++)
             {
                 var child = transitionCanvas.transform.GetChild(i);
                 var transitionElement = child.GetComponent<Transition>();
@@ -90,7 +90,7 @@ namespace Snowdrama.Transition
                 Debug.LogWarning($"Found 0 transitions, you need at least 1 transition that's a child of the Transition Driver");
             }
 
-            ValidateTransition();
+            this.ValidateTransition();
         }
 
         private void ValidateTransition()
@@ -101,7 +101,7 @@ namespace Snowdrama.Transition
             }
             if (transitions.Keys.Count == 0)
             {
-                Debug.LogError($"Transition list has 0 transitions, one transition is required", gameObject);
+                Debug.LogError($"Transition list has 0 transitions, one transition is required", this.gameObject);
                 return;
             }
             if (currentTransition == null)
@@ -134,15 +134,18 @@ namespace Snowdrama.Transition
             Action fakeLoadComplete
         )
         {
-            currentTransition = ChooseTransition(allowedTransitions);
+            currentTransition = this.ChooseTransition(allowedTransitions);
 
             //activate the transition and canvas
             transitionCanvas?.SetActive(true);
             currentTransition?.gameObject.SetActive(true);
 
-            float currentHideTime = hideTime;
-            float speed = hideTime.CreateSpeedFromTime();
-            float transitionValue = 0.0f;
+            //start the transition
+            currentTransition?.OnTransitionStarted();
+
+            var currentHideTime = hideTime;
+            var speed = hideTime.CreateSpeedFromTime();
+            var transitionValue = 0.0f;
 
             while (transitionValue < 1.0f)
             {
@@ -167,9 +170,9 @@ namespace Snowdrama.Transition
             Action sceneShownCallback
         )
         {
-            float currentShowTime = showTime;
-            float speed = showTime.CreateSpeedFromTime();
-            float transitionValue = 1.0f;
+            var currentShowTime = showTime;
+            var speed = showTime.CreateSpeedFromTime();
+            var transitionValue = 1.0f;
 
             transitionCanvas?.SetActive(true);
             currentTransition?.gameObject.SetActive(true);
@@ -182,8 +185,8 @@ namespace Snowdrama.Transition
                 await Awaitable.NextFrameAsync();
             }
             transitionCanvas?.SetActive(false);
+            currentTransition?.OnTransitionComplete();
             currentTransition?.gameObject?.SetActive(false);
-
             sceneShownCallback?.Invoke();
         }
 

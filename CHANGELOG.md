@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-04-07
+- Fix to Transition driver to call OnTransitionStart/Complete used by some sample transitions like the Text one
+
 ## [0.5.2] - 2026-04-07
 - Added/Fixed Vector3/Int Extension stuff
 - Added MoveUp/Down functions to ListExtensions
