@@ -8,14 +8,20 @@ namespace Snowdrama.UI
     public class UIRouter : ScriptableObject
     {
         private Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
-        public Stack<string> routesOpened = new Stack<string>();
+        private Stack<string> routesOpened = new Stack<string>();
 
         [Header("Debug[Don't Edit!]")]
-        public List<string> registeredRoutes = new List<string>();
-        public List<string> currentStack = new List<string>();
+        [SerializeField] private List<string> registeredRoutes = new List<string>();
+        [SerializeField] private List<string> currentStack = new List<string>();
 
-        public Action OnAllRoutesClosed;
-        public Action<string> OnOpenRoute;
+        private Action OnAllRoutesClosed;
+        private Action<string> OnOpenRoute;
+
+
+        public Stack<string> GetRoutesOpened()
+        {
+            return routesOpened;
+        }
 
         private void OnEnable()
         {
@@ -99,14 +105,14 @@ namespace Snowdrama.UI
             {
                 Debug.LogError("No Route with segment: " + routeSegment.ToLower());
             }
-            UpdateDebug();
+            this.UpdateDebug();
         }
 
         public void OpenRouteExclusive(string routeSegment)
         {
             if (routes.ContainsKey(routeSegment.ToLower()))
             {
-                CloseAll();
+                this.CloseAll();
                 routesOpened.Push(routeSegment.ToLower());
                 routes[routeSegment.ToLower()].OpenRoute();
             }
@@ -114,7 +120,7 @@ namespace Snowdrama.UI
             {
                 Debug.LogError("No Route with segment: " + routeSegment.ToLower());
             }
-            UpdateDebug();
+            this.UpdateDebug();
         }
 
         public void CloseAll()
@@ -125,8 +131,12 @@ namespace Snowdrama.UI
                 routes[rs].CloseRoute();
             }
             OnAllRoutesClosed?.Invoke();
+            foreach (var route in routes.Values)
+            {
+                route.AllClosed();
+            }
             routesOpened.Clear();
-            UpdateDebug();
+            this.UpdateDebug();
         }
 
         public void Back()
@@ -150,9 +160,13 @@ namespace Snowdrama.UI
             if (routesOpened.Count <= 0)
             {
                 OnAllRoutesClosed?.Invoke();
+                foreach (var route in routes.Values)
+                {
+                    route.AllClosed();
+                }
             }
 
-            UpdateDebug();
+            this.UpdateDebug();
         }
 
 
