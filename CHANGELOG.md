@@ -5,9 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-04-09
+- Change to List Extensions to use RandomAndNoise which uses System.Random instead of UnityEngine.Random to allow things like Shuffle/MutateSelf to work outside of things like Start/Awake
+
 ## [0.5.4] - 2026-04-08
 - UIRoute now remembers the last selection until closed
 - UIRouter now uses private properties and exposes a getter for the current stack
+- UIRouter now has a counter of how many routes are open and a getter for it, this is better instead of calling count on the stack every time.
 
 ## [0.5.3] - 2026-04-07
 - Fix to Transition driver to call OnTransitionStart/Complete used by some sample transitions like the Text one

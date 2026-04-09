@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 public static class ListExtensions
 {
     /// <summary>
@@ -17,12 +16,12 @@ public static class ListExtensions
         {
             throw new ArgumentNullException(nameof(sourceList));
         }
-        List<T> newList = new List<T>(sourceList);
-        int size = newList.Count;
-        for (int i = 0; i < size; i++)
+        var newList = new List<T>(sourceList);
+        var size = newList.Count;
+        for (var i = 0; i < size; i++)
         {
-            T temp = newList[i];
-            int randIndex = UnityEngine.Random.Range(0, size);
+            var temp = newList[i];
+            var randIndex = RandomAndNoise.RandomRange(0, size);
             newList[i] = newList[randIndex];
             newList[randIndex] = temp;
         }
@@ -42,11 +41,11 @@ public static class ListExtensions
             throw new ArgumentNullException(nameof(sourceList));
         }
 
-        int size = sourceList.Count;
-        for (int i = 0; i < size; i++)
+        var size = sourceList.Count;
+        for (var i = 0; i < size; i++)
         {
-            T temp = sourceList[i];
-            int randIndex = UnityEngine.Random.Range(0, size);
+            var temp = sourceList[i];
+            var randIndex = RandomAndNoise.RandomRange(0, size);
             sourceList[i] = sourceList[randIndex];
             sourceList[randIndex] = temp;
         }
@@ -70,7 +69,7 @@ public static class ListExtensions
                 $"the sourceList which has {sourceList.Count} elements.");
         }
 
-        T firstValue = sourceList[firstIndex];
+        var firstValue = sourceList[firstIndex];
         sourceList[firstIndex] = sourceList[secondIndex];
         sourceList[secondIndex] = firstValue;
     }
@@ -85,7 +84,7 @@ public static class ListExtensions
         if (source == null) throw new ArgumentNullException("source");
         if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
 
-        return source.ElementAt(UnityEngine.Random.Range(0, source.Count));
+        return source.ElementAt(UnityEngine.Random.RandomRange(0, source.Count));
     }
     public static IList<T> GetRandomCount<T>(this IList<T> source, int count)
     {
