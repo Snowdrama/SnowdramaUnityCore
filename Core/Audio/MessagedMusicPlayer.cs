@@ -22,17 +22,25 @@ public class MessagedMusicPlayer : MonoBehaviour
     {
         if (currentSource.clip == null)
         {
-            currentSource.clip = songs.GetRandom().Value;
+            if (songs.Count > 0)
+            {
+                currentSource.clip = songs.GetRandom().Value;
+            }
+            else
+            {
+                Debug.LogWarning($"Songs need to be assigned to Music Manager");
+            }
+
         }
         if (nextSource == null)
         {
-            GameObject newNextSource = new GameObject();
+            var newNextSource = new GameObject();
             newNextSource.transform.SetParent(this.transform, false);
             nextSource = newNextSource.AddComponent<AudioSource>();
         }
         if (currentSource == null)
         {
-            GameObject newCurrentSource = new GameObject();
+            var newCurrentSource = new GameObject();
             newCurrentSource.transform.SetParent(this.transform, false);
             currentSource = newCurrentSource.AddComponent<AudioSource>();
         }
@@ -106,7 +114,7 @@ public class MessagedMusicPlayer : MonoBehaviour
             {
                 transitioning = false;
                 transitionTime = 0;
-                SwapSources();
+                this.SwapSources();
             }
         }
     }
@@ -123,12 +131,12 @@ public class MessagedMusicPlayer : MonoBehaviour
     private void OnEnable()
     {
         requestMessage = Messages.Get<PlayMusicRequestMessage>();
-        requestMessage.AddListener(SetNextSong);
+        requestMessage.AddListener(this.SetNextSong);
     }
 
     private void OnDisable()
     {
-        requestMessage.RemoveListener(SetNextSong);
+        requestMessage.RemoveListener(this.SetNextSong);
         requestMessage = null;
     }
 
