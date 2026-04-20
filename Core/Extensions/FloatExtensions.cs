@@ -23,7 +23,7 @@ public static class FloatExtensions
     /// <returns></returns>
     public static float Remap(this float value, float fromMin, float fromMax, float toMin, float toMax)
     {
-        return (value - fromMin) / (fromMax - fromMin) * (toMax - toMin) + toMin;
+        return ((value - fromMin) / (fromMax - fromMin) * (toMax - toMin)) + toMin;
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public static class FloatExtensions
     /// <returns></returns>
     public static float WrapClamp(this float x, float min, float max)
     {
-        return (((x - min) % (max - min)) + (max - min)) % (max - min) + min;
+        return ((((x - min) % (max - min)) + (max - min)) % (max - min)) + min;
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class FloatExtensions
             return x;
         }
 
-        return (x % m + m) % m;
+        return ((x % m) + m) % m;
     }
 
     public static int FloorToInt(this float val)
@@ -142,7 +142,7 @@ public static class FloatExtensions
     /// <returns>A value from 0-1 linearly</returns>
     public static float DecibelToLinear(float dB)
     {
-        float linear = Mathf.Pow(10.0f, dB / 20.0f);
+        var linear = Mathf.Pow(10.0f, dB / 20.0f);
         return linear;
     }
 
@@ -159,6 +159,11 @@ public static class FloatExtensions
     /// <returns>The value rounded to the nearest snap target</returns>
     public static float RoundTo(this float value, float snapTarget)
     {
+        if (snapTarget == 0)
+        {
+            throw new ArgumentException("Round To requires snapTarget to be non-zero");
+        }
+
         return Mathf.Round(value / snapTarget) * snapTarget;
     }
 
