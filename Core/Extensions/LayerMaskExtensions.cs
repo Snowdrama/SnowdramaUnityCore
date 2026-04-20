@@ -10,7 +10,7 @@ public static class LayerMaskExtensions
         return layermask == (layermask | (1 << layer));
     }
 
-    public static int ToLayerInt(LayerMask layerMask) {
+    public static int ToLayerInt(this LayerMask layerMask) {
 		int layerNumber = 0;
 		int layer = layerMask.value;
 		while(layer > 0) {
@@ -19,5 +19,4 @@ public static class LayerMaskExtensions
 		}
 		return layerNumber - 1;
 	}
-
 }
