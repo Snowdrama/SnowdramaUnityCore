@@ -91,6 +91,16 @@ namespace Snowdrama.UI
             {
                 routes.Remove(routeSegment.ToLower());
                 registeredRoutes.Remove(routeSegment.ToLower());
+                //remove it if we're destroying the element
+                //to ensure we don't try and open it
+                if (currentStack.Contains(routeSegment.ToLower()))
+                {
+                    currentStack.Remove(routeSegment.ToLower());
+                }
+                if (routesOpened.Contains(routeSegment.ToLower()))
+                {
+                    routesOpened.(routeSegment.ToLower());
+                }
             }
         }
 
