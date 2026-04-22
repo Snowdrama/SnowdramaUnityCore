@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +7,10 @@ using UnityEngine;
 /// but is actually a list internally
 /// </summary>
 /// <typeparam name="T">The type the 'stack' holds</typeparam>
-public class StackList<T>
+public class StackList<T> : IEnumerable<T>
 {
     private List<T> items = new List<T>();
-
+    public int Count => items.Count;
     public void Push(T item)
     {
         items.Add(item);
@@ -29,8 +30,32 @@ public class StackList<T>
     {
         return items[items.Count - 1];
     }
-    public void Remove(int itemAtPosition)
+    public void Remove(T item)
+    {
+        items.Remove(item);
+    }
+    public void RemoveAt(int itemAtPosition)
     {
         items.RemoveAt(itemAtPosition);
+    }
+
+    public void Clear()
+    {
+        items.Clear();
+    }
+
+    public bool Contains(T item)
+    {
+        return items.Contains(item);
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return items.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return items.GetEnumerator();
     }
 }

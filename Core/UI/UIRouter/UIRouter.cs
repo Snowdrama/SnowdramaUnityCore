@@ -8,7 +8,7 @@ namespace Snowdrama.UI
     public class UIRouter : ScriptableObject
     {
         private Dictionary<string, UIRoute> routes = new Dictionary<string, UIRoute>();
-        private Stack<string> routesOpened = new Stack<string>();
+        private StackList<string> routesOpened = new StackList<string>();
         private int openRouteCount = 0;
 
         [Header("Debug[Don't Edit!]")]
@@ -19,7 +19,7 @@ namespace Snowdrama.UI
         private Action<string> OnOpenRoute;
 
 
-        public Stack<string> GetRoutesOpened()
+        public StackList<string> GetRoutesOpened()
         {
             return routesOpened;
         }
@@ -99,7 +99,7 @@ namespace Snowdrama.UI
                 }
                 if (routesOpened.Contains(routeSegment.ToLower()))
                 {
-                    routesOpened.(routeSegment.ToLower());
+                    routesOpened.Remove(routeSegment.ToLower());
                 }
             }
         }
