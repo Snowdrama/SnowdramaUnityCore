@@ -49,6 +49,12 @@ public class PauseMenuController : MonoBehaviour
             cancelAction.action.Enable();
             cancelAction.action.started -= this.OnPause;
         }
+        //if we're disabling the pause menu, then we're probably deleting
+        //ensure we're no longer requesting pause
+        PauseManager.RequestUnpause("PauseController");
+
+        //and also clear all the routes
+        pauseRouter.CloseAll();
     }
 
     public void OnPause(InputAction.CallbackContext context)
