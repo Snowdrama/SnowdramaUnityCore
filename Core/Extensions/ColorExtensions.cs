@@ -11,7 +11,7 @@ public static class ColorExtensions
     /// <returns></returns>
     public static Color ParseStringAsColor(this string hexString, Color fallback = default)
     {
-        Color color = fallback;
+        var color = fallback;
         ColorUtility.TryParseHtmlString(hexString, out color);
         return color;
     }
@@ -45,8 +45,8 @@ public static class ColorExtensions
         else
         {
             g = new Gradient();
-            GradientColorKey[] colorKeys = new GradientColorKey[8];
-            GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
+            var colorKeys = new GradientColorKey[8];
+            var alphaKeys = new GradientAlphaKey[2];
             alphaKeys[0].alpha = 1;
             alphaKeys[1].alpha = 1;
             alphaKeys[0].time = 0;
@@ -74,5 +74,38 @@ public static class ColorExtensions
 
         t = Mathf.Clamp01(t);
         return g.Evaluate(t);
+    }
+
+    public static Color MoveTowards(this Color color, Color targetColor, float maxDelta)
+    {
+        color.r = Mathf.MoveTowards(color.r, targetColor.r, maxDelta);
+        color.g = Mathf.MoveTowards(color.g, targetColor.g, maxDelta);
+        color.b = Mathf.MoveTowards(color.b, targetColor.b, maxDelta);
+        color.a = Mathf.MoveTowards(color.a, targetColor.a, maxDelta);
+
+        return color;
+    }
+    public static Color SmoothStep(this Color color, Color targetColor, float t)
+    {
+        //t = Mathf.MoveTowards(t, 1, t);
+        color.r = Mathf.SmoothStep(color.r, targetColor.r, t);
+        color.g = Mathf.SmoothStep(color.g, targetColor.g, t);
+        color.b = Mathf.SmoothStep(color.b, targetColor.b, t);
+        color.a = Mathf.SmoothStep(color.a, targetColor.a, t);
+
+        return color;
+    }
+    public static Color SmoothStep(this Color color, Color targetColor, ref float velocity, float smoothTime)
+    {
+        var rVel = velocity;
+        var gVel = velocity;
+        var bVel = velocity;
+
+        color.r = Mathf.SmoothDamp(color.r, targetColor.r, ref rVel, smoothTime);
+        color.g = Mathf.SmoothDamp(color.g, targetColor.g, ref gVel, smoothTime);
+        color.b = Mathf.SmoothDamp(color.b, targetColor.b, ref bVel, smoothTime);
+        color.a = Mathf.SmoothDamp(color.a, targetColor.a, ref velocity, smoothTime);
+
+        return color;
     }
 }
