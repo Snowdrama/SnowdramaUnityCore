@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.6.2] - 2026-04-26
 - Exposed static IsPaused bool in the PauseManager
 - Added format to the loading screen text so you can append the tooltip text to a format like "Loading: \[Replace\]"
-- 
+- Made the main content of the UIRoute into a list, so you can open multiple things when a UI opens(like a background texture)
 
 ## [0.6.1] - 2026-04-25
 - Added SmoothStep and MoveTowards variants for Color

@@ -11,7 +11,7 @@ namespace Snowdrama.UI
     {
         [SerializeField] private UIRouter _router;
         [SerializeField] private string _routeSegment;
-        [SerializeField] private GameObject _mainContent;
+        [SerializeField] private GameObject[] _toggleWhenActive;
         [SerializeField] private bool _startEnabled = false;
 
         [SerializeField] private Selectable _objectToSelectOnOpen;
@@ -25,11 +25,17 @@ namespace Snowdrama.UI
             if (_startEnabled)
             {
                 _router.OpenRoute(_routeSegment);
-                _mainContent?.SetActive(true);
+                foreach (var item in _toggleWhenActive)
+                {
+                    item?.SetActive(true);
+                }
             }
             else
             {
-                _mainContent?.SetActive(false);
+                foreach (var item in _toggleWhenActive)
+                {
+                    item?.SetActive(false);
+                }
             }
         }
 
@@ -40,7 +46,10 @@ namespace Snowdrama.UI
 
         public void OpenRoute()
         {
-            _mainContent?.SetActive(true);
+            foreach (var item in _toggleWhenActive)
+            {
+                item?.SetActive(true);
+            }
 
             // Try restoring last selected if still valid
             if (_lastSelected != null && _lastSelected.gameObject.activeInHierarchy && _lastSelected.IsInteractable())
@@ -67,7 +76,10 @@ namespace Snowdrama.UI
                 }
             }
 
-            _mainContent?.SetActive(false);
+            foreach (var item in _toggleWhenActive)
+            {
+                item?.SetActive(false);
+            }
         }
 
         /// <summary>
