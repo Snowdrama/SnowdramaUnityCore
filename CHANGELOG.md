@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.2] - 2026-04-26
+- Exposed static IsPaused bool in the PauseManager
+- Added format to the loading screen text so you can append the tooltip text to a format like "Loading: \[Replace\]"
+- 
+
 ## [0.6.1] - 2026-04-25
 - Added SmoothStep and MoveTowards variants for Color
 - Fix to scene controller to work correctly when the target scene is a sub-string of scene like going from "GameLevel1" to "Game" would break

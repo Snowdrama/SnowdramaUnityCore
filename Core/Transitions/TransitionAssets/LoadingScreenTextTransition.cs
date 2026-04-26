@@ -9,12 +9,14 @@ namespace Snowdrama.Transition
     [RequireComponent(typeof(TMP_Text))]
     public class LoadingScreenTextTransition : Transition
     {
-        [SerializeField] Color textColor;
-        [SerializeField] TMP_Text text;
+        [SerializeField] private Color textColor;
+        [SerializeField] private TMP_Text text;
 
-        [SerializeField] LoadingScreenTextObject loadingScreenText;
+        [SerializeField] private LoadingScreenTextObject loadingScreenText;
 
-        void Start()
+        [SerializeField] private string format = "Loading: [REPLACE]";
+        [SerializeField] private string replace = "[REPLACE]";
+        private void Start()
         {
             text = this.GetComponent<TMP_Text>();
             textColor = text.color;
@@ -36,7 +38,7 @@ namespace Snowdrama.Transition
 
         public override void OnTransitionStarted()
         {
-            text.text = loadingScreenText.GetLoadingScreenText();
+            text.text = format.Replace(replace, loadingScreenText.GetLoadingScreenText());
         }
 
 
