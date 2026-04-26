@@ -3,13 +3,22 @@ using UnityEngine;
 
 public class PauseManager : MonoBehaviour
 {
-    private PauseManager instance;
-    public bool IsPaused => requestedPauseList.Count > 0;
+    private static PauseManager instance;
+    public static bool IsPaused => requestedPauseList.Count > 0;
 
     private static List<string> requestedPauseList = new List<string>();
 
 #if UNITY_EDITOR
     [SerializeField] private List<string> requestedPauseListDebug = new List<string>();
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this.gameObject);
+        }
+        instance = this;
+    }
 
     public void Update()
     {
