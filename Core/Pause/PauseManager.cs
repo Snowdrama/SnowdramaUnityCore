@@ -4,6 +4,7 @@ using UnityEngine;
 public class PauseManager : MonoBehaviour
 {
     private PauseManager instance;
+    public bool IsPaused => requestedPauseList.Count > 0;
 
     private static List<string> requestedPauseList = new List<string>();
 
@@ -49,4 +50,5 @@ public class PauseManager : MonoBehaviour
             Time.timeScale = 1.0f;
         }
     }
+
 }
