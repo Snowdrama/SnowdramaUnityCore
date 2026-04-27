@@ -8,11 +8,11 @@ public class TestGameData_SaveBoolToSave : MonoBehaviour
     [SerializeField] private string key;
     private void Start()
     {
-        toggle = GetComponent<Toggle>();
+        toggle = this.GetComponent<Toggle>();
         var value = GameDataManager.GetBool(key, false);
-        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
+        //Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         toggle.SetIsOnWithoutNotify(value);
-        toggle.onValueChanged.AddListener(OnChanged);
+        toggle.onValueChanged.AddListener(this.OnChanged);
     }
 
     public void OnChanged(bool newState)

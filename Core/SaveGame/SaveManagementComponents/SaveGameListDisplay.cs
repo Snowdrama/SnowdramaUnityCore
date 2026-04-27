@@ -14,13 +14,13 @@ public class SaveGameListDisplay : MonoBehaviour
     private void OnEnable()
     {
         savesChanged = Messages.Get<SaveGameListChangedMessage>();
-        savesChanged.AddListener(LoadSaveList);
+        savesChanged.AddListener(this.LoadSaveList);
 
     }
 
     private void OnDisable()
     {
-        savesChanged.RemoveListener(LoadSaveList);
+        savesChanged.RemoveListener(this.LoadSaveList);
         savesChanged = null;
         Messages.Return<SaveGameListChangedMessage>();
     }
@@ -29,7 +29,7 @@ public class SaveGameListDisplay : MonoBehaviour
 
     private void Start()
     {
-        LoadSaveList();
+        this.LoadSaveList();
     }
 
     private void Update()
@@ -38,7 +38,7 @@ public class SaveGameListDisplay : MonoBehaviour
     private void LoadSaveList()
     {
 
-        for (int i = 0; i < buttons.Count; i++)
+        for (var i = 0; i < buttons.Count; i++)
         {
             Destroy(buttons[i]);
         }
@@ -64,7 +64,7 @@ public class SaveGameListDisplay : MonoBehaviour
         }
 
         buttonContainer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonHeight * saves.Count);
-        Debug.Log($"Setting Height to: {buttonHeight * saves.Count}");
+        //Debug.Log($"Setting Height to: {buttonHeight * saves.Count}");
 
         saves = saves.OrderByDescending(x => x.Value.dateModified).ToList();
 

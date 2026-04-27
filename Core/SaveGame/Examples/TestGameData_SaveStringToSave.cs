@@ -8,11 +8,11 @@ public class TestGameData_SaveStringToSave : MonoBehaviour
     [SerializeField] private string key;
     private void Start()
     {
-        inputField = GetComponent<TMP_InputField>();
+        inputField = this.GetComponent<TMP_InputField>();
         var value = GameDataManager.GetString(key, "N/A");
-        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
+        //Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         inputField.SetTextWithoutNotify(value);
-        inputField.onValueChanged.AddListener(OnChanged);
+        inputField.onValueChanged.AddListener(this.OnChanged);
     }
 
     public void OnChanged(string newState)

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.3] - 2026-04-27
+- Fix to the SceneController again to fix issues with weird loading behavior when loading a scene more than once. 
+
 ## [0.6.2] - 2026-04-26
 - Exposed static IsPaused bool in the PauseManager
 - Added format to the loading screen text so you can append the tooltip text to a format like "Loading: \[Replace\]"

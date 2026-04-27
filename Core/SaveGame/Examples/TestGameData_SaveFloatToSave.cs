@@ -8,17 +8,16 @@ public class TestGameData_SaveFloatToSave : MonoBehaviour
     [SerializeField] private string key;
     private void Start()
     {
-        inputField = GetComponent<TMP_InputField>();
+        inputField = this.GetComponent<TMP_InputField>();
         var value = GameDataManager.GetFloat(key, 0.0f);
-        Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
+        //Debug.Log($"Loaded {key} from GameDataManager, Value: {value}");
         inputField.SetTextWithoutNotify($"{value}");
-        inputField.onValueChanged.AddListener(OnChanged);
+        inputField.onValueChanged.AddListener(this.OnChanged);
     }
 
     public void OnChanged(string newState)
     {
-        float value;
-        if (float.TryParse(newState, out value))
+        if (float.TryParse(newState, out var value))
         {
             GameDataManager.SetFloat(key, value);
         }

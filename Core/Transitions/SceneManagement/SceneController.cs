@@ -312,9 +312,13 @@ public class SceneController : MonoBehaviour
                 if (loadedSceneData.ReloadIfSceneExists)
                 {
                     DebugLogWarning($"We DO want to reload");
-                    //unload and then also reload the scene
+                    //unload because we also want to unload and reload
+                    //and we're already in the calculatedScenes_ToLoad
                     calculatedScenes_ToUnload.Add(loadedSceneData.Name);
-                    calculatedScenes_ToLoad.Add(loadedSceneData.Name);
+
+                    //DON'T DO THIS: it will mean loading a second one!
+                    //DON'T DO THIS: it will mean loading a second one!
+                    //calculatedScenes_ToLoad.Add(loadedSceneData.Name);
                 }
                 else
                 {
@@ -403,8 +407,14 @@ public class SceneController : MonoBehaviour
     #region Load Functions
     private static void LoadScenes_Normal(List<string> scenesToLoad)
     {
+        DebugLogWarning($"Number of Scenes to Unload: {scenesToLoad.Count}");
+
+        foreach (var scene in scenesToLoad) { Debug.Log($"<color=orange>{scene}</color>"); }
+
+
         for (var i = 0; i < scenesToLoad.Count; i++)
         {
+            DebugLog($"Loading Scene: {scenesToLoad[i]}");
             LoadScene_Normal(scenesToLoad[i]);
         }
     }
