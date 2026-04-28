@@ -64,12 +64,12 @@ public class SaveManager : MonoBehaviour
             saveDataInfo = new SaveDataStruct();
         }
 
-        foreach (SaveGameInfo file in saveDataInfo.saveLocations.Values)
+        foreach (var file in saveDataInfo.saveLocations.Values)
         {
             //Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
 
-        foreach (SaveGameInfo file in saveDataInfo.autoSaveLocations.Values)
+        foreach (var file in saveDataInfo.autoSaveLocations.Values)
         {
             //Debug.Log($"Found Load: {file.name} {file.filePath}");
         }
@@ -99,7 +99,7 @@ public class SaveManager : MonoBehaviour
 #endif
     }
 
-    public void NewGame()
+    public static void NewGame()
     {
         //Debug.Log($"Starting new game, loading default data!");
         //load the default save from resources:
