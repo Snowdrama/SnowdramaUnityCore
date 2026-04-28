@@ -116,6 +116,14 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    public static void LoadSaveScene()
+    {
+        if (loadedSave != null)
+        {
+            SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
+        }
+    }
+
     public static SaveDataStruct GetSaveList()
     {
         return saveDataInfo;
@@ -229,7 +237,7 @@ public class SaveManager : MonoBehaviour
 
     public static int GetUnusedSaveSlot()
     {
-        int index = 0;
+        var index = 0;
         //This assumes that there's no way the player
         //has int.MaxValue number of saves...
         //we will EVENTUALLY find one they don't use
@@ -242,7 +250,7 @@ public class SaveManager : MonoBehaviour
 
     public static int GetUnusedAutoSaveSlot()
     {
-        int index = 0;
+        var index = 0;
         //This assumes that there's no way the player
         //has int.MaxValue number of saves...
         //we will EVENTUALLY find one they don't use
@@ -271,7 +279,7 @@ public class SaveManager : MonoBehaviour
         var filePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.json";
 
         //do we have a file there already?
-        bool fileExists = File.Exists(filePath);
+        var fileExists = File.Exists(filePath);
 
         //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
 
