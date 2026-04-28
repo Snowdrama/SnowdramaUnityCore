@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ## [0.6.4] - 2026-04-28
-- Make the SaveGameManager.NewGame function static so it can be called from other scripts 
+- Make the SaveGameManager.NewGame function static so it can be called from other scripts
+- Added SaveManager.LoadSaveScene to trigger SceneController.GoToScene on the scene that was listed in the save data
+- SaveManager no longer automatically sets the current scene when saving, to allow another scene to save before loading the next scene
 
 ## [0.6.3] - 2026-04-27
 - Fix to the SceneController again to fix issues with weird loading behavior when loading a scene more than once. 

@@ -312,10 +312,6 @@ public class SaveManager : MonoBehaviour
         }
 
         Messages.GetOnce<SaveGameStartingSaveMessage>().Dispatch();
-
-        gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
-
-
         //Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         File.WriteAllText(filePath, fileContents);
