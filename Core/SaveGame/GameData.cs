@@ -29,6 +29,8 @@ public class GameData
     public Dictionary<string, Vector3[]> Vector3ArrayData;
     public Dictionary<string, Vector3Int[]> Vector3IntArrayData;
     public Dictionary<string, Vector4[]> Vector4ArrayData;
+    public Dictionary<string, Color> colorData;
+    public Dictionary<string, Color[]> colorArrayData;
 
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //public Dictionary<int, string> imageData = new Dictionary<int, string>();
@@ -38,6 +40,8 @@ public class GameData
 
     //TODO: ensure this serializes and stuff correctly...
     public Dictionary<Type, Dictionary<string, System.Object>> objectData;
+
+    #region SingleDataTypes
 
     #region BoolData
     public void SetBool(string name, bool value)
@@ -63,7 +67,7 @@ public class GameData
         {
             boolData = new Dictionary<string, bool>();
         }
-        if (boolData.TryGetValue(name, out bool value))
+        if (boolData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -96,7 +100,7 @@ public class GameData
             intData = new Dictionary<string, int>();
         }
         //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
-        if (intData.TryGetValue(name, out int value))
+        if (intData.TryGetValue(name, out var value))
         {
             //Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -132,7 +136,7 @@ public class GameData
             Debug.LogError($"Float dictionary is null, setting it to empty dictionary");
             floatData = new Dictionary<string, float>();
         }
-        if (floatData.TryGetValue(name, out float value))
+        if (floatData.TryGetValue(name, out var value))
         {
             //Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -167,7 +171,7 @@ public class GameData
             doubleData = new Dictionary<string, double>();
         }
 
-        if (doubleData.TryGetValue(name, out double value))
+        if (doubleData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -199,7 +203,7 @@ public class GameData
         {
             stringData = new Dictionary<string, string>();
         }
-        if (stringData.TryGetValue(name, out string value))
+        if (stringData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -232,7 +236,7 @@ public class GameData
             Vector2Data = new Dictionary<string, Vector2>();
         }
 
-        if (Vector2Data.TryGetValue(name, out Vector2 value))
+        if (Vector2Data.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -265,7 +269,7 @@ public class GameData
             Vector2IntData = new Dictionary<string, Vector2Int>();
         }
 
-        if (Vector2IntData.TryGetValue(name, out Vector2Int value))
+        if (Vector2IntData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -299,7 +303,7 @@ public class GameData
             Vector3Data = new Dictionary<string, Vector3>();
         }
 
-        if (Vector3Data.TryGetValue(name, out Vector3 value))
+        if (Vector3Data.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -332,7 +336,7 @@ public class GameData
             Vector3IntData = new Dictionary<string, Vector3Int>();
         }
 
-        if (Vector3IntData.TryGetValue(name, out Vector3Int value))
+        if (Vector3IntData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -365,13 +369,52 @@ public class GameData
             Vector4Data = new Dictionary<string, Vector4>();
         }
 
-        if (Vector4Data.TryGetValue(name, out Vector4 value))
+        if (Vector4Data.TryGetValue(name, out var value))
         {
             return value;
         }
         return defaultValue;
     }
     #endregion
+
+    #region ColorData
+    public void SetColor(string name, Color value)
+    {
+        if (colorData == null)
+        {
+            colorData = new Dictionary<string, Color>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!colorData.ContainsKey(name))
+        {
+            colorData.Add(name, value);
+        }
+        else
+        {
+            colorData[name] = value;
+        }
+    }
+
+    public Color GetColor(string name, Color defaultValue = default)
+    {
+        if (colorData == null)
+        {
+            colorData = new Dictionary<string, Color>();
+        }
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (colorData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
+    #endregion
+
+    #region ArrayDataTypes
 
     #region boolArrayData
     public void SetBoolArray(string name, bool[] value)
@@ -397,7 +440,7 @@ public class GameData
         {
             boolArrayData = new Dictionary<string, bool[]>();
         }
-        if (boolArrayData.TryGetValue(name, out bool[] value))
+        if (boolArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -429,7 +472,7 @@ public class GameData
         {
             intArrayData = new Dictionary<string, int[]>();
         }
-        if (intArrayData.TryGetValue(name, out int[] value))
+        if (intArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -461,7 +504,7 @@ public class GameData
         {
             floatArrayData = new Dictionary<string, float[]>();
         }
-        if (floatArrayData.TryGetValue(name, out float[] value))
+        if (floatArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -494,7 +537,7 @@ public class GameData
         {
             doubleArrayData = new Dictionary<string, double[]>();
         }
-        if (doubleArrayData.TryGetValue(name, out double[] value))
+        if (doubleArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -526,7 +569,7 @@ public class GameData
         {
             stringArrayData = new Dictionary<string, string[]>();
         }
-        if (stringArrayData.TryGetValue(name, out string[] value))
+        if (stringArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -558,7 +601,7 @@ public class GameData
         {
             Vector2ArrayData = new Dictionary<string, Vector2[]>();
         }
-        if (Vector2ArrayData.TryGetValue(name, out Vector2[] value))
+        if (Vector2ArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -590,7 +633,7 @@ public class GameData
         {
             Vector2IntArrayData = new Dictionary<string, Vector2Int[]>();
         }
-        if (Vector2IntArrayData.TryGetValue(name, out Vector2Int[] value))
+        if (Vector2IntArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -622,7 +665,7 @@ public class GameData
         {
             Vector3ArrayData = new Dictionary<string, Vector3[]>();
         }
-        if (Vector3ArrayData.TryGetValue(name, out Vector3[] value))
+        if (Vector3ArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -654,7 +697,7 @@ public class GameData
         {
             Vector3IntArrayData = new Dictionary<string, Vector3Int[]>();
         }
-        if (Vector3IntArrayData.TryGetValue(name, out Vector3Int[] value))
+        if (Vector3IntArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
@@ -687,12 +730,49 @@ public class GameData
             Vector4ArrayData = new Dictionary<string, Vector4[]>();
         }
 
-        if (Vector4ArrayData.TryGetValue(name, out Vector4[] value))
+        if (Vector4ArrayData.TryGetValue(name, out var value))
         {
             return value;
         }
         return defaultValue;
     }
+    #endregion
+
+    #region ColorArrayData
+    public void SetColorArray(string name, Color[] value)
+    {
+        if (colorArrayData == null)
+        {
+            colorArrayData = new Dictionary<string, Color[]>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!colorArrayData.ContainsKey(name))
+        {
+            colorArrayData.Add(name, value);
+        }
+        else
+        {
+            colorArrayData[name] = value;
+        }
+    }
+
+    public Color[] GetColorArray(string name, Color[] defaultValue = default)
+    {
+        if (colorArrayData == null)
+        {
+            colorArrayData = new Dictionary<string, Color[]>();
+        }
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (colorArrayData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
     #endregion
 
     #region Object/Struct Data
@@ -727,7 +807,4 @@ public class GameData
         return (T)default;
     }
     #endregion
-
-
-
 }

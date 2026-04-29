@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.5] - 2026-04-28
+- Added Color and Color[] to the GameData/GameDataManager
+
 ## [0.6.4] - 2026-04-28
 - Make the SaveGameManager.NewGame function static so it can be called from other scripts
 - Added SaveManager.LoadSaveScene to trigger SceneController.GoToScene on the scene that was listed in the save data
@@ -24,16 +27,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.6.0] - 2026-04-22
 - Added new collection StackList, a Stack that uses a List internally so you can do things like Remove and RemoveAt
 - Changes to router to use StackList and now when unregistering a route we remove remove it from the Route Stack to ensure it can't be opened if say it closes, destroys and then can't be navigated back to.
-- Routes
 
 ## [0.5.9] - 2026-04-21
-- Added SplashScreen and SplashScreenImage to GameFeatures
-- Added ControlSchemeManager to Input
-- Added PauseManager and PauseMenuController to Pause
+- Moved SplashScreen and SplashScreenImage to GameFeatures Folder
+- Reworked SplashScreen and SplashScreenImage slightly, removed silly editor tooling simplified code
+- Moved ControlSchemeManager to Input Folder
+- Moved PauseManager and PauseMenuController to Pause Folder
 - Fixed PauseMenuController to stop request unpausing and close all pause menu routes when disabling
 - Added RandomSprite to SimpleTools/2DHelpers
-- Added HideInWebGL to SimpleTools
-- Added SelectFirstSelectable to UI
+- Moved HideInWebGL to SimpleTools Folder
+- Moved SelectFirstSelectable to UI Folder
 
 ## [0.5.8] - 2026-04-20
 - Added LayerMask helper ToLayerInt

@@ -259,6 +259,30 @@ public class GameDataManager : MonoBehaviour
     }
     #endregion
 
+    #region ColorData
+    public static void SetColor(string name, Color value)
+    {
+        data.SetColor(name, value);
+    }
+
+    public static Color GetColor(string name, Color defaultValue = default)
+    {
+        return data.GetColor(name, defaultValue);
+    }
+    #endregion
+
+    #region ColorArrayData
+    public static void SetColorArray(string name, Color[] value)
+    {
+        data.SetColorArray(name, value);
+    }
+
+    public static Color[] GetColorArray(string name, Color[] defaultValue = default)
+    {
+        return data.GetColorArray(name, defaultValue);
+    }
+    #endregion
+
     #region Object/Struct Data
     public static void SetData<T>(string name, System.Object dataToSet)
     {
@@ -300,12 +324,12 @@ public class GameDataManager : MonoBehaviour
         requestSaveMessage = Messages.Get<RequestSaveMessage>();
         preparingToSaveMessage = Messages.Get<PreparingToSaveMessage>();
         saveGameLoadedMessage = Messages.Get<SaveGameLoadedMessage>();
-        requestSaveMessage.AddListener(OnRequestSave);
+        requestSaveMessage.AddListener(this.OnRequestSave);
     }
 
     private void OnDisable()
     {
-        requestSaveMessage.RemoveListener(OnRequestSave);
+        requestSaveMessage.RemoveListener(this.OnRequestSave);
         Messages.Return<SaveGameLoadedMessage>();
         Messages.Return<PreparingToSaveMessage>();
         Messages.Return<RequestSaveMessage>();
