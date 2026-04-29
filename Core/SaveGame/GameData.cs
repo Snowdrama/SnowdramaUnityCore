@@ -29,8 +29,8 @@ public class GameData
     public Dictionary<string, Vector3[]> Vector3ArrayData;
     public Dictionary<string, Vector3Int[]> Vector3IntArrayData;
     public Dictionary<string, Vector4[]> Vector4ArrayData;
-    public Dictionary<string, Color> colorData;
-    public Dictionary<string, Color[]> colorArrayData;
+    public Dictionary<string, Color> ColorData;
+    public Dictionary<string, Color[]> ColorArrayData;
 
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //public Dictionary<int, string> imageData = new Dictionary<int, string>();
@@ -380,29 +380,29 @@ public class GameData
     #region ColorData
     public void SetColor(string name, Color value)
     {
-        if (colorData == null)
+        if (ColorData == null)
         {
-            colorData = new Dictionary<string, Color>();
+            ColorData = new Dictionary<string, Color>();
         }
         //Debug.Log($"Setting Color for name: {name} = {name}");
-        if (!colorData.ContainsKey(name))
+        if (!ColorData.ContainsKey(name))
         {
-            colorData.Add(name, value);
+            ColorData.Add(name, value);
         }
         else
         {
-            colorData[name] = value;
+            ColorData[name] = value;
         }
     }
 
     public Color GetColor(string name, Color defaultValue = default)
     {
-        if (colorData == null)
+        if (ColorData == null)
         {
-            colorData = new Dictionary<string, Color>();
+            ColorData = new Dictionary<string, Color>();
         }
         //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
-        if (colorData.TryGetValue(name, out var value))
+        if (ColorData.TryGetValue(name, out var value))
         {
             //Debug.Log($"Found Value! Returning: {value}");
             return value;
@@ -741,29 +741,29 @@ public class GameData
     #region ColorArrayData
     public void SetColorArray(string name, Color[] value)
     {
-        if (colorArrayData == null)
+        if (ColorArrayData == null)
         {
-            colorArrayData = new Dictionary<string, Color[]>();
+            ColorArrayData = new Dictionary<string, Color[]>();
         }
         //Debug.Log($"Setting Color for name: {name} = {name}");
-        if (!colorArrayData.ContainsKey(name))
+        if (!ColorArrayData.ContainsKey(name))
         {
-            colorArrayData.Add(name, value);
+            ColorArrayData.Add(name, value);
         }
         else
         {
-            colorArrayData[name] = value;
+            ColorArrayData[name] = value;
         }
     }
 
     public Color[] GetColorArray(string name, Color[] defaultValue = default)
     {
-        if (colorArrayData == null)
+        if (ColorArrayData == null)
         {
-            colorArrayData = new Dictionary<string, Color[]>();
+            ColorArrayData = new Dictionary<string, Color[]>();
         }
         //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
-        if (colorArrayData.TryGetValue(name, out var value))
+        if (ColorArrayData.TryGetValue(name, out var value))
         {
             //Debug.Log($"Found Value! Returning: {value}");
             return value;
