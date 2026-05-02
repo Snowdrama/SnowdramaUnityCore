@@ -25,8 +25,13 @@ public class SaveGameInfo
     public bool isAutoSave;
 }
 
+//This is used for updating the save list
+//when you save or delete a game save
 public class SaveGameListChangedMessage : AMessage { }
-public class SaveGameLoadedMessage : AMessage { }
+
+//this is triggered when the save is loaded to tell the game to trigger
+//something in response to the save
+public class SaveGameLoadedMessage : AMessage<GameData> { }
 
 //this gets triggered right before the game serializes
 //good to listen for this and have all objects write their data here
@@ -39,14 +44,15 @@ public class SaveGameSavingCompletedMessage : AMessage { }
 public class SaveManager : MonoBehaviour
 {
     private static GameData loadedSave = new();
+    private static GameData activeSave = new();
     private static SaveDataStruct saveDataInfo = new();
-
     private static readonly JsonSerializerSettings settings = new()
     {
         Formatting = Formatting.Indented,
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
-    private void Awake()
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void Bootstrap()
     {
         ValidateDirectories();
         NewGame();
@@ -64,15 +70,15 @@ public class SaveManager : MonoBehaviour
             saveDataInfo = new SaveDataStruct();
         }
 
-        foreach (var file in saveDataInfo.saveLocations.Values)
-        {
-            //Debug.Log($"Found Load: {file.name} {file.filePath}");
-        }
+        //foreach (var file in saveDataInfo.saveLocations.Values)
+        //{
+        //    Debug.Log($"Found Load: {file.name} {file.filePath}");
+        //}
 
-        foreach (var file in saveDataInfo.autoSaveLocations.Values)
-        {
-            //Debug.Log($"Found Load: {file.name} {file.filePath}");
-        }
+        //foreach (var file in saveDataInfo.autoSaveLocations.Values)
+        //{
+        //    Debug.Log($"Found Load: {file.name} {file.filePath}");
+        //}
 
 #if UNITY_EDITOR
         //load save 0 by default in case we're testing
@@ -98,7 +104,6 @@ public class SaveManager : MonoBehaviour
         }
 #endif
     }
-
     public static void NewGame()
     {
         //Debug.Log($"Starting new game, loading default data!");
@@ -115,7 +120,6 @@ public class SaveManager : MonoBehaviour
                 $"Make sure you have a DefaultSave.jsonc in the Resources folder!");
         }
     }
-
     public static void LoadSaveScene()
     {
         if (loadedSave != null)
@@ -123,12 +127,10 @@ public class SaveManager : MonoBehaviour
             SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
         }
     }
-
     public static SaveDataStruct GetSaveList()
     {
         return saveDataInfo;
     }
-
     #region Load Game
     public static bool CanLoadSave(int saveSlot, bool autoSave)
     {
@@ -200,6 +202,9 @@ public class SaveManager : MonoBehaviour
         if (isAutoSave)
         {
             expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+
+            //if we're loading an auto save, we do this so it
+            saveDataInfo.currentAutoSaveIndex = saveSlot;
         }
         else
         {
@@ -224,7 +229,7 @@ public class SaveManager : MonoBehaviour
                 SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
             }
 
-            saveDataInfo.currentAutoSaveIndex = saveSlot;
+            GameDataManager.SetLoadedSave(loadedSave);
             SaveInfoFile();
             //Messages.GetOnce<SaveGameLoadedMessage>().Dispatch();
             Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
@@ -234,7 +239,6 @@ public class SaveManager : MonoBehaviour
         return false;
     }
     #endregion
-
     public static int GetUnusedSaveSlot()
     {
         var index = 0;
@@ -247,7 +251,6 @@ public class SaveManager : MonoBehaviour
         }
         return index;
     }
-
     public static int GetUnusedAutoSaveSlot()
     {
         var index = 0;
@@ -260,16 +263,29 @@ public class SaveManager : MonoBehaviour
         }
         return index;
     }
-
     public static bool SaveGameToCurrentSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
         return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
     }
-
     public static bool SaveGameToNewSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
         saveDataInfo.currentSaveIndex = GetUnusedSaveSlot();
         return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
+    }
+    public static bool CanOverwriteSave(int saveSlot, bool autoSave)
+    {
+        ValidateDirectories();
+        if (!autoSave)
+        {
+            var filePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.json";
+
+            //do we have a file there already?
+            //if true we can overwrite it lol
+            return File.Exists(filePath);
+        }
+
+        //auto saves can't be overridden
+        return false;
     }
 
     public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null)
@@ -322,7 +338,6 @@ public class SaveManager : MonoBehaviour
         Messages.GetOnce<SaveGameSavingCompletedMessage>().Dispatch();
         return true;
     }
-
     public static void AutoSave(GameData gameData, string version = null)
     {
         ValidateDirectories();
@@ -390,7 +405,6 @@ public class SaveManager : MonoBehaviour
         SaveInfoFile();
         Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
     }
-
     public static bool DeleteSaveGame(int saveSlot, bool isAutoSave, bool force = false)
     {
         if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
@@ -445,7 +459,6 @@ public class SaveManager : MonoBehaviour
         Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
         return true;
     }
-
     private static void SaveInfoFile()
     {
         ValidateDirectories();
@@ -457,7 +470,6 @@ public class SaveManager : MonoBehaviour
 
         File.WriteAllText(filePath, fileContents);
     }
-
     public static GameData GetGameData()
     {
         return loadedSave;
@@ -498,7 +510,6 @@ public class SaveManager : MonoBehaviour
         }
         return null;
     }
-
     private static void ValidateDirectories()
     {
         if (!Directory.Exists($"{Application.persistentDataPath}/Saves"))

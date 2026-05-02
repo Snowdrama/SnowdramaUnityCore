@@ -133,7 +133,6 @@ public class GameData
     {
         if (floatData == null)
         {
-            Debug.LogError($"Float dictionary is null, setting it to empty dictionary");
             floatData = new Dictionary<string, float>();
         }
         if (floatData.TryGetValue(name, out var value))

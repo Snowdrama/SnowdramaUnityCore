@@ -2,19 +2,45 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 public class GameDataManager : MonoBehaviour
 {
     private static GameData data = new();
-    private void Start()
+    public static Action<GameData> saveGameLoaded;
+    private static bool isSaveGameLoaded = false;
+
+    //this is forced on us when the SaveManager pulls a save
+    public static void SetLoadedSave(GameData setData)
     {
-        //On Awake the SaveManager should be loaded already!
-        data = SaveManager.GetGameData();
+        //so set the data
+        data = setData;
+        //then dispatch the save loaded dispatch to listen for stuff
+        Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(data);
+    }
+    public static void RequestSave(int saveSlot = -1)
+    {
+        Messages.GetOnce<PreparingToSaveMessage>().Dispatch();
 
-
-
-        saveGameLoadedMessage.Dispatch();
+        if (saveSlot == -1)
+        {
+            SaveManager.AutoSave(data);
+        }
+        else
+        {
+            SaveManager.SaveGame(saveSlot, data, true);
+        }
+    }
+    public static void SetSceneToLoadOnLoad(string sceneName)
+    {
+        data.SceneToLoadOnLoad = sceneName;
+    }
+    public static GameData GetGameData()
+    {
+        return data;
     }
 
     #region BoolData
@@ -283,6 +309,7 @@ public class GameDataManager : MonoBehaviour
     }
     #endregion
 
+    //TODO: Make sure this works lol
     #region Object/Struct Data
     public static void SetData<T>(string name, System.Object dataToSet)
     {
@@ -316,52 +343,8 @@ public class GameDataManager : MonoBehaviour
     }
     #endregion
 
-    private RequestSaveMessage requestSaveMessage;
-    private PreparingToSaveMessage preparingToSaveMessage;
-    private SaveGameLoadedMessage saveGameLoadedMessage;
-    private void OnEnable()
-    {
-        requestSaveMessage = Messages.Get<RequestSaveMessage>();
-        preparingToSaveMessage = Messages.Get<PreparingToSaveMessage>();
-        saveGameLoadedMessage = Messages.Get<SaveGameLoadedMessage>();
-        requestSaveMessage.AddListener(this.OnRequestSave);
-    }
-
-    private void OnDisable()
-    {
-        requestSaveMessage.RemoveListener(this.OnRequestSave);
-        Messages.Return<SaveGameLoadedMessage>();
-        Messages.Return<PreparingToSaveMessage>();
-        Messages.Return<RequestSaveMessage>();
-    }
-
-    private void OnRequestSave(int saveSlot)
-    {
-        Debug.Log("Save Requested, Preparing to save");
-        preparingToSaveMessage?.Dispatch();
-
-        Debug.Log($"ISavables triggered, Writing Save");
-        if (saveSlot == -1)
-        {
-            SaveManager.AutoSave(data);
-        }
-        else
-        {
-            SaveManager.SaveGame(saveSlot, data, true);
-        }
-    }
-
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //TODO: Add save/load images using byte arrays? Save game screenshot images?
-    //TODO: Add save/load structs generically? 
-    public static void SetSceneToLoadOnLoad(string sceneName)
-    {
-        data.SceneToLoadOnLoad = sceneName;
-    }
-    public static GameData GetGameData()
-    {
-        return data;
-    }
 
 #if UNITY_EDITOR
 

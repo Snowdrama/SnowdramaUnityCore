@@ -16,18 +16,18 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
     private SaveGame_OverwriteSaveModalMessage openSavegameModal;
     private void OnEnable()
     {
-        SaveButton.onClick.AddListener(SaveToExistingSlot);
-        CancelButton.onClick.AddListener(CancelSave);
+        SaveButton.onClick.AddListener(this.SaveToExistingSlot);
+        CancelButton.onClick.AddListener(this.CancelSave);
 
         openSavegameModal = Messages.Get<SaveGame_OverwriteSaveModalMessage>();
-        openSavegameModal.AddListener(OpenSaveModal);
+        openSavegameModal.AddListener(this.OpenSaveModal);
     }
     private void OnDisable()
     {
-        SaveButton.onClick.RemoveListener(SaveToExistingSlot);
-        CancelButton.onClick.AddListener(CancelSave);
+        SaveButton.onClick.RemoveListener(this.SaveToExistingSlot);
+        CancelButton.onClick.AddListener(this.CancelSave);
 
-        openSavegameModal.RemoveListener(OpenSaveModal);
+        openSavegameModal.RemoveListener(this.OpenSaveModal);
         openSavegameModal = null;
         Messages.Return<SaveGame_OverwriteSaveModalMessage>();
     }
@@ -46,30 +46,36 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
     private void SaveToExistingSlot()
     {
-        if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), false, SaveName.text))
-        {
-            SaveGamePanel.SetActive(false);
-            DarkBackground?.SetActive(false);
-            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                "Are you sure you want to override the save?",
-                new ModalButtonData()
-                {
-                    text = "Yes",
-                    pressCallback = ForceSave,
-                    disableTime = SaveButton_DisableTime,
-                },
-                new ModalButtonData()
-                {
-                    text = "No",
-                    pressCallback = CancelSave,
-                    disableTime = CancelButton_DisableTime,
-                }
-            );
-        }
+        //TODO Check if we need to do this, I think no
+        //if (!SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), false, SaveName.text))
+        //{
+        //}
+
+        Debug.Log($"Prepping to overwrite save");
+        //open the panel
+        SaveGamePanel.SetActive(false);
+        DarkBackground?.SetActive(false);
+        //dispatch the confirm modal message
+        Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+            "Are you sure you want to override the save?",
+            new ModalButtonData()
+            {
+                text = "Yes",
+                pressCallback = this.ForceSave,
+                disableTime = SaveButton_DisableTime,
+            },
+            new ModalButtonData()
+            {
+                text = "No",
+                pressCallback = this.CancelSave,
+                disableTime = CancelButton_DisableTime,
+            }
+        );
     }
 
     public void ForceSave()
     {
+        Debug.Log($"Writing Save: {SaveName.text} to Save Slot: {saveGameInfo.saveSlot}");
         SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text);
         SaveGamePanel.SetActive(false);
         DarkBackground?.SetActive(false);
@@ -77,6 +83,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
     public void CancelSave()
     {
         //do nothing XD
+        Debug.Log($"Canceling Overwriting Save");
         SaveGamePanel.SetActive(false);
         DarkBackground?.SetActive(false);
     }

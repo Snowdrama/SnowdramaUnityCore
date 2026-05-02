@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.6] - 2026-04-28
+- BIG overhaul to save game!
+    - Removed need for wrapper scenes entirely
+    - Save/GameData Managers are now globally bootstrapped fixing issues with launch from editor problems
+    - SaveManager still loads save 0 if it exists on start even when launching from Editor
+- Fixed a bunch of issues with the save/load modals.
+
 ## [0.6.5] - 2026-04-28
 - Added Color and Color[] to the GameData/GameDataManager
 

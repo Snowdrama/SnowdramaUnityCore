@@ -14,22 +14,24 @@ public class SaveGame_OverwriteSaveButton : MonoBehaviour, ISaveButton
 
     private void Start()
     {
-        SaveButton.onClick.AddListener(OpenModal);
-        DeleteButton.onClick.AddListener(DeleteSave);
+        SaveButton.onClick.AddListener(this.OpenModal);
+        DeleteButton.onClick.AddListener(this.DeleteSave);
     }
 
     private void OpenModal()
     {
+        Debug.Log($"<color=orange>Opening Overwrite Modal {saveGameInfo.saveSlot} - {saveGameInfo.name}");
         Messages.GetOnce<SaveGame_OverwriteSaveModalMessage>().Dispatch(saveGameInfo);
     }
     private void DeleteSave()
     {
+        Debug.Log($"<color=red>Prepping to delete {saveGameInfo.saveSlot} - {saveGameInfo.name}");
         Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
             $"Are you sure you want to delete the save?\n {saveGameInfo.name}",
             new ModalButtonData()
             {
                 text = "Yes",
-                pressCallback = ForceDelete,
+                pressCallback = this.ForceDelete,
                 disableTime = DeleteButton_DisableTime,
             },
             new ModalButtonData()
@@ -43,14 +45,14 @@ public class SaveGame_OverwriteSaveButton : MonoBehaviour, ISaveButton
 
     private void ForceDelete()
     {
+        Debug.Log($"<color=red>Force Deleting Save {saveGameInfo.saveSlot} - {saveGameInfo.name}");
         SaveManager.DeleteSaveGame(saveGameInfo.saveSlot, saveGameInfo.isAutoSave, true);
         Destroy(this.gameObject);
     }
 
     public void SetButtonInfo(SaveGameInfo saveInfo)
     {
-
-        this.saveGameInfo = saveInfo;
+        saveGameInfo = saveInfo;
         saveButtonText.text = $"{saveGameInfo.name} - {saveGameInfo.dateModified}";
     }
 }

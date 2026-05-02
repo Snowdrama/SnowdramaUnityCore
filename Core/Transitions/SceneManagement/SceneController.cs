@@ -81,8 +81,11 @@ public class SceneController : MonoBehaviour
         }
 
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
+
         Debug.Log($"Loading Scene Management Data, ShowConsoleMessages? -> {sceneManagementData.ShowConsoleMessages}");
+
         DebugLog(jsonDoc.text);
+
         RequiredScenes.Clear();
         WrapperScenes.Clear();
         Scenes.Clear();
@@ -108,8 +111,9 @@ public class SceneController : MonoBehaviour
         for (var i = 0; i < SceneManager.sceneCount; i++)
         {
             var scene = SceneManager.GetSceneAt(i);
+            DebugLog($"[SceneControllerDebug] Grabbing Editor Scene: {scene.name}");
+
             //first check if it's a required scene
-            DebugLog($"[SceneControllerDebug] Loading into scene: {scene.name}");
             if (RequiredScenes.Contains(scene.name))
             {
                 //if it is add it here so we don't load it again
