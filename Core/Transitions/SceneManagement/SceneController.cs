@@ -699,18 +699,9 @@ public class SceneController : MonoBehaviour
             {
                 new()
                 {
-                    Name = "SaveGameScene",
+                    Name = "PauseMenuScene",
                     ReloadIfSceneExists = false,
                     Dependencies = new(){}
-                },
-                new()
-                {
-                    Name = "GameDataScene",
-                    ReloadIfSceneExists = false,
-                    Dependencies = new()
-                    {
-                        "SaveGameScene",
-                    }
                 }
             },
             Scenes = new()
@@ -719,14 +710,10 @@ public class SceneController : MonoBehaviour
                 {
                     Name = "MainMenuScene",
                     ReloadIfSceneExists = true,
-                    Dependencies = new()
-                    {
-                        "SaveGameScene",
-                    },
+                    Dependencies = new(),
                     AllowedTransitions = new(),
                     transitionTime = 0.5f,
                     transitionFakeLoadTime = 0.5f,
-
                 },
                 new()
                 {
@@ -734,9 +721,26 @@ public class SceneController : MonoBehaviour
                     ReloadIfSceneExists = true,
                     Dependencies = new()
                     {
-                        "SaveGameScene",
-                        "GameDataScene",
+                        "PauseMenuScene",
                     },
+                    AllowedTransitions = new(),
+                    transitionTime = 0.5f,
+                    transitionFakeLoadTime = 0.5f,
+                },
+                new()
+                {
+                    Name = "WinScene",
+                    ReloadIfSceneExists = true,
+                    Dependencies = new(),
+                    AllowedTransitions = new(),
+                    transitionTime = 0.5f,
+                    transitionFakeLoadTime = 0.5f,
+                },
+                new()
+                {
+                    Name = "LoseScene",
+                    ReloadIfSceneExists = true,
+                    Dependencies = new(),
                     AllowedTransitions = new(),
                     transitionTime = 0.5f,
                     transitionFakeLoadTime = 0.5f,
@@ -751,9 +755,11 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            DebugLogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
-                $"Can't overwrite SceneLayoutJSON.jsonc because it already exists. " +
-                $"If this intended please manually delete the SceneLayoutJSON.jsonc and run again");
+            DebugLogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
+                "Can't overwrite SceneLayoutJSON.jsonc because it already exists! " +
+                "Overwriting this would delete any scene configuration you have! " +
+                "Check the SceneLayoutJSON.json file and ensure you actually want to delete it! " +
+                "If this ACTUALLY intended please manually delete the SceneLayoutJSON.jsonc and run again. ");
         }
     }
 #endif

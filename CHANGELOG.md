@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - Removed need for wrapper scenes entirely
     - Save/GameData Managers are now globally bootstrapped fixing issues with launch from editor problems
     - SaveManager still loads save 0 if it exists on start even when launching from Editor
+- Changed the SceneController Default SceneLayoutJSON to match with the removal of need for Save/GameData Manager
 - Fixed a bunch of issues with the save/load modals.
 
 ## [0.6.5] - 2026-04-28
