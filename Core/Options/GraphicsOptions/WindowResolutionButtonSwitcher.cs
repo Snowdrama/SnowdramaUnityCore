@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -20,6 +21,12 @@ public class WindowResolutionButtonSwitcher : MonoBehaviour
         leftButton.onClick.AddListener(this.PreviousResolution);
         rightButton.onClick.AddListener(this.NextResolution);
         applyButton.onClick.AddListener(this.ApplyResolution);
+        resolutionOptions = WindowSettingsManager.UniqueResolutions.ToList();
+        index = WindowSettingsManager.CurrentResolutionIndex;
+        this.UpdateStuff();
+    }
+    private void OnEnable()
+    {
         resolutionOptions = WindowSettingsManager.UniqueResolutions.ToList();
         index = WindowSettingsManager.CurrentResolutionIndex;
         this.UpdateStuff();

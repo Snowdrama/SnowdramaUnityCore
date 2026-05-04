@@ -3,6 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static WindowSettingsManager;
 
 public class WindowFullscreenButtonSwitcher : MonoBehaviour
 {
@@ -33,10 +34,15 @@ public class WindowFullscreenButtonSwitcher : MonoBehaviour
 
         // Load saved mode
         var currentMode = WindowSettingsManager.CurrentFullScreenMode;
-
         index = Array.IndexOf(modes, currentMode);
         if (index < 0) index = 0;
-
+        this.UpdateStuff();
+    }
+    private void OnEnable()
+    {
+        var currentMode = WindowSettingsManager.CurrentFullScreenMode;
+        index = Array.IndexOf(modes, currentMode);
+        if (index < 0) index = 0;
         this.UpdateStuff();
     }
 
