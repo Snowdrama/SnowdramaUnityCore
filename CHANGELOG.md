@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.7] - 2026-04-28
+- Updated ControlSchemeManager to add input references for KBM/Gamepad/Touch inputs
+- Finishing and overhauling the WindowSettingsManager
+- Added ScreenResolutionOptionDropdown with Resolution + RefreshRate.
+
 ## [0.6.6] - 2026-04-28
 - BIG overhaul to save game!
     - Removed need for wrapper scenes entirely
