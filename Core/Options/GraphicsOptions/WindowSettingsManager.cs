@@ -134,14 +134,14 @@ public class WindowSettingsManager : MonoBehaviour
             var r = _resolutions[i];
 
             Debug.Log($"<color=orange>Testing: ({r.width}, {r.height}) -> ({Screen.width}, {Screen.height})");
-            if (r.width == Screen.width && r.height == Screen.height)
+            if (r.width <= Screen.width && r.height <= Screen.height)
             {
-                Debug.Log("<color=green>Resolution Match!");
+                Debug.Log($"<color=green>Closet Match... ({r.width}, {r.height})");
                 // try to match refresh rate too if possible
                 bestIndexFound = i;
                 if (ApproximatelyEqual(r.refreshRate, Screen.currentResolution.refreshRateRatio))
                 {
-                    Debug.Log("<color=green>Refresh Match!");
+                    Debug.Log($"<color=green>Closest with refresh: {r.refreshRate}hz");
                     bestIndexFoundWithRefresh = i;
                 }
             }
