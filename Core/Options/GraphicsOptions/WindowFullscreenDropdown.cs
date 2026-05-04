@@ -11,7 +11,8 @@ public class WindowFullscreenDropdown : MonoBehaviour
         FullScreenMode.ExclusiveFullScreen,  // Exclusive
         FullScreenMode.Windowed              // Windowed
     };
-
+    [Header("Optional")]
+    [SerializeField] private WindowResolutionDropdown WindowResolutionDropdown;
     private void Awake()
     {
         _dropdown = this.GetComponent<TMP_Dropdown>();
@@ -56,10 +57,14 @@ public class WindowFullscreenDropdown : MonoBehaviour
 
         return 0;
     }
-
     private void OnChanged(int index)
     {
         var mode = _modes[index];
         WindowSettingsManager.SetFullscreenMode(mode);
+
+        if (WindowResolutionDropdown != null)
+        {
+            WindowResolutionDropdown.Refresh();
+        }
     }
 }

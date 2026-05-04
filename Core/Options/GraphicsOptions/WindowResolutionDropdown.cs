@@ -29,16 +29,30 @@ public class WindowResolutionDropdown : MonoBehaviour
 
         var options = new List<TMP_Dropdown.OptionData>();
 
-        foreach (var res in WindowSettingsManager.UniqueResolutions)
+        if (WindowSettingsManager.FullScreenMode == FullScreenMode.ExclusiveFullScreen)
         {
-            options.Add(new TMP_Dropdown.OptionData($"{res.x} x {res.y}"));
+            foreach (var res in WindowSettingsManager.UniqueResolutions)
+            {
+                options.Add(new TMP_Dropdown.OptionData($"{res.width}x{res.height} @ {res.refreshRate.numerator / res.refreshRate.denominator}Hz"));
+            }
+        }
+        else
+        {
+            foreach (var res in WindowSettingsManager.UniqueResolutions)
+            {
+                options.Add(new TMP_Dropdown.OptionData($"{res.width}x{res.height} @ {res.refreshRate.numerator / res.refreshRate.denominator}Hz"));
+            }
         }
 
         _dropdown.AddOptions(options);
-
         // Optional: set current value
         _dropdown.value = this.GetCurrentResolutionIndex();
         _dropdown.RefreshShownValue();
+    }
+
+    public void Refresh()
+    {
+        this.Populate();
     }
 
     private int GetCurrentResolutionIndex()
@@ -48,10 +62,11 @@ public class WindowResolutionDropdown : MonoBehaviour
 
         for (var i = 0; i < list.Count; i++)
         {
-            if (list[i] == current)
+            if (list[i].width == current.x && list[i].height == current.y)
+            {
                 return i;
+            }
         }
-
         return 0;
     }
 

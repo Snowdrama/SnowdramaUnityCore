@@ -15,12 +15,8 @@ public class WindowSettingsManager : MonoBehaviour
             return $"{width}x{height} @ {refreshRate.numerator / refreshRate.denominator}Hz";
         }
     }
-    public static IReadOnlyList<Vector2Int> UniqueResolutions =>
-    _resolutions
-        .Select(r => new Vector2Int(r.width, r.height))
-        .Distinct()
-        .ToList();
-
+    public static FullScreenMode FullScreenMode => _fullscreenMode;
+    public static IReadOnlyList<ResolutionOption> UniqueResolutions => _resolutions.Distinct().ToList();
     public static List<ResolutionOption> GetOptionsForResolution(Vector2Int res)
     {
         return _resolutions
