@@ -126,18 +126,39 @@ public class WindowSettingsManager : MonoBehaviour
 
     private static int FindClosestMatch()
     {
+        Debug.Log($"<color=red>Finding closest resolution match to: ({Screen.width}, {Screen.height})");
+        var bestIndexFound = -1;
+        var bestIndexFoundWithRefresh = -1;
         for (var i = 0; i < _resolutions.Count; i++)
         {
             var r = _resolutions[i];
 
+            Debug.Log($"<color=orange>Testing: ({r.width}, {r.height}) -> ({Screen.width}, {Screen.height})");
             if (r.width == Screen.width && r.height == Screen.height)
             {
+                Debug.Log("<color=green>Resolution Match!");
                 // try to match refresh rate too if possible
+                bestIndexFound = i;
                 if (ApproximatelyEqual(r.refreshRate, Screen.currentResolution.refreshRateRatio))
-                    return i;
+                {
+                    Debug.Log("<color=green>Refresh Match!");
+                    bestIndexFoundWithRefresh = i;
+                }
             }
         }
 
+        if (bestIndexFoundWithRefresh >= 0)
+        {
+            Debug.Log($"<color=green>Best Found With Refresh: {bestIndexFoundWithRefresh}!");
+            return bestIndexFoundWithRefresh;
+        }
+        else if (bestIndexFound >= 0)
+        {
+            Debug.Log($"<color=green>Best Found: {bestIndexFound}!");
+            return bestIndexFound;
+        }
+
+        Debug.Log($"<color=range>Fallback to resolution index: {_resolutions.Count - 1}!");
         // fallback: highest resolution + highest refresh
         return _resolutions.Count - 1;
     }
