@@ -18,6 +18,7 @@ public class WindowResolutionButtonSwitcher : MonoBehaviour
     [SerializeField, EditorReadOnly] private bool needsApplying;
     private void Start()
     {
+        Debug.Log($"Binding to buttons: {this.name}");
         leftButton.onClick.AddListener(this.PreviousResolution);
         rightButton.onClick.AddListener(this.NextResolution);
         applyButton.onClick.AddListener(this.ApplyResolution);

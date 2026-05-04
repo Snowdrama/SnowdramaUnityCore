@@ -19,6 +19,7 @@ public class WindowFullscreenButtonSwitcher : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"Binding to buttons: {this.name}");
         leftButton.onClick.AddListener(this.PreviousMode);
         rightButton.onClick.AddListener(this.NextMode);
         applyButton.onClick.AddListener(this.ApplyMode);
