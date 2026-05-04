@@ -17,10 +17,10 @@ public class WindowSettingsManager : MonoBehaviour
     }
     public static FullScreenMode FullScreenMode => _fullscreenMode;
     public static IReadOnlyList<ResolutionOption> UniqueResolutions => _resolutions.Distinct().ToList();
-    public static List<ResolutionOption> GetOptionsForResolution(Vector2Int res)
+    public static List<ResolutionOption> GetOptionsForResolution(ResolutionOption res)
     {
         return _resolutions
-            .Where(r => r.width == res.x && r.height == res.y)
+            .Where(r => r.width == res.width && r.height == res.height)
             .OrderBy(r => r.refreshRate.numerator)
             .ToList();
     }
