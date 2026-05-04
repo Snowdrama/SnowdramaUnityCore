@@ -49,6 +49,7 @@ public class WindowFullscreenButtonSwitcher : MonoBehaviour
 
     public void NextMode()
     {
+        Debug.Log($"[{this.name}]Next Was Clicked!", this.gameObject);
         index++;
         index = index.WrapClamp(0, modes.Length);
         needsApplying = true;
@@ -57,6 +58,7 @@ public class WindowFullscreenButtonSwitcher : MonoBehaviour
 
     public void PreviousMode()
     {
+        Debug.Log($"[{this.name}]Previous Was Clicked!", this.gameObject);
         index--;
         index = index.WrapClamp(0, modes.Length);
         needsApplying = true;
@@ -75,6 +77,7 @@ public class WindowFullscreenButtonSwitcher : MonoBehaviour
 
     public void ApplyMode()
     {
+        Debug.Log($"[{this.name}]Apply Was Clicked!", this.gameObject);
         WindowSettingsManager.SetFullscreenMode(modes[index]);
         needsApplying = false;
         this.UpdateStuff();

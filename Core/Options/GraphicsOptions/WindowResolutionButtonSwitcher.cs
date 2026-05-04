@@ -35,6 +35,7 @@ public class WindowResolutionButtonSwitcher : MonoBehaviour
 
     public void NextResolution()
     {
+        Debug.Log($"[{this.name}]Next Was Clicked!", this.gameObject);
         index++;
         index = index.WrapClamp(0, resolutionOptions.Count);
         needsApplying = true;
@@ -43,6 +44,7 @@ public class WindowResolutionButtonSwitcher : MonoBehaviour
 
     public void PreviousResolution()
     {
+        Debug.Log($"[{this.name}]Previous Was Clicked!", this.gameObject);
         index--;
         index = index.WrapClamp(0, resolutionOptions.Count);
         needsApplying = true;
@@ -61,6 +63,7 @@ public class WindowResolutionButtonSwitcher : MonoBehaviour
 
     public void ApplyResolution()
     {
+        Debug.Log($"[{this.name}]Apply Was Clicked!", this.gameObject);
         WindowSettingsManager.SetResolution(index);
         needsApplying = false;
         this.UpdateStuff();
