@@ -52,7 +52,7 @@ namespace Snowdrama.UI
             if (_children == null)
             {
                 _children = new List<RectTransform>();
-                
+
             }
         }
 
@@ -61,9 +61,9 @@ namespace Snowdrama.UI
             if (useActive)
             {
                 tempActiveCount = 0;
-                for (int i = 0; i < transform.childCount; i++)
+                for (var i = 0; i < this.transform.childCount; i++)
                 {
-                    if (transform.GetChild(i).gameObject.activeSelf)
+                    if (this.transform.GetChild(i).gameObject.activeSelf)
                     {
                         tempActiveCount++;
                     }
@@ -74,15 +74,20 @@ namespace Snowdrama.UI
         {
         }
 
+        protected void ProcessCellPercent(int x, int y, int index, float percent)
+        {
+
+        }
+
         protected void ProcessCell(int x, int y, int index)
         {
-            if (index < children.Count)
+            if (index < this.children.Count)
             {
-                var child = children[index];
+                var child = this.children[index];
                 if (index < internalRowCount * internalColumnCount)
                 {
                     var minX = x * percentWidth;
-                    var maxX = x * percentWidth + percentWidth;
+                    var maxX = (x * percentWidth) + percentWidth;
 
                     var maxY = 1.0f - (y * percentHeight);
                     var minY = 1.0f - ((y + 1) * percentHeight);
@@ -133,29 +138,60 @@ namespace Snowdrama.UI
             }
         }
 
-        protected void ProcessChildren()
+        protected void ProcessChildrenWithPercent(float[] percents)
         {
-            if (children.Count > 0)
+            if (this.children.Count > 0)
             {
-                int index = 0;
+                var index = 0;
                 switch (direction)
                 {
                     case UIDirection.ColumnsFirst:
-                        for (int y = 0; y < internalRowCount; y++)
+                        for (var y = 0; y < internalRowCount; y++)
                         {
-                            for (int x = 0; x < internalColumnCount; x++)
+                            for (var x = 0; x < internalColumnCount; x++)
                             {
-                                ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index);
                                 ++index;
                             }
                         }
                         break;
                     case UIDirection.RowsFirst:
-                        for (int x = 0; x < internalColumnCount; x++)
+                        for (var x = 0; x < internalColumnCount; x++)
                         {
-                            for (int y = 0; y < internalRowCount; y++)
+                            for (var y = 0; y < internalRowCount; y++)
                             {
-                                ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index);
+                                ++index;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        protected void ProcessChildren()
+        {
+            if (this.children.Count > 0)
+            {
+                var index = 0;
+                switch (direction)
+                {
+                    case UIDirection.ColumnsFirst:
+                        for (var y = 0; y < internalRowCount; y++)
+                        {
+                            for (var x = 0; x < internalColumnCount; x++)
+                            {
+                                this.ProcessCell(x, y, index);
+                                ++index;
+                            }
+                        }
+                        break;
+                    case UIDirection.RowsFirst:
+                        for (var x = 0; x < internalColumnCount; x++)
+                        {
+                            for (var y = 0; y < internalRowCount; y++)
+                            {
+                                this.ProcessCell(x, y, index);
                                 ++index;
                             }
                         }
@@ -165,37 +201,37 @@ namespace Snowdrama.UI
         }
         protected void CalculateColumns(int count, int rowCount)
         {
-            this.internalRowCount = rowCount;
-            this.internalColumnCount = Mathf.CeilToInt((float)count / (float)rowCount);
-            percentWidth = 1.0f / (float)this.internalColumnCount;
-            percentHeight = 1.0f / (float)this.internalRowCount;
+            internalRowCount = rowCount;
+            internalColumnCount = Mathf.CeilToInt((float)count / (float)rowCount);
+            percentWidth = 1.0f / (float)internalColumnCount;
+            percentHeight = 1.0f / (float)internalRowCount;
         }
 
         protected void CalculateRows(int count, int columnCount)
         {
-            this.internalColumnCount = columnCount;
-            this.internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
-            percentWidth = 1.0f / (float)this.internalColumnCount;
+            internalColumnCount = columnCount;
+            internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
+            percentWidth = 1.0f / (float)internalColumnCount;
             percentHeight = 1.0f / (float)internalRowCount;
         }
         protected void CalculateGrid(int count, int columnCount, int rowCount)
         {
-            this.internalColumnCount = columnCount;
-            this.internalRowCount = rowCount;
+            internalColumnCount = columnCount;
+            internalRowCount = rowCount;
 
             if (shrinkCountToElementCount)
             {
-                
+
                 switch (direction)
                 {
                     case UIDirection.ColumnsFirst:
-                        if(count <= columnCount)
+                        if (count <= columnCount)
                         {
-                            this.internalColumnCount = count;
+                            internalColumnCount = count;
                         }
-                        if(Mathf.CeilToInt((float)count / (float)columnCount) < rowCount)
+                        if (Mathf.CeilToInt((float)count / (float)columnCount) < rowCount)
                         {
-                            this.internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
+                            internalRowCount = Mathf.CeilToInt((float)count / (float)columnCount);
                         }
                         break;
 
@@ -203,50 +239,50 @@ namespace Snowdrama.UI
 
                         if (Mathf.CeilToInt((float)count / (float)rowCount) < columnCount)
                         {
-                            this.internalRowCount = Mathf.CeilToInt((float)count / (float)rowCount);
+                            internalRowCount = Mathf.CeilToInt((float)count / (float)rowCount);
                         }
                         if (count <= rowCount)
                         {
-                            this.internalRowCount = count;
+                            internalRowCount = count;
                         }
                         break;
                 }
             }
 
-            percentWidth = 1.0f / (float)this.internalColumnCount;
-            percentHeight = 1.0f / (float)this.internalRowCount;
+            percentWidth = 1.0f / (float)internalColumnCount;
+            percentHeight = 1.0f / (float)internalRowCount;
         }
 
         protected void CollectChildren()
         {
-            children.Clear();
-            foreach (Transform child in transform)
+            this.children.Clear();
+            foreach (Transform child in this.transform)
             {
                 if (forceActiveIfInactive)
                 {
                     child.gameObject.SetActive(true);
-                    children.Add(child.GetComponent<RectTransform>());
+                    this.children.Add(child.GetComponent<RectTransform>());
                 }
                 else if (useActive)
                 {
                     if (child.gameObject.activeSelf)
                     {
-                        children.Add(child.GetComponent<RectTransform>());
+                        this.children.Add(child.GetComponent<RectTransform>());
                     }
                 }
                 else
                 {
-                    children.Add(child.GetComponent<RectTransform>());
+                    this.children.Add(child.GetComponent<RectTransform>());
                 }
             }
         }
         public int GetRowCount()
         {
-            return this.internalRowCount;
+            return internalRowCount;
         }
         public int GetColumnCount()
         {
-            return this.internalColumnCount;
+            return internalColumnCount;
         }
     }
 

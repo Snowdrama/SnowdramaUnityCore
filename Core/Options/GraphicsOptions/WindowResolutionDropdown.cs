@@ -29,7 +29,7 @@ public class WindowResolutionDropdown : MonoBehaviour
 
         var options = new List<TMP_Dropdown.OptionData>();
 
-        if (WindowSettingsManager.FullScreenMode == FullScreenMode.ExclusiveFullScreen)
+        if (WindowSettingsManager.CurrentFullScreenMode == FullScreenMode.ExclusiveFullScreen)
         {
             foreach (var res in WindowSettingsManager.UniqueResolutions)
             {

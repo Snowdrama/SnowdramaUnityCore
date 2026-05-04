@@ -99,8 +99,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                     case "dpad": return dpad;
                     case "dpad/up": return dpadUp;
                     case "dpad/down": return dpadDown;
-                    case "dpad/left": return dpadLeft;
-                    case "dpad/right": return dpadRight;
+                    case "dpad/leftButton": return dpadLeft;
+                    case "dpad/rightButton": return dpadRight;
                     case "leftStick": return leftStick;
                     case "rightStick": return rightStick;
                     case "leftStickPress": return leftStickPress;

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class WindowSettingsManager : MonoBehaviour
 {
+    [System.Serializable]
     public struct ResolutionOption
     {
         public int width;
@@ -15,7 +17,6 @@ public class WindowSettingsManager : MonoBehaviour
             return $"{width}x{height} @ {refreshRate.numerator / refreshRate.denominator}Hz";
         }
     }
-    public static FullScreenMode FullScreenMode => _fullscreenMode;
     public static IReadOnlyList<ResolutionOption> UniqueResolutions => _resolutions.Distinct().ToList();
     public static List<ResolutionOption> GetOptionsForResolution(ResolutionOption res)
     {
@@ -30,9 +31,12 @@ public class WindowSettingsManager : MonoBehaviour
 
     private static int _resolutionIndex;
     private static FullScreenMode _fullscreenMode;
+    public static int CurrentResolutionIndex => _resolutionIndex;
+    public static ResolutionOption CurrentResolution => UniqueResolutions[CurrentResolutionIndex];
+    public static FullScreenMode CurrentFullScreenMode => _fullscreenMode;
 
-    private const string RESOLUTION_SETTING_KEY = "ResolutionIndex";
-    private const string FULLSCREEN_SETTING_KEY = "FullscreenMode";
+    public const string RESOLUTION_SETTING_KEY = "ResolutionIndex";
+    public const string FULLSCREEN_SETTING_KEY = "FullscreenMode";
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()

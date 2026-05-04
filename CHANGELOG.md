@@ -7,7 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.6.7] - 2026-04-28
 - Updated ControlSchemeManager to add input references for KBM/Gamepad/Touch inputs
 - Finishing and overhauling the WindowSettingsManager
-- Added ScreenResolutionOptionDropdown with Resolution + RefreshRate.
+- Added WindowResolution and WindowFullscreen options tools.
+- Added UI Horizontal/Vertical Flex tool for non-uniform sized layouts
 
 ## [0.6.6] - 2026-04-28
 - BIG overhaul to save game!
