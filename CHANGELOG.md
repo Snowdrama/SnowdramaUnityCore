@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.8] - 2026-05-05
+- Added MainMenuController a script for using a router for doing options on start menu, prevents closing the root menu
+- Added Generic menu controller, similar to pause menu but does not request pausing. 
+
 ## [0.6.7] - 2026-05-04
 - Updated ControlSchemeManager to add input references for KBM/Gamepad/Touch inputs
 - Finishing and overhauling the WindowSettingsManager
