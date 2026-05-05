@@ -28,7 +28,7 @@ public class PauseMenuController : MonoBehaviour
     {
         foreach (var pauseAction in pauseActions)
         {
-            pauseAction.action.Disable();
+            pauseAction.action.Enable();
             pauseAction.action.started += this.OnPause;
         }
         foreach (var cancelAction in cancelActions)
@@ -47,7 +47,7 @@ public class PauseMenuController : MonoBehaviour
         }
         foreach (var cancelAction in cancelActions)
         {
-            cancelAction.action.Enable();
+            cancelAction.action.Disable();
             cancelAction.action.started -= this.OnCancel;
         }
         //if we're disabling the pause menu, then we're probably deleting
