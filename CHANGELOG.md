@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added WindowResolution and WindowFullscreen options tools.
 - Added UI Horizontal/Vertical Flex tool for non-uniform sized layouts
 - Fix to PauseMenuManager to fix cancel button also pausing
+- Fix to PauseMenuManager to fix enabling buttons correctly lol
 - Fix to NewGame not actually setting the loaded save to the GameDataManager.
 - NewGame now has an option to auto load the scene listed in the DefaultSave.jsonc once it loads it
 
