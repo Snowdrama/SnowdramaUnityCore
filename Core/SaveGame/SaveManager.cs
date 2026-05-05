@@ -104,7 +104,7 @@ public class SaveManager : MonoBehaviour
         }
 #endif
     }
-    public static void NewGame()
+    public static void NewGame(bool autoLoadScene = true)
     {
         //Debug.Log($"Starting new game, loading default data!");
         //load the default save from resources:
@@ -113,6 +113,12 @@ public class SaveManager : MonoBehaviour
         {
             //Debug.Log($"Loaded Default Save!: {defaultSaveJson.text}");
             loadedSave = JsonConvert.DeserializeObject<GameData>(defaultSaveJson.text, settings);
+            GameDataManager.SetLoadedSave(loadedSave);
+            if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
+            {
+                //Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
+                SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
+            }
         }
         else
         {
@@ -221,6 +227,7 @@ public class SaveManager : MonoBehaviour
             //Debug.Log($"Loading file from {savePathToLoad}");
             //Debug.Log(fileContents);
             loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
+            GameDataManager.SetLoadedSave(loadedSave);
 
             //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
             if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
@@ -229,7 +236,6 @@ public class SaveManager : MonoBehaviour
                 SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
             }
 
-            GameDataManager.SetLoadedSave(loadedSave);
             SaveInfoFile();
             //Messages.GetOnce<SaveGameLoadedMessage>().Dispatch();
             Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();

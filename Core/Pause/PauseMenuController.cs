@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
+    [SerializeField] private string pauseRouteName = "Pause";
     [SerializeField] private UIRouter pauseRouter;
     [SerializeField] private List<InputActionReference> pauseActions;
     [SerializeField] private List<InputActionReference> cancelActions;
@@ -33,7 +34,7 @@ public class PauseMenuController : MonoBehaviour
         foreach (var cancelAction in cancelActions)
         {
             cancelAction.action.Enable();
-            cancelAction.action.started += this.OnPause;
+            cancelAction.action.started += this.OnCancel;
         }
     }
 
@@ -47,7 +48,7 @@ public class PauseMenuController : MonoBehaviour
         foreach (var cancelAction in cancelActions)
         {
             cancelAction.action.Enable();
-            cancelAction.action.started -= this.OnPause;
+            cancelAction.action.started -= this.OnCancel;
         }
         //if we're disabling the pause menu, then we're probably deleting
         //ensure we're no longer requesting pause
@@ -63,7 +64,7 @@ public class PauseMenuController : MonoBehaviour
         {
             if (!paused)
             {
-                pauseRouter.OpenRoute($"pause");
+                pauseRouter.OpenRoute(pauseRouteName);
             }
             else
             {
