@@ -15,36 +15,44 @@ public class AudioVolumeManager : MonoBehaviour
     public UnitySerializedDictionary<string, AudioChannelData> audioChannels = new UnitySerializedDictionary<string, AudioChannelData>()
     {
         {
-            "MasterVolume",
+            Options.MASTER_VOLUME_KEY,
             new AudioChannelData()
             {
-                mixerChannelName = "MasterVolume",
-                defaultValue = 1.0f
+                mixerChannelName = Options.MASTER_VOLUME_KEY,
+                defaultValue = 0.5f
             }
         },
 
         {
-            "MusicVolume",
+            Options.MUSIC_VOLUME_KEY,
             new AudioChannelData()
             {
-                mixerChannelName = "MusicVolume",
-                defaultValue = 1.0f
+                mixerChannelName = Options.MUSIC_VOLUME_KEY,
+                defaultValue = 0.5f
             }
         },
         {
-            "SoundVolume",
+            Options.SOUND_VOLUME_KEY,
             new AudioChannelData()
             {
-                mixerChannelName = "SoundVolume",
-                defaultValue = 1.0f
+                mixerChannelName = Options.SOUND_VOLUME_KEY,
+                defaultValue = 0.5f
             }
         },
         {
-            "VoiceVolume",
+            Options.VOICE_VOLUME_KEY,
             new AudioChannelData()
             {
-                mixerChannelName = "VoiceVolume",
-                defaultValue = 1.0f
+                mixerChannelName = Options.VOICE_VOLUME_KEY,
+                defaultValue = 0.5f
+            }
+        },
+        {
+            Options.AMBIENCE_VOLUME_KEY,
+            new AudioChannelData()
+            {
+                mixerChannelName = Options.AMBIENCE_VOLUME_KEY,
+                defaultValue = 0.5f
             }
         },
     };
@@ -53,7 +61,7 @@ public class AudioVolumeManager : MonoBehaviour
     {
         foreach (var data in audioChannels)
         {
-            Options.RegisterFloatOptionCallback(data.Key, VolumeValueChanged);
+            Options.RegisterFloatOptionCallback(data.Key, this.VolumeValueChanged);
         }
     }
 

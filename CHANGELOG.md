@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.6.9] - 2026-05-06
+- Added consts to Options for common music volume and bus names like Music/Sound/Voice/Footstep
+- Changed AudioVolumeManager to use the consts instead of the string keys on create.
+- Added 'Ambience' to both as it wasn't there before, it's also now in the Sample mixer.
+
 ## [0.6.8] - 2026-05-05
 - Added MainMenuController a script for using a router for doing options on start menu, prevents closing the root menu
 - Added Generic menu controller, similar to pause menu but does not request pausing. 
@@ -164,4 +169,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.1.6] - 2019-11-15
 ### Added
-- Added in all the tools, previously unlogged changes so this is the "first" release
+- Added in all the tools, previously not logged changes so this is the "first" release

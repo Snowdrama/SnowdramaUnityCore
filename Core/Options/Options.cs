@@ -10,6 +10,7 @@ using UnityEngine;
 //public class OptionValueChanged : AMessage { }
 public class OptionsData
 {
+
     public Dictionary<string, int> intValues;
     public Dictionary<string, float> floatValues;
     public Dictionary<string, bool> boolValues;
@@ -55,6 +56,28 @@ public class OptionsData
 }
 public class Options : MonoBehaviour
 {
+    //these are shortcuts for the volume option keys
+    //so Option.SetFloat(Options.MASTER_VOLUME_KEY, 0.5f);
+    public const string MASTER_VOLUME_KEY = "MasterVolume";
+    public const string MUSIC_VOLUME_KEY = "MusicVolume";
+    public const string SOUND_VOLUME_KEY = "SoundVolume";
+    public const string VOICE_VOLUME_KEY = "VoiceVolume";
+    public const string FOOTSTEP_VOLUME_KEY = "FootstepVolume";
+    public const string AMBIENCE_VOLUME_KEY = "AmbienceVolume";
+
+    //these are some shortcuts for the name of the bus in the mixer
+    //so var mixerGroups = Mixer.FindMatchingGroups(busName);
+    //Also used in PlaySoundMessage:
+    //Messages
+    //    .GetOnce<PlaySoundMessage>()
+    //    .Dispatch(audioClip, Options.MASTER_MIXER_BUS_KEY, 1.0f);
+    public const string MASTER_MIXER_BUS_KEY = "Master";
+    public const string MUSIC_MIXER_BUS_KEY = "Music";
+    public const string SOUND_MIXER_BUS_KEY = "Sound";
+    public const string VOICE_MIXER_BUS_KEY = "Voice";
+    public const string FOOTSTEP_MIXER_BUS_KEY = "Footstep";
+    public const string AMBIENCE_MIXER_BUS_KEY = "Ambience"; //rain, burning fire etc
+
     private static OptionsData data;
     private static JsonSerializerSettings jsonSetting = new JsonSerializerSettings()
     {
