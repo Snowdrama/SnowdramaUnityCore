@@ -70,9 +70,10 @@ public class CinemachineOrthographicCalculator : MonoBehaviour
         }
     }
 
+    [SerializeField] private Vector3 debugOffset = new Vector3(0.0f, 10, 0.0f);
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(this.transform.position, new Vector3(orthographicScale.x * 1 / ratio, orthographicScale.y * 2, 0));
+        Gizmos.DrawWireCube(this.transform.position + debugOffset, new Vector3(orthographicScale.x * 1 / ratio, orthographicScale.y * 2, 0));
     }
 }
