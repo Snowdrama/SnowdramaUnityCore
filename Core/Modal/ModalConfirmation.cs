@@ -1,16 +1,7 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OpenConfirmationModalMessage : AMessage<string, ModalButtonData, ModalButtonData> { }
-public class OpenNoticeModalMessage : AMessage<string, ModalButtonData> { }
-public struct ModalButtonData
-{
-    public string text;
-    public Action pressCallback;
-    public float disableTime;
-}
 /// <summary>
 /// Confirmation Modals are for showing choices
 /// to the player, like yes/no
@@ -20,6 +11,7 @@ public struct ModalButtonData
 /// "Do you want to dismantle this item? -> Yes -> No"
 /// "Are you sure you want to exit to the desktop? -> Keep Playing -> Exit Game"
 /// </summary>
+[RequireComponent(typeof(CanvasGroup))]
 public class ModalConfirmation : MonoBehaviour
 {
     [SerializeField] private GameObject modalPanel;
@@ -34,26 +26,39 @@ public class ModalConfirmation : MonoBehaviour
     private ModalButtonData ok;
     private ModalButtonData cancel;
 
+    private float targetAlpha = 0.0f;
+    private float currentAlpha = 0.0f;
+    private CanvasGroup canvasGroup;
+    private void Start()
+    {
+        modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
+        cancelButton.onClick.AddListener(this.CancelPressed);
+        okButton.onClick.AddListener(this.OkPressed);
+        canvasGroup = this.GetComponent<CanvasGroup>();
+
+        currentAlpha = targetAlpha = 0.0f;
+        canvasGroup.alpha = 0.0f;
+    }
+
     private void OnEnable()
     {
         saveModalMessage = Messages.Get<OpenConfirmationModalMessage>();
-        saveModalMessage.AddListener(OpenModal);
+        saveModalMessage.AddListener(this.OpenModal);
     }
 
     private void OnDisable()
     {
-        saveModalMessage.RemoveListener(OpenModal);
+        saveModalMessage.RemoveListener(this.OpenModal);
         saveModalMessage = null;
         Messages.Return<OpenConfirmationModalMessage>();
     }
 
     public void OpenModal(string setModalText, ModalButtonData okModalData, ModalButtonData cancelModalData)
     {
-
         modalText.text = setModalText;
         ok = okModalData;
         cancel = cancelModalData;
-
 
         if (ok.disableTime > 0)
         {
@@ -76,33 +81,22 @@ public class ModalConfirmation : MonoBehaviour
             cancelButton.interactable = true;
             cancelButtonText.text = $"{cancel.text}";
         }
-        modalPanel.SetActive(true);
-        DarkBackground?.SetActive(true);
+        targetAlpha = 1.0f;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
-    {
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
-        cancelButton.onClick.AddListener(CancelPressed);
-        okButton.onClick.AddListener(OkPressed);
-    }
+
 
     private void CancelPressed()
     {
         cancel.pressCallback?.Invoke();
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
+        targetAlpha = 0.0f;
     }
 
     private void OkPressed()
     {
         ok.pressCallback?.Invoke();
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
+        targetAlpha = 0.0f;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (ok.disableTime > 0)
@@ -127,6 +121,19 @@ public class ModalConfirmation : MonoBehaviour
                 cancelButton.interactable = true;
                 cancelButtonText.text = $"{cancel.text}";
             }
+        }
+
+        currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.deltaTime * 4.0f);
+        canvasGroup.alpha = currentAlpha;
+        if (canvasGroup.alpha > 0.2f)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
         }
     }
 }

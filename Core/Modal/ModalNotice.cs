@@ -10,6 +10,7 @@ using UnityEngine.UI;
 /// "Can't delete last object -> Ok"
 /// "Needs a key to open -> Ok"
 /// </summary>
+[RequireComponent(typeof(CanvasGroup))]
 public class ModalNotice : MonoBehaviour
 {
     [SerializeField] private GameObject modalPanel;
@@ -21,15 +22,27 @@ public class ModalNotice : MonoBehaviour
     private OpenNoticeModalMessage saveModalMessage;
     private ModalButtonData ok;
 
+    private float targetAlpha = 0.0f;
+    private float currentAlpha = 0.0f;
+    private CanvasGroup canvasGroup;
+    private void Start()
+    {
+        modalPanel.SetActive(false);
+        DarkBackground?.SetActive(false);
+        okButton.onClick.AddListener(this.OkPressed);
+        currentAlpha = targetAlpha = 0.0f;
+        canvasGroup.alpha = 0.0f;
+    }
+
     private void OnEnable()
     {
         saveModalMessage = Messages.Get<OpenNoticeModalMessage>();
-        saveModalMessage.AddListener(OpenModal);
+        saveModalMessage.AddListener(this.OpenModal);
     }
 
     private void OnDisable()
     {
-        saveModalMessage.RemoveListener(OpenModal);
+        saveModalMessage.RemoveListener(this.OpenModal);
         saveModalMessage = null;
         Messages.Return<OpenNoticeModalMessage>();
     }
@@ -52,20 +65,14 @@ public class ModalNotice : MonoBehaviour
         }
         modalPanel.SetActive(true);
         DarkBackground?.SetActive(true);
+        targetAlpha = 1.0f;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void Start()
-    {
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
-        okButton.onClick.AddListener(OkPressed);
-    }
-
     private void OkPressed()
     {
         ok.pressCallback?.Invoke();
         modalPanel.SetActive(false);
         DarkBackground?.SetActive(false);
+        targetAlpha = 0.0f;
     }
 
     // Update is called once per frame
@@ -81,6 +88,19 @@ public class ModalNotice : MonoBehaviour
                 okButton.interactable = true;
                 okButtonText.text = $"{ok.text}";
             }
+        }
+
+        currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.deltaTime * 4.0f);
+        canvasGroup.alpha = currentAlpha;
+        if (canvasGroup.alpha > 0.2f)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
         }
     }
 }

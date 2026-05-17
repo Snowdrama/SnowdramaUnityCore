@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+
+## [0.7.0] - 2026-05-16
+- Updated Modal to use CanvasGroup instead of "SetActive" so the modal now fades in and out.
+
 ## [0.6.9] - 2026-05-06
 - Added consts to Options for common music volume and bus names like Music/Sound/Voice/Footstep
 - Changed AudioVolumeManager to use the consts instead of the string keys on create.
