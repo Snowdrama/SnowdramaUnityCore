@@ -31,8 +31,6 @@ public class ModalConfirmation : MonoBehaviour
     private CanvasGroup canvasGroup;
     private void Start()
     {
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
         cancelButton.onClick.AddListener(this.CancelPressed);
         okButton.onClick.AddListener(this.OkPressed);
         canvasGroup = this.GetComponent<CanvasGroup>();

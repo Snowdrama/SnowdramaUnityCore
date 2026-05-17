@@ -27,8 +27,6 @@ public class ModalNotice : MonoBehaviour
     private CanvasGroup canvasGroup;
     private void Start()
     {
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
         okButton.onClick.AddListener(this.OkPressed);
         canvasGroup = this.GetComponent<CanvasGroup>();
 
@@ -65,15 +63,11 @@ public class ModalNotice : MonoBehaviour
             okButton.interactable = true;
             okButtonText.text = $"{ok.text}";
         }
-        modalPanel.SetActive(true);
-        DarkBackground?.SetActive(true);
         targetAlpha = 1.0f;
     }
     private void OkPressed()
     {
         ok.pressCallback?.Invoke();
-        modalPanel.SetActive(false);
-        DarkBackground?.SetActive(false);
         targetAlpha = 0.0f;
     }
 
