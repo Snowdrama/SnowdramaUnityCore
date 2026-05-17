@@ -30,6 +30,8 @@ public class ModalNotice : MonoBehaviour
         modalPanel.SetActive(false);
         DarkBackground?.SetActive(false);
         okButton.onClick.AddListener(this.OkPressed);
+        canvasGroup = this.GetComponent<CanvasGroup>();
+
         currentAlpha = targetAlpha = 0.0f;
         canvasGroup.alpha = 0.0f;
     }
