@@ -14,6 +14,7 @@ namespace Snowdrama
         public int height = 128;
 
         [Header("Process Chain")]
+        [Expandable]
         public List<CellularAutomataProcess> processes = new List<CellularAutomataProcess>();
     }
 
