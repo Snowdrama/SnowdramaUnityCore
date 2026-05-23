@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-05-16
+- Removed SerializableObjectDrawer in favor of the `[Expandable]` attribute
+- Moved LootTable/StackList/TableList to the "Collections" folder
+
 ## [0.7.0] - 2026-05-16
 - Updated Modal to use CanvasGroup instead of "SetActive" so the modal now fades in and out.
 
