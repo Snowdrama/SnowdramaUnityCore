@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class WindowSettingsManager : MonoBehaviour
 {
@@ -71,7 +72,7 @@ public class WindowSettingsManager : MonoBehaviour
 
         if (!IsValidIndex(_resolutionIndex))
         {
-            _resolutionIndex = FindClosestMatch();
+            _resolutionIndex = GetLargestScreenSize();
             Options.SetIntValue(RESOLUTION_SETTING_KEY, _resolutionIndex);
         }
 
@@ -84,7 +85,7 @@ public class WindowSettingsManager : MonoBehaviour
     public static void SetResolution(int index)
     {
         if (!IsValidIndex(index))
-            index = FindClosestMatch();
+            index = GetLargestScreenSize();
 
         _resolutionIndex = index;
         Options.SetIntValue(RESOLUTION_SETTING_KEY, index);
@@ -124,6 +125,68 @@ public class WindowSettingsManager : MonoBehaviour
         return index >= 0 && index < _resolutions.Count;
     }
 
+
+    /// <summary>
+    /// Returns the largest size display from the _resolutions list
+    /// </summary>
+    /// <returns></returns>
+    private static int GetLargestScreenSize()
+    {
+        var bestIndexFound = -1;
+        var bestIndexFoundWithRefresh = -1;
+        var largestWidth = 0;
+        var largestHeight = 0;
+        var largestRefreshRate = 0;
+        for (var i = 0; i < _resolutions.Count; i++)
+        {
+            var r = _resolutions[i];
+
+            Debug.Log($"<color=orange>Testing: ({r.width}, {r.height}) -> ({largestWidth}, {largestHeight})");
+            if (r.width <= largestWidth && r.height <= largestHeight)
+            {
+                largestWidth = r.width;
+                largestHeight = r.height;
+
+                Debug.Log($"<color=green>Closet Match... ({r.width}, {r.height})");
+                // try to match refresh rate too if possible
+                bestIndexFound = i;
+
+                var hz = r.refreshRate.denominator / r.refreshRate.numerator;
+                if (Mathf.Approximately(hz, largestRefreshRate))
+                {
+                    Debug.Log($"<color=green>Closest with refresh: {r.refreshRate}hz");
+                    bestIndexFoundWithRefresh = i;
+                }
+            }
+        }
+
+        if (bestIndexFoundWithRefresh >= 0)
+        {
+            Debug.Log($"<color=green>Best Found With Refresh: {bestIndexFoundWithRefresh}!");
+            return bestIndexFoundWithRefresh;
+        }
+        else if (bestIndexFound >= 0)
+        {
+            Debug.Log($"<color=green>Best Found: {bestIndexFound}!");
+            return bestIndexFound;
+        }
+
+        Debug.Log($"<color=range>Fallback to resolution index: {_resolutions.Count - 1}!");
+        // fallback: highest resolution + highest refresh
+        return _resolutions.Count - 1;
+    }
+
+
+    /// <summary>
+    /// This tries to match the Screen.width and Screen.height
+    /// 
+    /// This fails on screens that report weird screen resolutions
+    /// 
+    /// Use WindowSettingsManager.GetLargestScreenSize() instead as that's
+    /// usually what most people would want as default
+    /// </summary>
+    /// <returns></returns>
+    [Obsolete]
     private static int FindClosestMatch()
     {
         Debug.Log($"<color=red>Finding closest resolution match to: ({Screen.width}, {Screen.height})");
