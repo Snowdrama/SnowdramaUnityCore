@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ## [0.7.2] - 2026-05-25
+- lol
+
+## [0.7.2] - 2026-05-25
 - Changed WindowSettingsManager to default to the highest resolution in the resolution list vs comparing to screen size
 
 ## [0.7.1] - 2026-05-22

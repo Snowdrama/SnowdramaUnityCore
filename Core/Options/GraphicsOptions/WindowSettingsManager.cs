@@ -132,102 +132,72 @@ public class WindowSettingsManager : MonoBehaviour
     /// <returns></returns>
     private static int GetLargestScreenSize()
     {
-        var bestIndexFound = -1;
-        var bestIndexFoundWithRefresh = -1;
-        var largestWidth = 0;
-        var largestHeight = 0;
-        var largestRefreshRate = 0;
+        //var bestIndexFoundWithRefresh = -1;
+        //var largestWidth = 0.0f;
+        //var largestHeight = 0.0f;
+        //var largestRefreshRate = 0.0f;
+        var largestArea = 0.0f;
+        var largestAreaIndex = 0;
+        //find the largest possible resoltion
         for (var i = 0; i < _resolutions.Count; i++)
         {
             var r = _resolutions[i];
+            var hz = (float)r.refreshRate.denominator / (float)r.refreshRate.numerator;
+            var area = r.width * r.height;
 
-            Debug.Log($"<color=orange>Testing: ({r.width}, {r.height}) -> ({largestWidth}, {largestHeight})");
-            if (r.width <= largestWidth && r.height <= largestHeight)
+            if (area > largestArea)
             {
-                largestWidth = r.width;
-                largestHeight = r.height;
-
-                Debug.Log($"<color=green>Closet Match... ({r.width}, {r.height})");
-                // try to match refresh rate too if possible
-                bestIndexFound = i;
-
-                var hz = r.refreshRate.denominator / r.refreshRate.numerator;
-                if (Mathf.Approximately(hz, largestRefreshRate))
-                {
-                    Debug.Log($"<color=green>Closest with refresh: {r.refreshRate}hz");
-                    bestIndexFoundWithRefresh = i;
-                }
+                largestArea = area;
+                largestAreaIndex = i;
             }
+            //Debug.Log($"<color=orange>Testing[{i}]: ({r.width}, {r.height}) -> ({largestWidth}, {largestHeight}) @ {largestRefreshRate}");
+            //if (r.width >= largestWidth)
+            //{
+            //    largestWidth = r.width;
+            //}
+            //if (r.height >= largestHeight)
+            //{
+            //    largestHeight = r.height;
+            //}
+            //if (hz >= largestRefreshRate)
+            //{
+            //    largestRefreshRate = hz;
+            //}
         }
 
-        if (bestIndexFoundWithRefresh >= 0)
+        //Debug.Log($"<color=green>Best Possible Resolution: ({largestWidth}, {largestHeight}) -> ({largestRefreshRate}) | By Area Best Index {largestAreaIndex}");
+
+        //var bestCurrentWidth = 0.0f;
+        //var bestCurrentHeight = 0.0f;
+        //var bestCurrentRefreshRate = 0.0f;
+        //for (var i = 0; i < _resolutions.Count; i++)
+        //{
+        //    var r = _resolutions[i];
+        //    var hz = (float)r.refreshRate.denominator / (float)r.refreshRate.numerator;
+
+        //    Debug.Log($"<color=magenta>Comparing [{i}] Against Theoretical Largest: ({r.width}, {r.height}) @ {hz} == ({largestWidth}, {largestHeight}) @ {largestRefreshRate} ");
+
+        //    if (
+        //        r.width <= largestWidth && r.width >= bestCurrentWidth &&
+        //        r.height <= largestHeight && r.height >= bestCurrentHeight &&
+        //        hz <= largestRefreshRate && hz >= bestCurrentRefreshRate)
+        //    {
+        //        bestCurrentWidth = r.width;
+        //        bestCurrentHeight = r.height;
+        //        bestCurrentRefreshRate = hz;
+        //        bestIndexFoundWithRefresh = i;
+        //    }
+        //}
+
+        if (largestAreaIndex >= 0)
         {
-            Debug.Log($"<color=green>Best Found With Refresh: {bestIndexFoundWithRefresh}!");
-            return bestIndexFoundWithRefresh;
-        }
-        else if (bestIndexFound >= 0)
-        {
-            Debug.Log($"<color=green>Best Found: {bestIndexFound}!");
-            return bestIndexFound;
+            Debug.Log($"<color=green>Size with largest area: {largestAreaIndex}!");
+            return largestAreaIndex;
         }
 
-        Debug.Log($"<color=range>Fallback to resolution index: {_resolutions.Count - 1}!");
+        Debug.Log($"<color=range>Fallback to resolution index: {_resolutions.Count - 1}! " +
+            $"({_resolutions[_resolutions.Count - 1].width}, {_resolutions[_resolutions.Count - 1].height})");
         // fallback: highest resolution + highest refresh
         return _resolutions.Count - 1;
-    }
-
-
-    /// <summary>
-    /// This tries to match the Screen.width and Screen.height
-    /// 
-    /// This fails on screens that report weird screen resolutions
-    /// 
-    /// Use WindowSettingsManager.GetLargestScreenSize() instead as that's
-    /// usually what most people would want as default
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete]
-    private static int FindClosestMatch()
-    {
-        Debug.Log($"<color=red>Finding closest resolution match to: ({Screen.width}, {Screen.height})");
-        var bestIndexFound = -1;
-        var bestIndexFoundWithRefresh = -1;
-        for (var i = 0; i < _resolutions.Count; i++)
-        {
-            var r = _resolutions[i];
-
-            Debug.Log($"<color=orange>Testing: ({r.width}, {r.height}) -> ({Screen.width}, {Screen.height})");
-            if (r.width <= Screen.width && r.height <= Screen.height)
-            {
-                Debug.Log($"<color=green>Closet Match... ({r.width}, {r.height})");
-                // try to match refresh rate too if possible
-                bestIndexFound = i;
-                if (ApproximatelyEqual(r.refreshRate, Screen.currentResolution.refreshRateRatio))
-                {
-                    Debug.Log($"<color=green>Closest with refresh: {r.refreshRate}hz");
-                    bestIndexFoundWithRefresh = i;
-                }
-            }
-        }
-
-        if (bestIndexFoundWithRefresh >= 0)
-        {
-            Debug.Log($"<color=green>Best Found With Refresh: {bestIndexFoundWithRefresh}!");
-            return bestIndexFoundWithRefresh;
-        }
-        else if (bestIndexFound >= 0)
-        {
-            Debug.Log($"<color=green>Best Found: {bestIndexFound}!");
-            return bestIndexFound;
-        }
-
-        Debug.Log($"<color=range>Fallback to resolution index: {_resolutions.Count - 1}!");
-        // fallback: highest resolution + highest refresh
-        return _resolutions.Count - 1;
-    }
-
-    private static bool ApproximatelyEqual(RefreshRate a, RefreshRate b)
-    {
-        return a.numerator == b.numerator && a.denominator == b.denominator;
     }
 }
