@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed an issue where removing routes sometimes wouldn't update the route count in the router. 
 
 ## [0.7.3] - 2026-05-25
-- lol
+- Changed the WindowSettingsManager to default to the highest resolution based on the AREA of the screen not the width and height individually
 
 ## [0.7.2] - 2026-05-25
 - Changed WindowSettingsManager to default to the highest resolution in the resolution list vs comparing to screen size
