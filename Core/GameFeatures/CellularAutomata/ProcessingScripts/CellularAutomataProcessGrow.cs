@@ -11,17 +11,17 @@ namespace Snowdrama
         public override void Init() { }
         public override bool[,] Process(bool[,] data, int seed, ref int rngSequenceIndex)
         {
-            int width = data.GetLength(0);
-            int height = data.GetLength(1);
-            bool[,] newData = (bool[,])data.Clone();
+            var width = data.GetLength(0);
+            var height = data.GetLength(1);
+            var newData = (bool[,])data.Clone();
 
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (var x = 0; x < width; x++)
                 {
                     if (!data[x, y])
                     {
-                        int neighbors = NeighborCount8Way(data, x, y);
+                        var neighbors = this.NeighborCount8Way(data, x, y);
                         if (neighbors >= neighborThreshold)
                             newData[x, y] = true;
                     }
@@ -33,10 +33,10 @@ namespace Snowdrama
 
         private int NeighborCount8Way(bool[,] data, int x, int y)
         {
-            int count = 0;
-            for (int yy = -1; yy <= 1; yy++)
+            var count = 0;
+            for (var yy = -1; yy <= 1; yy++)
             {
-                for (int xx = -1; xx <= 1; xx++)
+                for (var xx = -1; xx <= 1; xx++)
                 {
                     if (xx == 0 && yy == 0) continue;
                     int nx = x + xx, ny = y + yy;

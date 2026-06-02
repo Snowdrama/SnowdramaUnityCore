@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [0.7.2] - 2026-05-25
+## [0.7.4] - 2026-05-25
+- Fixed an issue where when loading the pause menu controller it would pause the game if the previous scene had open routes in the target router object
+- Fixed an issue where removing routes sometimes wouldn't update the route count in the router. 
+
+## [0.7.3] - 2026-05-25
 - lol
 
 ## [0.7.2] - 2026-05-25

@@ -12,13 +12,11 @@ namespace Snowdrama.UI
         private int openRouteCount = 0;
 
         [Header("Debug[Don't Edit!]")]
-        [SerializeField] private List<string> registeredRoutes = new List<string>();
-        [SerializeField] private List<string> currentStack = new List<string>();
+        [SerializeField] private List<string> registeredRoutesDebug = new List<string>();
+        [SerializeField] private List<string> currentStackDebug = new List<string>();
 
         private Action OnAllRoutesClosed;
         private Action<string> OnOpenRoute;
-
-
         public StackList<string> GetRoutesOpened()
         {
             return routesOpened;
@@ -32,16 +30,18 @@ namespace Snowdrama.UI
         {
             routes.Clear();
             routesOpened.Clear();
-            registeredRoutes.Clear();
-            currentStack.Clear();
+            openRouteCount = routesOpened.Count;
+            registeredRoutesDebug.Clear();
+            currentStackDebug.Clear();
         }
 
         private void OnDisable()
         {
             routes.Clear();
             routesOpened.Clear();
-            registeredRoutes.Clear();
-            currentStack.Clear();
+            openRouteCount = routesOpened.Count;
+            registeredRoutesDebug.Clear();
+            currentStackDebug.Clear();
         }
         public bool IsRouteOpen(string routeSegment)
         {
@@ -81,8 +81,9 @@ namespace Snowdrama.UI
             else
             {
                 routes.Add(routeSegment.ToLower(), reference);
-                registeredRoutes.Add(routeSegment.ToLower());
+                registeredRoutesDebug.Add(routeSegment.ToLower());
             }
+            this.UpdateDebug();
         }
 
         public void UnregisterRoute(string routeSegment)
@@ -90,18 +91,14 @@ namespace Snowdrama.UI
             if (routes.ContainsKey(routeSegment.ToLower()))
             {
                 routes.Remove(routeSegment.ToLower());
-                registeredRoutes.Remove(routeSegment.ToLower());
-                //remove it if we're destroying the element
-                //to ensure we don't try and open it
-                if (currentStack.Contains(routeSegment.ToLower()))
-                {
-                    currentStack.Remove(routeSegment.ToLower());
-                }
+                registeredRoutesDebug.Remove(routeSegment.ToLower());
                 if (routesOpened.Contains(routeSegment.ToLower()))
                 {
                     routesOpened.Remove(routeSegment.ToLower());
+                    openRouteCount = routesOpened.Count;
                 }
             }
+            this.UpdateDebug();
         }
 
         public void OpenRoute(string routeSegment)
@@ -115,7 +112,7 @@ namespace Snowdrama.UI
                 }
                 routesOpened.Push(routeSegment.ToLower());
                 routes[routeSegment.ToLower()].OpenRoute();
-                openRouteCount++;
+                openRouteCount = routesOpened.Count;
             }
             else
             {
@@ -131,7 +128,7 @@ namespace Snowdrama.UI
                 this.CloseAll();
                 routesOpened.Push(routeSegment.ToLower());
                 routes[routeSegment.ToLower()].OpenRoute();
-                openRouteCount = 1;
+                openRouteCount = routesOpened.Count;
             }
             else
             {
@@ -153,8 +150,8 @@ namespace Snowdrama.UI
                 route.AllClosed();
             }
 
-            openRouteCount = 0;
             routesOpened.Clear();
+            openRouteCount = routesOpened.Count;
             this.UpdateDebug();
         }
 
@@ -166,7 +163,6 @@ namespace Snowdrama.UI
                 if (routes.ContainsKey(rs))
                 {
                     routes[rs].CloseRoute();
-                    openRouteCount--;
                 }
                 if (routesOpened.Count > 0)
                 {
@@ -184,20 +180,17 @@ namespace Snowdrama.UI
                 {
                     route.AllClosed();
                 }
-                openRouteCount = 0;
             }
 
+            openRouteCount = routesOpened.Count;
             this.UpdateDebug();
         }
 
 
         public void UpdateDebug()
         {
-            currentStack = new List<string>(routesOpened);
+            currentStackDebug = new List<string>(routesOpened);
         }
-
-
-
 
         //Shortcut to use to exit the game
         public void ExitGame()
