@@ -84,7 +84,7 @@ public static class ListExtensions
         if (source == null) throw new ArgumentNullException("source");
         if (source.Count == 0) throw new Exception("GetRandom can't be called since list has no values");
 
-        return source.ElementAt(UnityEngine.Random.RandomRange(0, source.Count));
+        return source.ElementAt(RandomAndNoise.RandomRange(0, source.Count));
     }
     public static IList<T> GetRandomCount<T>(this IList<T> source, int count)
     {

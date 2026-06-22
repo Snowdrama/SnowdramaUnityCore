@@ -2,16 +2,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 public class GameDataManager : MonoBehaviour
 {
     private static GameData data = new();
     public static Action<GameData> saveGameLoaded;
-    private static bool isSaveGameLoaded = false;
 
     //this is forced on us when the SaveManager pulls a save
     public static void SetLoadedSave(GameData setData)

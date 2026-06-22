@@ -23,6 +23,11 @@
       "path": "Samples~/TransitionSample"
     },
     {
+      "displayName": "Transition Sample",
+      "description": "Shows the use of Transitions With the new modal option",
+      "path": "Samples~/TransitionWithModalSample"
+    },
+    {
       "displayName": "Expandable Attribute Sample",
       "description": "Shows the use of Expandable Attribute in the Inspector",
       "path": "Samples~/ExpandableAttributeSample"
