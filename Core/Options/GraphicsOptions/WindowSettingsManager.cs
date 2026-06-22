@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 public class WindowSettingsManager : MonoBehaviour
 {
@@ -138,56 +137,42 @@ public class WindowSettingsManager : MonoBehaviour
         //var largestRefreshRate = 0.0f;
         var largestArea = 0.0f;
         var largestAreaIndex = 0;
+
+        var targetArea = Screen.currentResolution.width * Screen.currentResolution.height;
+        var targetAreaFound = -1;
+
+        var bestTargetHzFound = 1.0f;
         //find the largest possible resoltion
+        Debug.Log($"<color=orange>Resolution?: ({Screen.currentResolution.width}, {Screen.currentResolution.height}) -> (Area: {Screen.width * Screen.height}");
+
+
         for (var i = 0; i < _resolutions.Count; i++)
         {
-            var r = _resolutions[i];
-            var hz = (float)r.refreshRate.denominator / (float)r.refreshRate.numerator;
-            var area = r.width * r.height;
+            var rez = _resolutions[i];
+            var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
+            var area = rez.width * rez.height;
+
+            Debug.Log($"<color=orange>Testing[{i}]: ({rez.width}, {rez.height}) @ {hz}-> (area: {area})");
+
+            if (targetArea == area && hz <= bestTargetHzFound)
+            {
+                targetAreaFound = i;
+                bestTargetHzFound = hz;
+            }
 
             if (area > largestArea)
             {
                 largestArea = area;
                 largestAreaIndex = i;
             }
-            //Debug.Log($"<color=orange>Testing[{i}]: ({r.width}, {r.height}) -> ({largestWidth}, {largestHeight}) @ {largestRefreshRate}");
-            //if (r.width >= largestWidth)
-            //{
-            //    largestWidth = r.width;
-            //}
-            //if (r.height >= largestHeight)
-            //{
-            //    largestHeight = r.height;
-            //}
-            //if (hz >= largestRefreshRate)
-            //{
-            //    largestRefreshRate = hz;
-            //}
         }
 
-        //Debug.Log($"<color=green>Best Possible Resolution: ({largestWidth}, {largestHeight}) -> ({largestRefreshRate}) | By Area Best Index {largestAreaIndex}");
-
-        //var bestCurrentWidth = 0.0f;
-        //var bestCurrentHeight = 0.0f;
-        //var bestCurrentRefreshRate = 0.0f;
-        //for (var i = 0; i < _resolutions.Count; i++)
-        //{
-        //    var r = _resolutions[i];
-        //    var hz = (float)r.refreshRate.denominator / (float)r.refreshRate.numerator;
-
-        //    Debug.Log($"<color=magenta>Comparing [{i}] Against Theoretical Largest: ({r.width}, {r.height}) @ {hz} == ({largestWidth}, {largestHeight}) @ {largestRefreshRate} ");
-
-        //    if (
-        //        r.width <= largestWidth && r.width >= bestCurrentWidth &&
-        //        r.height <= largestHeight && r.height >= bestCurrentHeight &&
-        //        hz <= largestRefreshRate && hz >= bestCurrentRefreshRate)
-        //    {
-        //        bestCurrentWidth = r.width;
-        //        bestCurrentHeight = r.height;
-        //        bestCurrentRefreshRate = hz;
-        //        bestIndexFoundWithRefresh = i;
-        //    }
-        //}
+        if(targetAreaFound >= 0)
+        {
+            var rez = _resolutions[targetAreaFound];
+            var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
+            return targetAreaFound;
+        }
 
         if (largestAreaIndex >= 0)
         {
