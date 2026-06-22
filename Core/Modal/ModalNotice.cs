@@ -86,7 +86,7 @@ public class ModalNotice : MonoBehaviour
             }
         }
 
-        currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.deltaTime * 4.0f);
+        currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.unscaledDeltaTime * 4.0f);
         canvasGroup.alpha = currentAlpha;
         if (canvasGroup.alpha > 0.2f)
         {

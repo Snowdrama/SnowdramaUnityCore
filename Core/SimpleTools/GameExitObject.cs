@@ -52,7 +52,31 @@ public class GameExitObject : ScriptableObject
             Application.Quit();
         }
 #else
-        Debug.LogError("Tried to quit in a reference that can't 'Quit' like the editor or WebGL");
+        if (_useConfirmation)
+        {
+            Debug.Log($"Started Transition with Confirmation");
+            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                _confirmationMessage,
+                new ModalButtonData()
+                {
+                    text = _confirmationMessage_Yes,
+                    disableTime = _confirmationDisableTime_Yes,
+                    pressCallback = () =>
+                    {
+                        Debug.LogError("Tried to quit in a reference that can't 'Quit' like the editor or WebGL");
+                    }
+                },
+                new ModalButtonData()
+                {
+                    text = this.ConfirmationMessage_No,
+                    disableTime = _confirmationDisableTime_No,
+                    pressCallback = null
+                });
+        }
+        else
+        {
+            Debug.LogError("Tried to quit in a reference that can't 'Quit' like the editor or WebGL");
+        }
 #endif
     }
 }
