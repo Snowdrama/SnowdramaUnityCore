@@ -53,17 +53,22 @@
       "path": "Samples~/UIToolsSample"
     },
     {
-      "displayName": "Virtual Cursor Sample",
+      "displayName": "Tooltip Sample",
+      "description": "Shows the use of the Tooltip Component",
+      "path": "Samples~/TooltipSample"
+    },
+    {
+      "displayName": "Virtual Cursor Sample[Experimental]",
       "description": "Shows the use of VirtualCursors",
       "path": "Samples~/VirtualCursorSample"
     },
     {
-      "displayName": "UI Curve Sample",
+      "displayName": "UI Curve Sample[Experimental]",
       "description": "Shows the use of UICurves",
       "path": "Samples~/CurvesSample"
     },
     {
-      "displayName": "Spline Sample",
+      "displayName": "Spline Sample[Experimental]",
       "description": "Shows the use of the Spline Component",
       "path": "Samples~/SplineSample"
     }

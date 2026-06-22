@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.7.5] - 2026-06-22
 - Slight change to the window resolution finder to be based on area and not raw width/height Should make finding best resolution better for weird aspects
+- Added a tooltip manager and tools for "Tooltip UI" - Check GameFeatures/Tooltips
+- Added tooltip sample, marked a few samples as Experimental because I don't think they're working well right now
 
 ## [0.7.4] - 2026-05-25
 - Fixed an issue where when loading the pause menu controller it would pause the game if the previous scene had open routes in the target router object
