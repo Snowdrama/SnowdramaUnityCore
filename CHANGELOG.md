@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
+## [0.7.6] - 2026-06-22
+- Added the confirmation modal to the transition and game exit object so you can toggle on a "Are you Sure" message easily
 
 ## [0.7.5] - 2026-06-22
 - Slight change to the window resolution finder to be based on area and not raw width/height Should make finding best resolution better for weird aspects
