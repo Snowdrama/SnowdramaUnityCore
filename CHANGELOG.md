@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the confirmation modal to the transition and game exit object so you can toggle on a "Are you Sure" message easily
 - Added some new save tools and started adding some tools for saving images to go along with a save in the save system
 - Updated save modals to use CanvasGroup
+- Cleaned up the scroll view buttons separated out delete functionality to not duplicate it.
 
 ## [0.7.5] - 2026-06-22
 - Slight change to the window resolution finder to be based on area and not raw width/height Should make finding best resolution better for weird aspects
