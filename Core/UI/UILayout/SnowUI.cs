@@ -9,10 +9,19 @@ namespace Snowdrama.UI
         [Header("Gap")]
         [Range(0, 1), SerializeField] protected float gapX = 0.1f;
         [Range(0, 1), SerializeField] protected float gapY = 0.1f;
+
+        [Header("Outer Gap Pixels[Experimental]")]
+        [SerializeField] protected float gapXOuterPixel = 0.0f;
+        [SerializeField] protected float gapYOuterPixel = 0.0f;
+
+        [Header("Inner Gap Pixels[Experimental]")]
+        [SerializeField] protected float gapXInnerPixel = 0.0f;
+        [SerializeField] protected float gapYInnerPixel = 0.0f;
+
         [Header("Active Items")]
         [SerializeField] protected bool forceActiveIfInactive = false;
-        [SerializeField] protected bool useActive;
-        [SerializeField] protected bool shrinkCountToElementCount;
+        [SerializeField] protected bool useActive = true;
+        [SerializeField] protected bool shrinkCountToElementCount = true;
         protected int currentActiveCount = 0;
         protected int tempActiveCount = 0;
 
@@ -79,7 +88,7 @@ namespace Snowdrama.UI
 
         }
 
-        protected void ProcessCell(int x, int y, int index)
+        protected void ProcessCell(int x, int y, int index, bool firstElementX = true, bool lastElementX = true, bool firstElementY = true, bool lastElementY = true)
         {
             if (index < this.children.Count)
             {
@@ -121,11 +130,48 @@ namespace Snowdrama.UI
                     var currentWidth = child.rect.width;
                     var currentHeight = child.rect.height;
 
-                    var offsetX = currentWidth * gapX / 2.0f;
-                    var offsetY = currentHeight * gapY / 2.0f;
+                    var offsetYTop = currentHeight * gapY / 2.0f;
+                    var offsetYBot = currentHeight * gapY / 2.0f;
 
-                    child.offsetMin = new Vector2(offsetX, offsetY);
-                    child.offsetMax = new Vector2(-offsetX, -offsetY);
+                    var offsetXLeft = currentWidth * gapX / 2.0f;
+                    var offsetXRight = currentWidth * gapX / 2.0f;
+
+
+                    if (firstElementY)
+                    {
+                        offsetYTop += gapYOuterPixel;
+                    }
+                    else
+                    {
+                        offsetYTop += gapYInnerPixel;
+                    }
+                    if (lastElementY)
+                    {
+                        offsetYBot += gapYOuterPixel;
+                    }
+                    else
+                    {
+                        offsetYBot += gapYInnerPixel;
+                    }
+                    if (firstElementX)
+                    {
+                        offsetXLeft += gapXOuterPixel;
+                    }
+                    else
+                    {
+                        offsetXLeft += gapXInnerPixel;
+                    }
+                    if (lastElementX)
+                    {
+                        offsetXRight += gapXOuterPixel;
+                    }
+                    else
+                    {
+                        offsetXRight += gapXInnerPixel;
+                    }
+
+                    child.offsetMin = new Vector2(offsetXLeft, offsetYBot);
+                    child.offsetMax = new Vector2(-offsetXRight, -offsetYTop);
                     child.ForceUpdateRectTransforms();
                 }
                 else
@@ -150,7 +196,7 @@ namespace Snowdrama.UI
                         {
                             for (var x = 0; x < internalColumnCount; x++)
                             {
-                                this.ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index, x == 0, x == internalColumnCount - 1, y == 0, y == internalRowCount - 1);
                                 ++index;
                             }
                         }
@@ -160,7 +206,7 @@ namespace Snowdrama.UI
                         {
                             for (var y = 0; y < internalRowCount; y++)
                             {
-                                this.ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index, x == 0, x == internalColumnCount - 1, y == 0, y == internalRowCount - 1);
                                 ++index;
                             }
                         }
@@ -181,7 +227,7 @@ namespace Snowdrama.UI
                         {
                             for (var x = 0; x < internalColumnCount; x++)
                             {
-                                this.ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index, x == 0, x == internalColumnCount - 1, y == 0, y == internalRowCount - 1);
                                 ++index;
                             }
                         }
@@ -191,7 +237,7 @@ namespace Snowdrama.UI
                         {
                             for (var y = 0; y < internalRowCount; y++)
                             {
-                                this.ProcessCell(x, y, index);
+                                this.ProcessCell(x, y, index, x == 0, x == internalColumnCount - 1, y == 0, y == internalRowCount - 1);
                                 ++index;
                             }
                         }
@@ -221,7 +267,6 @@ namespace Snowdrama.UI
 
             if (shrinkCountToElementCount)
             {
-
                 switch (direction)
                 {
                     case UIDirection.ColumnsFirst:

@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.7.7] - 2026-06-23
 - Added the Save and Load Grid prefabs and scripts
 - Added the SaveScreenshotHelper to handle saving the screenshot with the saves
+- Added some Experimental pixel gap options to the UI Vertical/Horizontal/Grid tools
 
 ## [0.7.6] - 2026-06-22
 - Added the confirmation modal to the transition and game exit object so you can toggle on a "Are you Sure" message easily

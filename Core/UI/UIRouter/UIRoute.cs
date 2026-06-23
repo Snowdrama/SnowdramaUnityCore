@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Snowdrama.UI
 {
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
 
     [RequireComponent(typeof(CanvasGroup))]
     public class UIRoute : MonoBehaviour
@@ -43,13 +41,15 @@ namespace Snowdrama.UI
                 }
             }
         }
-        private float currentAlpha;
-        private float targetAlpha;
-        private float currentAlphaVelocity;
+        [Header("Debug")]
+        [SerializeField] private float currentAlpha;
+        [SerializeField] private float targetAlpha;
+        [SerializeField] private float currentAlphaVelocity;
 
         private void Start()
         {
             _router.RegisterRoute(_routeSegment, this);
+            canvasGroup = this.GetComponent<CanvasGroup>();
 
             if (_startEnabled)
             {
@@ -58,10 +58,8 @@ namespace Snowdrama.UI
             }
             else
             {
-                targetAlpha = 0.0f;
                 this.RouteActive = false;
             }
-            canvasGroup = this.GetComponent<CanvasGroup>();
         }
 
         private void OnDestroy()
@@ -111,7 +109,7 @@ namespace Snowdrama.UI
 
         private void Update()
         {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime);
+            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
             canvasGroup.alpha = currentAlpha;
         }
     }
