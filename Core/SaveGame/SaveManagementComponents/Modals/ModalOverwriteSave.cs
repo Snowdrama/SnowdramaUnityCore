@@ -78,7 +78,15 @@ public class ModalOverwriteSave : MonoBehaviour
     public void ForceSave()
     {
         Debug.Log($"Writing Save: {SaveName.text} to Save Slot: {saveGameInfo.saveSlot}");
-        SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text);
+        if (SaveScreenshotHelper.lastScreenshot != null)
+        {
+            SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version, SaveScreenshotHelper.lastScreenshot);
+        }
+        else
+        {
+
+            SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version);
+        }
         targetAlpha = 0;
     }
     public void CancelSave()

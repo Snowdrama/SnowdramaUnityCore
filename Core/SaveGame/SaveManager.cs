@@ -41,7 +41,6 @@ public class SaveGameStartingSaveMessage : AMessage { }
 //this is called right after a game saved, useful for triggering things like "Save and Quit"
 public class SaveGameSavingCompletedMessage : AMessage { }
 
-
 public class SaveManager : MonoBehaviour
 {
     private static GameData loadedSave = new();
@@ -315,9 +314,9 @@ public class SaveManager : MonoBehaviour
         if (image != null)
         {
             //Serialize the image to disk
-            var png = ImageConversion.EncodeToPNG(image);
+            var png = ImageConversion.EncodeToJPG(image, 75);
 
-            imagePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.png";
+            imagePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.jpg";
             File.WriteAllBytes(imagePath, png);
         }
 
@@ -378,8 +377,8 @@ public class SaveManager : MonoBehaviour
 
             //get the oldest key and use that auto save key:
             saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
-            //arbitrary loop on auto save 10.
-            saveDataInfo.currentAutoSaveIndex %= 10;
+            //arbitrary loop on auto save 4, good for a game with "16" saves 4 auto saves, and 12 non auto saves 
+            saveDataInfo.currentAutoSaveIndex %= 4;
 
 
             //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
