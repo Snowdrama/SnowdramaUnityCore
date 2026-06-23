@@ -22,6 +22,7 @@ public class SaveGameInfo
     public string version;
     public string dateModified;
     public string filePath;
+    public string imagePath;
     public bool isAutoSave;
 }
 
@@ -294,7 +295,7 @@ public class SaveManager : MonoBehaviour
         return false;
     }
 
-    public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null)
+    public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null, Texture2D image = null)
     {
         ValidateDirectories();
 
@@ -310,6 +311,15 @@ public class SaveManager : MonoBehaviour
             //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
             return false;
         }
+        string imagePath = null;
+        if (image != null)
+        {
+            //Serialize the image to disk
+            var png = ImageConversion.EncodeToPNG(image);
+
+            imagePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.png";
+            File.WriteAllBytes(imagePath, png);
+        }
 
         //Update save info
         //Debug.Log("Creating new save info");
@@ -319,6 +329,7 @@ public class SaveManager : MonoBehaviour
             name = (!string.IsNullOrEmpty(saveName)) ? saveName : $"Save {saveSlot}",
             dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
+            imagePath = imagePath,
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
             isAutoSave = false,
         };

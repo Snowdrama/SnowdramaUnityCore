@@ -15,9 +15,7 @@ public class SaveGameListDisplay : MonoBehaviour
     {
         savesChanged = Messages.Get<SaveGameListChangedMessage>();
         savesChanged.AddListener(this.LoadSaveList);
-
     }
-
     private void OnDisable()
     {
         savesChanged.RemoveListener(this.LoadSaveList);
@@ -45,7 +43,7 @@ public class SaveGameListDisplay : MonoBehaviour
         buttons.Clear();
 
         var saveDataStruct = SaveManager.GetSaveList();
-        List<KeyValuePair<int, SaveGameInfo>> saves = new List<KeyValuePair<int, SaveGameInfo>>();
+        var saves = new List<KeyValuePair<int, SaveGameInfo>>();
 
         if (AddSaves)
         {

@@ -2,16 +2,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class SaveGame_OverwriteSaveModalMessage : AMessage<SaveGameInfo> { }
-public class SaveGame_OverwriteSaveModal : MonoBehaviour
+
+[RequireComponent(typeof(CanvasGroup))]
+public class ModalOverwriteSave : MonoBehaviour
 {
-    [SerializeField] private GameObject SaveGamePanel;
-    [SerializeField] private GameObject DarkBackground;
     [SerializeField] private TMP_InputField SaveName;
     [SerializeField] private Button SaveButton;
     [SerializeField] private float SaveButton_DisableTime = 1.0f;
     [SerializeField] private Button CancelButton;
     [SerializeField] private float CancelButton_DisableTime = 0.0f;
 
+    private CanvasGroup canvasGroup;
+    private float currentAlpha;
+    private float targetAlpha;
+    private float currentAlphaVelocity;
     private SaveGameInfo saveGameInfo;
     private SaveGame_OverwriteSaveModalMessage openSavegameModal;
     private void OnEnable()
@@ -21,6 +25,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
         openSavegameModal = Messages.Get<SaveGame_OverwriteSaveModalMessage>();
         openSavegameModal.AddListener(this.OpenSaveModal);
+        canvasGroup = this.GetComponent<CanvasGroup>();
     }
     private void OnDisable()
     {
@@ -40,8 +45,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
             SaveName.text = saveGameInfo.name;
         }
 
-        SaveGamePanel.SetActive(true);
-        DarkBackground?.SetActive(true);
+        targetAlpha = 1;
     }
 
     private void SaveToExistingSlot()
@@ -53,8 +57,7 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
 
         Debug.Log($"Prepping to overwrite save");
         //open the panel
-        SaveGamePanel.SetActive(false);
-        DarkBackground?.SetActive(false);
+        targetAlpha = 0;
         //dispatch the confirm modal message
         Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
             "Are you sure you want to override the save?",
@@ -77,14 +80,17 @@ public class SaveGame_OverwriteSaveModal : MonoBehaviour
     {
         Debug.Log($"Writing Save: {SaveName.text} to Save Slot: {saveGameInfo.saveSlot}");
         SaveManager.SaveGame(saveGameInfo.saveSlot, GameDataManager.GetGameData(), true, SaveName.text);
-        SaveGamePanel.SetActive(false);
-        DarkBackground?.SetActive(false);
+        targetAlpha = 0;
     }
     public void CancelSave()
     {
         //do nothing XD
         Debug.Log($"Canceling Overwriting Save");
-        SaveGamePanel.SetActive(false);
-        DarkBackground?.SetActive(false);
+        targetAlpha = 0;
+    }
+    private void Update()
+    {
+        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f);
+        canvasGroup.alpha = currentAlpha;
     }
 }

@@ -24,6 +24,7 @@ public class ModalNotice : MonoBehaviour
 
     private float targetAlpha = 0.0f;
     private float currentAlpha = 0.0f;
+    private float currentAlphaVelocity = 0.0f;
     private CanvasGroup canvasGroup;
     private void Start()
     {
@@ -86,7 +87,7 @@ public class ModalNotice : MonoBehaviour
             }
         }
 
-        currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.unscaledDeltaTime * 4.0f);
+        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f);
         canvasGroup.alpha = currentAlpha;
         if (canvasGroup.alpha > 0.2f)
         {
