@@ -7,16 +7,45 @@ namespace Snowdrama.UI
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
+    [RequireComponent(typeof(CanvasGroup))]
     public class UIRoute : MonoBehaviour
     {
         [SerializeField] private UIRouter _router;
         [SerializeField] private string _routeSegment;
-        [SerializeField] private GameObject[] _toggleWhenActive;
+        //[SerializeField] private GameObject[] _toggleWhenActive;
         [SerializeField] private bool _startEnabled = false;
 
         [SerializeField] private Selectable _objectToSelectOnOpen;
 
         private Selectable _lastSelected;
+
+        private CanvasGroup canvasGroup;
+        [SerializeField] private float showHideTime = 0.25f;
+
+        private bool _routeActive;
+        private bool RouteActive
+        {
+            get { return _routeActive; }
+            set
+            {
+                _routeActive = value;
+                if (_routeActive)
+                {
+                    targetAlpha = 1f;
+                    canvasGroup.interactable = true;
+                    canvasGroup.blocksRaycasts = true;
+                }
+                else
+                {
+                    targetAlpha = 0f;
+                    canvasGroup.interactable = false;
+                    canvasGroup.blocksRaycasts = false;
+                }
+            }
+        }
+        private float currentAlpha;
+        private float targetAlpha;
+        private float currentAlphaVelocity;
 
         private void Start()
         {
@@ -25,18 +54,14 @@ namespace Snowdrama.UI
             if (_startEnabled)
             {
                 _router.OpenRoute(_routeSegment);
-                foreach (var item in _toggleWhenActive)
-                {
-                    item?.SetActive(true);
-                }
+                this.RouteActive = true;
             }
             else
             {
-                foreach (var item in _toggleWhenActive)
-                {
-                    item?.SetActive(false);
-                }
+                targetAlpha = 0.0f;
+                this.RouteActive = false;
             }
+            canvasGroup = this.GetComponent<CanvasGroup>();
         }
 
         private void OnDestroy()
@@ -46,10 +71,7 @@ namespace Snowdrama.UI
 
         public void OpenRoute()
         {
-            foreach (var item in _toggleWhenActive)
-            {
-                item?.SetActive(true);
-            }
+            this.RouteActive = true;
 
             // Try restoring last selected if still valid
             if (_lastSelected != null && _lastSelected.gameObject.activeInHierarchy && _lastSelected.IsInteractable())
@@ -76,10 +98,7 @@ namespace Snowdrama.UI
                 }
             }
 
-            foreach (var item in _toggleWhenActive)
-            {
-                item?.SetActive(false);
-            }
+            this.RouteActive = false;
         }
 
         /// <summary>
@@ -88,6 +107,12 @@ namespace Snowdrama.UI
         public void AllClosed()
         {
             _lastSelected = null;
+        }
+
+        private void Update()
+        {
+            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime);
+            canvasGroup.alpha = currentAlpha;
         }
     }
 }
