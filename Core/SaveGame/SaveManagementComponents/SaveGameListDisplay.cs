@@ -70,7 +70,10 @@ public class SaveGameListDisplay : MonoBehaviour
         foreach (var kvp in saves)
         {
             var go = Instantiate(saveButtonPrefab, buttonContainer, false);
-            go.GetComponent<ISaveButton>().SetButtonInfo(kvp.Value);
+            foreach (var item in go.GetComponents<ISaveButton>())
+            {
+                item.SetButtonInfo(kvp.Value);
+            }
             buttons.Add(go);
         }
 

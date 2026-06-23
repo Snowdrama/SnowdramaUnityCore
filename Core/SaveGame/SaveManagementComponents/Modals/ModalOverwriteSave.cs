@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class SaveGame_OverwriteSaveModalMessage : AMessage<SaveGameInfo> { }
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ModalOverwriteSave : MonoBehaviour
@@ -17,13 +16,13 @@ public class ModalOverwriteSave : MonoBehaviour
     private float targetAlpha;
     private float currentAlphaVelocity;
     private SaveGameInfo saveGameInfo;
-    private SaveGame_OverwriteSaveModalMessage openSavegameModal;
+    private Modal_OverwriteSaveMessage openSavegameModal;
     private void OnEnable()
     {
         SaveButton.onClick.AddListener(this.SaveToExistingSlot);
         CancelButton.onClick.AddListener(this.CancelSave);
 
-        openSavegameModal = Messages.Get<SaveGame_OverwriteSaveModalMessage>();
+        openSavegameModal = Messages.Get<Modal_OverwriteSaveMessage>();
         openSavegameModal.AddListener(this.OpenSaveModal);
         canvasGroup = this.GetComponent<CanvasGroup>();
     }
@@ -34,7 +33,7 @@ public class ModalOverwriteSave : MonoBehaviour
 
         openSavegameModal.RemoveListener(this.OpenSaveModal);
         openSavegameModal = null;
-        Messages.Return<SaveGame_OverwriteSaveModalMessage>();
+        Messages.Return<Modal_OverwriteSaveMessage>();
     }
 
     private void OpenSaveModal(SaveGameInfo saveGameInfo)
@@ -92,5 +91,15 @@ public class ModalOverwriteSave : MonoBehaviour
     {
         currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f);
         canvasGroup.alpha = currentAlpha;
+        if (canvasGroup.alpha > 0.2f)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 }

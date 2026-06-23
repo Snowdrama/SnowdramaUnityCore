@@ -232,7 +232,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46.35
+  m_fontSize: 49.05
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -786,7 +786,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40.7
+  m_fontSize: 43.1
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -883,8 +883,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26040a09fa8aa7546bd002a6afb2ee7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Snowdrama.Core::SaveOverrideModal
-  modalPanel: {fileID: 396616160857740683}
-  DarkBackground: {fileID: 5006063000459865355}
   modalText: {fileID: 253855793165603083}
   cancelButton: {fileID: 7246092603717515275}
   cancelButtonText: {fileID: 8107491076249989783}

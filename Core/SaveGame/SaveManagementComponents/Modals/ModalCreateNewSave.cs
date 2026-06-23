@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class SaveGame_CreateNewSaveModalMessage : AMessage { }
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ModalCreateNewSave : MonoBehaviour
@@ -15,14 +14,15 @@ public class ModalCreateNewSave : MonoBehaviour
     private float currentAlpha;
     private float targetAlpha;
     private float currentAlphaVelocity;
-    private SaveGame_CreateNewSaveModalMessage openSavegameModal;
+    private Modal_CreateNewSaveMessage openSavegameModal;
     private void OnEnable()
     {
         SaveButton.onClick.AddListener(this.SaveToNewSlot);
         CancelButton.onClick.AddListener(this.Cancel);
-        openSavegameModal = Messages.Get<SaveGame_CreateNewSaveModalMessage>();
+        openSavegameModal = Messages.Get<Modal_CreateNewSaveMessage>();
         openSavegameModal.AddListener(this.OpenSaveModal);
         currentAlpha = targetAlpha = 0;
+        canvasGroup = this.GetComponent<CanvasGroup>();
     }
     private void OnDisable()
     {
@@ -30,7 +30,7 @@ public class ModalCreateNewSave : MonoBehaviour
         CancelButton.onClick.RemoveListener(this.Cancel);
         openSavegameModal.RemoveListener(this.OpenSaveModal);
         openSavegameModal = null;
-        Messages.Return<SaveGame_CreateNewSaveModalMessage>();
+        Messages.Return<Modal_CreateNewSaveMessage>();
     }
 
     private void OpenSaveModal()
@@ -81,5 +81,15 @@ public class ModalCreateNewSave : MonoBehaviour
     {
         currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f);
         canvasGroup.alpha = currentAlpha;
+        if (canvasGroup.alpha > 0.2f)
+        {
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 }

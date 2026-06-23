@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 2784707846415426973}
   - component: {fileID: 8584730732658928974}
   m_Layer: 5
-  m_Name: SaveGameScrollView
+  m_Name: ScrollView_SaveGameScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
