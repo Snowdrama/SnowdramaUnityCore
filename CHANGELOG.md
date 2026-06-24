@@ -3,11 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.7.8]
+- Added toggling of UI elements based on the fade state of the canvas group for UI Routes
+- Finished the save grid stuff
+- Merged the save modal into one modal
+- Load button can now prompt a Confirmation before loading
+
 ## [0.7.7] - 2026-06-23
 - Added the Save and Load Grid prefabs and scripts
 - Added the SaveScreenshotHelper to handle saving the screenshot with the saves
 - Added some Experimental pixel gap options to the UI Vertical/Horizontal/Grid tools
-- Added toggling of UI elements based on the fade state of the canvas group for UI Routes
 
 ## [0.7.6] - 2026-06-22
 - Added the confirmation modal to the transition and game exit object so you can toggle on a "Are you Sure" message before any transition

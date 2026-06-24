@@ -408,6 +408,7 @@ MonoBehaviour:
   saveDate: {fileID: 5534381058454025072}
   SaveInfo: {fileID: 9006719148401667008}
   NoSaveInfo: {fileID: 5974701745628704994}
+  promptConfirmation: 1
 --- !u!222 &6027564345010452259
 CanvasRenderer:
   m_ObjectHideFlags: 0

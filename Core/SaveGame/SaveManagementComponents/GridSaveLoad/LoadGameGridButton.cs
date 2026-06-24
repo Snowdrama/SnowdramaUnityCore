@@ -11,7 +11,7 @@ public class LoadGameGridButton : MonoBehaviour
 
     [SerializeField] private Sprite defaultSaveSprite;
 
-    [Header("Safe Info")]
+    [Header("Save Info")]
     [SerializeField] private Image saveImage;
     [SerializeField] private TMP_Text saveName;
     [SerializeField] private TMP_Text saveDate;
@@ -19,6 +19,10 @@ public class LoadGameGridButton : MonoBehaviour
     [Header("Save Toggles")]
     [SerializeField] private GameObject SaveInfo;
     [SerializeField] private GameObject NoSaveInfo;
+
+    [Header("Settings")]
+    [SerializeField] private bool promptConfirmation = true;
+
     private void Start()
     {
         this.GetComponent<Button>().onClick.AddListener(this.OnClick);
@@ -26,13 +30,37 @@ public class LoadGameGridButton : MonoBehaviour
 
     private void OnClick()
     {
-        SaveManager.LoadSave(currentSaveData.saveSlot, false);
+        if (promptConfirmation)
+        {
+            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                $"Are you sure you want to load\n\"{currentSaveData.name}\"?",
+                new ModalButtonData()
+                {
+                    text = "Yes",
+                    disableTime = 0.0f,
+                    pressCallback = () =>
+                    {
+                        SaveManager.LoadSave(currentSaveData.saveSlot, false);
+                    }
+                },
+                new ModalButtonData()
+                {
+                    text = "No",
+                    disableTime = 0.0f,
+                    pressCallback = null
+                });
+        }
+        else
+        {
+            SaveManager.LoadSave(currentSaveData.saveSlot, false);
+        }
+
+
     }
 
     public void SetSaveData(SaveGameInfo saveData)
     {
         currentSaveData = saveData;
-
         saveName.text = currentSaveData.name;
 
         //parse the date
