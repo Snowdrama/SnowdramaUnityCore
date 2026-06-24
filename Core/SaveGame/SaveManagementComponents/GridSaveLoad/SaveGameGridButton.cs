@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using TMPro;
-using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,12 +11,13 @@ public class SaveGameGridButton : MonoBehaviour
     [SerializeField] private Sprite defaultSaveSprite;
     [Header("Safe Info")]
     [SerializeField] private Image saveImage;
-    [SerializeField] private TMP_Text saveName;
-    [SerializeField] private TMP_Text saveDate;
+    [SerializeField] private TMP_Text saveNameTMP;
+    [SerializeField] private TMP_Text saveDateTMP;
 
     [Header("Save Toggles")]
     [SerializeField] private GameObject SaveInfo;
     [SerializeField] private GameObject NoSaveInfo;
+
     private void Start()
     {
         this.GetComponent<Button>().onClick.AddListener(this.OnClick);
@@ -27,8 +27,9 @@ public class SaveGameGridButton : MonoBehaviour
     {
         //trigger save game
         Debug.Log($"Trying to open the save modal!");
-        Messages.GetOnce<Modal_OverwriteSaveMessage>().Dispatch(currentSaveData);
+        Messages.GetOnce<Modal_SaveGameMessage>().Dispatch(currentSaveData.saveSlot, currentSaveData.name);
     }
+
     public void SetSaveData(SaveGameInfo saveData)
     {
         SaveInfo.gameObject.SetActive(true);
@@ -36,13 +37,13 @@ public class SaveGameGridButton : MonoBehaviour
 
         currentSaveData = saveData;
 
-        saveName.text = saveData.name;
+        saveNameTMP.text = saveData.name;
 
         //parse the date
         var date = DateTime.ParseExact(saveData.dateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
         if (date != null)
         {
-            saveDate.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
+            saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
         if (File.Exists(saveData.imagePath))

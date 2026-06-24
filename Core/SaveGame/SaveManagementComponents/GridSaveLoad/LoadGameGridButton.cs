@@ -26,25 +26,25 @@ public class LoadGameGridButton : MonoBehaviour
 
     private void OnClick()
     {
-        //trigger save game
-        //Debug.Log($"Trying to open the save modal!");
-        //Messages.GetOnce<Modal_OverwriteSaveMessage>().Dispatch(currentSaveData);
+        SaveManager.LoadSave(currentSaveData.saveSlot, false);
     }
 
     public void SetSaveData(SaveGameInfo saveData)
     {
-        saveName.text = saveData.name;
+        currentSaveData = saveData;
+
+        saveName.text = currentSaveData.name;
 
         //parse the date
-        var date = DateTime.ParseExact(saveData.dateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+        var date = DateTime.ParseExact(currentSaveData.dateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
         if (date != null)
         {
             saveDate.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
-        if (File.Exists(saveData.imagePath))
+        if (File.Exists(currentSaveData.imagePath))
         {
-            var imageBytes = File.ReadAllBytes(saveData.imagePath);
+            var imageBytes = File.ReadAllBytes(currentSaveData.imagePath);
             var tex = new Texture2D(2, 2);
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));

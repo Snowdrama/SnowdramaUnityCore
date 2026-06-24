@@ -11,7 +11,6 @@ public class SaveGame_CreateNewSaveButton : MonoBehaviour
 
     private void OpenModal()
     {
-        Debug.Log("<color=green>Opening Create New Save Modal</color>");
-        Messages.GetOnce<Modal_CreateNewSaveMessage>().Dispatch();
+        Messages.GetOnce<Modal_SaveGameMessage>().Dispatch(-1, "");
     }
 }

@@ -232,7 +232,7 @@ public class SaveManager : MonoBehaviour
             //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
             if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
             {
-                //Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
+                Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
                 SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
             }
 
@@ -300,14 +300,10 @@ public class SaveManager : MonoBehaviour
 
         var filePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.json";
 
-        //do we have a file there already?
+        //fail the save if it exists but we're not forcing it
         var fileExists = File.Exists(filePath);
-
-        //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
-
         if (fileExists && force == false)
         {
-            //Debug.Log($"File.Exists() = {fileExists} && force == {force}");
             return false;
         }
         string imagePath = null;

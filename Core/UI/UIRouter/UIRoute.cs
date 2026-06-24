@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 namespace Snowdrama.UI
 {
-
     [RequireComponent(typeof(CanvasGroup))]
     public class UIRoute : MonoBehaviour
     {

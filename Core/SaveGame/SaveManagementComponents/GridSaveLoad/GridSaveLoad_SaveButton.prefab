@@ -333,8 +333,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Snowdrama.Core::SaveGameGridButton
   defaultSaveSprite: {fileID: 21300000, guid: cd77822c662564341b28cf32879ff727, type: 3}
   saveImage: {fileID: 2004148326767630673}
-  saveName: {fileID: 8350999270425646971}
-  saveDate: {fileID: 5853501079109952529}
+  saveNameTMP: {fileID: 8350999270425646971}
+  saveDateTMP: {fileID: 5853501079109952529}
   SaveInfo: {fileID: 4756059958663169749}
   NoSaveInfo: {fileID: 1938367916136200080}
 --- !u!222 &3384712591092037461
