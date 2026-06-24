@@ -80,7 +80,7 @@ public class ModalSaveGame : MonoBehaviour
             //There's no save in the slot
 
             //Force saving the save
-            if (SaveManager.SaveGame(saveSlot, GameDataManager.GetGameData(), true, SaveName.text))
+            if (SaveManager.SaveGame(saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version, SaveScreenshotHelper.lastScreenshot))
             {
                 //then show a game saved modal
                 Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
@@ -123,16 +123,7 @@ public class ModalSaveGame : MonoBehaviour
 
     public void ForceSave()
     {
-        Debug.Log($"Writing Save: {saveName} to Save Slot: {saveSlot}");
-        if (SaveScreenshotHelper.lastScreenshot != null)
-        {
-            SaveManager.SaveGame(saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version, SaveScreenshotHelper.lastScreenshot);
-        }
-        else
-        {
-
-            SaveManager.SaveGame(saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version);
-        }
+        SaveManager.SaveGame(saveSlot, GameDataManager.GetGameData(), true, SaveName.text, Application.version, SaveScreenshotHelper.lastScreenshot);
         targetAlpha = 0;
     }
 
