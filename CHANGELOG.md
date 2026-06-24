@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Finished the save grid stuff
 - Merged the save modal into one modal
 - Load button can now prompt a Confirmation before loading
+- Fix to Modal to fix screenshots not working on new saves
 
 ## [0.7.7] - 2026-06-23
 - Added the Save and Load Grid prefabs and scripts
