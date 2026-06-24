@@ -307,6 +307,7 @@ public class SceneController : MonoBehaviour
             Debug.Log($"Scenes: {Scenes} ");
             Debug.Log($"Scenes Count: {Scenes.Count}");
             Debug.Log($"Scenes Count: {loadedScene_Current}");
+
             var loadedSceneData = Scenes[loadedScene_Current];
 
             //is this scene already loaded? And are we trying to load it again

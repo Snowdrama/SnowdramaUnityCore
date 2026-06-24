@@ -138,7 +138,7 @@ public class ModalSaveGame : MonoBehaviour
 
     private void Update()
     {
-        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f);
+        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, 0.1f, Mathf.Infinity, Time.unscaledDeltaTime);
         canvasGroup.alpha = currentAlpha;
         if (canvasGroup.alpha > 0.2f)
         {
