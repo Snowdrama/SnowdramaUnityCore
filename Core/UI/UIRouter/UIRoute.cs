@@ -135,10 +135,10 @@ namespace Snowdrama.UI
 
         private void Update()
         {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime Mathf.Infinity, Time.unscaledDeltaTime);
             canvasGroup.alpha = currentAlpha;
 
-            if (Mathf.Approximately(currentAlpha, Mathf.Epsilon))
+            if (currentAlpha <= 0.05f)
             {
                 this.ElementsActive = false;
             }
