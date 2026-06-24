@@ -10,7 +10,7 @@ namespace Snowdrama.UI
     {
         [SerializeField] private UIRouter _router;
         [SerializeField] private string _routeSegment;
-        //[SerializeField] private GameObject[] _toggleWhenActive;
+        [SerializeField] private GameObject[] _toggleWhenActive;
         [SerializeField] private bool _startEnabled = false;
 
         [SerializeField] private Selectable _objectToSelectOnOpen;
@@ -38,6 +38,32 @@ namespace Snowdrama.UI
                     targetAlpha = 0f;
                     canvasGroup.interactable = false;
                     canvasGroup.blocksRaycasts = false;
+                }
+            }
+        }
+        private bool _elementsActive;
+        private bool ElementsActive
+        {
+            get { return _elementsActive; }
+            set
+            {
+                if (_elementsActive != value)
+                {
+                    _elementsActive = value;
+                    if (_elementsActive)
+                    {
+                        foreach (var item in _toggleWhenActive)
+                        {
+                            item.gameObject.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in _toggleWhenActive)
+                        {
+                            item.gameObject.SetActive(false);
+                        }
+                    }
                 }
             }
         }
@@ -111,6 +137,16 @@ namespace Snowdrama.UI
         {
             currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
             canvasGroup.alpha = currentAlpha;
+
+            if (currentAlpha <= 0)
+            {
+                this.ElementsActive = false;
+            }
+            else
+            {
+                this.ElementsActive = true;
+            }
+            currentAlpha = currentAlpha.Clamp(0, 1);
         }
     }
 }

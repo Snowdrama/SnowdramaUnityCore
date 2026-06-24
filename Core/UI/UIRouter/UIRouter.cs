@@ -17,10 +17,12 @@ namespace Snowdrama.UI
 
         private Action OnAllRoutesClosed;
         private Action<string> OnOpenRoute;
+
         public StackList<string> GetRoutesOpened()
         {
             return routesOpened;
         }
+
         public int GetOpenRouteCount()
         {
             return openRouteCount;
