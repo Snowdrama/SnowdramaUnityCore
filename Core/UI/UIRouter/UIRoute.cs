@@ -135,7 +135,7 @@ namespace Snowdrama.UI
 
         private void Update()
         {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime Mathf.Infinity, Time.unscaledDeltaTime);
+            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
             canvasGroup.alpha = currentAlpha;
 
             if (currentAlpha <= 0.05f)
