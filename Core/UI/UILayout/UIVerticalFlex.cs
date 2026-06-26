@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Snowdrama.UI;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -15,6 +16,10 @@ namespace Snowdrama.UI
         public float[] ratio = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         public float[] percentages = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
         public bool topDown = true;
+
+        [SerializeField] private float spaceBetween = 0.01f;
+        [SerializeField] private float spaceTopBot = 0.02f;
+        [SerializeField] private float spaceLeftRight = 0.02f;
 
         [Header("Active Items")]
         [SerializeField] private bool forceActiveIfInactive = false;
@@ -88,8 +93,22 @@ namespace Snowdrama.UI
                     var child = this.children[i];
                     var percent = percentages[i];
 
-                    child.anchorMin = new Vector2(0.0f, 1.0f - current - percent);
-                    child.anchorMax = new Vector2(1.0f, 1.0f - current);
+                    if (i == 0)
+                    {
+                        // ******************************** 1.0f - 0.0 - 0.25 + 0.1
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceBetween);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceTopBot);
+                    }
+                    else if (i == this.children.Count - 1)
+                    {
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceTopBot);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceBetween);
+                    }
+                    else
+                    {
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceBetween);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceBetween);
+                    }
 
                     current = current + percent;
                 }
@@ -98,8 +117,21 @@ namespace Snowdrama.UI
                     var child = this.children[i];
                     var percent = percentages[i];
 
-                    child.anchorMin = new Vector2(0.0f, current);
-                    child.anchorMax = new Vector2(1.0f, current + percent);
+                    if (i == 0)
+                    {
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, current + spaceTopBot);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, current + percent - spaceBetween);
+                    }
+                    else if (i == this.children.Count - 1)
+                    {
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, current + spaceBetween);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, current + percent - spaceTopBot);
+                    }
+                    else
+                    {
+                        child.anchorMin = new Vector2(0.0f + spaceLeftRight, current + spaceBetween);
+                        child.anchorMax = new Vector2(1.0f - spaceLeftRight, current + percent - spaceBetween);
+                    }
 
                     current = current + percent;
                 }

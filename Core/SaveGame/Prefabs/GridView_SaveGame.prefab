@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1631943779354889889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5548770268554804176}
+  - component: {fileID: 2722751786437891084}
+  - component: {fileID: 3926077960202956222}
+  m_Layer: 5
+  m_Name: GridView_SaveGame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5548770268554804176
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631943779354889889}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.15}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2722751786437891084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631943779354889889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d107ddbddac5ab4db741dbaa48e7ba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Snowdrama.Core::SaveGameGrid
+  SaveGameButtonPrefab: {fileID: 142934589511910551, guid: 35dab8a96b445d3489f3b34f8c098af3, type: 3}
+  UseNormalSaves: 1
+  UseAutoSaves: 0
+  SortByDate: 0
+  fillWithEmptySaves: 1
+  saveCount: 16
+  grid: {fileID: 3926077960202956222}
+  buttons: []
+--- !u!114 &3926077960202956222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631943779354889889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e87f3836856f5634399909ca29ee837b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Snowdrama.Core::Snowdrama.UI.UIGridGroup
+  gapX: 0.1
+  gapY: 0.1
+  gapXOuterPixel: 1
+  gapYOuterPixel: 1
+  gapXInnerPixel: 1
+  gapYInnerPixel: 1
+  forceActiveIfInactive: 0
+  useActive: 0
+  shrinkCountToElementCount: 0
+  direction: 0
+  alignDirection: 0
+  forceUpdate: 0
+  internalColumnCount: 4
+  internalRowCount: 4
+  _children: []
+  numberOfRows: 4
+  numberOfColumns: 4

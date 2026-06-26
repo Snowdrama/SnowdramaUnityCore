@@ -2,6 +2,7 @@ using Snowdrama.UI;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using static Codice.CM.Common.CmCallContext;
 
 namespace Snowdrama.UI
 {
@@ -14,6 +15,11 @@ namespace Snowdrama.UI
         [Header("Horizonal Settings")]
         public float[] ratio = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         public float[] percentageColumns = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
+        public bool leftToRight = true;
+
+        [SerializeField] private float spaceBetween = 0.01f;
+        [SerializeField] private float spaceTopBot = 0.02f;
+        [SerializeField] private float spaceLeftRight = 0.02f;
 
 
         [Header("Active Items")]
@@ -76,7 +82,7 @@ namespace Snowdrama.UI
         {
             this.CollectChildren();
 
-            var currentX = 0.0f;
+            var current = 0.0f;
 
             for (var i = 0; i < this.children.Count; i++)
             {
@@ -86,10 +92,54 @@ namespace Snowdrama.UI
                 var child = this.children[i];
                 var percent = percentageColumns[i];
 
-                child.anchorMin = new Vector2(currentX, 0.0f);
-                child.anchorMax = new Vector2(currentX + percent, 1.0f);
 
-                currentX = currentX + percent;
+                if (leftToRight)
+                {
+
+                    if (i == 0)
+                    {
+                        // ******************************** 1.0f - 0.0 - 0.25 + 0.1
+                        //child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceBetween);
+                        //child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceTopBot);
+
+                        child.anchorMin = new Vector2(current + spaceLeftRight, 0.0f + spaceTopBot);
+                        child.anchorMax = new Vector2(current + percent - spaceBetween, 1.0f - spaceTopBot);
+                    }
+                    else if (i == this.children.Count - 1)
+                    {
+                        //child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceTopBot);
+                        //child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceBetween);
+
+                        child.anchorMin = new Vector2(current + spaceBetween, 0.0f + spaceTopBot);
+                        child.anchorMax = new Vector2(current + percent - spaceLeftRight, 1.0f - spaceTopBot);
+                    }
+                    else
+                    {
+                        //child.anchorMin = new Vector2(0.0f + spaceLeftRight, 1.0f - current - percent + spaceBetween);
+                        //child.anchorMax = new Vector2(1.0f - spaceLeftRight, 1.0f - current - spaceBetween);
+
+
+
+                        child.anchorMin = new Vector2(current + spaceBetween, 0.0f + spaceTopBot);
+                        child.anchorMax = new Vector2(current + percent - spaceBetween, 1.0f - spaceTopBot);
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+                //child.anchorMin = new Vector2(current, 0.0f);
+                //child.anchorMax = new Vector2(current + percent, 1.0f);
+
+                current = current + percent;
             }
 
             forceUpdate = false;
