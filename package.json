@@ -76,6 +76,11 @@
       "displayName": "Spline Sample[Experimental]",
       "description": "Shows the use of the Spline Component",
       "path": "Samples~/SplineSample"
+    },
+    {
+      "displayName": "Prefabs: Save & Load",
+      "description": "Pre made generic prefabs for all the Save & Load tools",
+      "path": "Samples~/SaveLoadPrefabs"
     }
   ]
 }
