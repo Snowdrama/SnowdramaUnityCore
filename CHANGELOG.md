@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.7.8]
+- Added additional gap options to the vertical/horizontal flex tools
+
+## [0.7.8]
 - Added toggling of UI elements based on the fade state of the canvas group for UI Routes
 - Finished the save grid stuff
 - Merged the save modal into one modal
