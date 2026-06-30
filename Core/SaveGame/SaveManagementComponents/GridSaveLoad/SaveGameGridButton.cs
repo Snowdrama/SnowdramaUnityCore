@@ -65,6 +65,7 @@ public class SaveGameGridButton : MonoBehaviour
             saveImage.sprite = defaultSaveSprite;
             noSaveImage.sprite = defaultSaveSprite;
         }
+    }
     public void NoSave(int saveSlot)
     {
         saveImage.sprite = defaultSaveSprite;
