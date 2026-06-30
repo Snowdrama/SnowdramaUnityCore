@@ -1,3 +1,4 @@
+using Snowdrama.UI;
 using System;
 using System.Globalization;
 using System.IO;
@@ -23,6 +24,10 @@ public class LoadGameGridButton : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private bool promptConfirmation = true;
 
+    [Header("Router Stuff")]
+    //this is here so when loading we can force close the menu
+    public UIRouter containingMenu;
+
     private void Start()
     {
         this.GetComponent<Button>().onClick.AddListener(this.OnClick);
@@ -41,6 +46,8 @@ public class LoadGameGridButton : MonoBehaviour
                     pressCallback = () =>
                     {
                         SaveManager.LoadSave(currentSaveData.saveSlot, false);
+                        //force close the menu if we load something
+                        containingMenu?.CloseAll();
                     }
                 },
                 new ModalButtonData()
@@ -53,9 +60,9 @@ public class LoadGameGridButton : MonoBehaviour
         else
         {
             SaveManager.LoadSave(currentSaveData.saveSlot, false);
+            //force close the menu if we load something
+            containingMenu?.CloseAll();
         }
-
-
     }
 
     public void SetSaveData(SaveGameInfo saveData)

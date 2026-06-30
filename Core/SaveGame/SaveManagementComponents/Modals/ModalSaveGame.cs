@@ -22,7 +22,7 @@ public class ModalSaveGame : MonoBehaviour
     private Modal_SaveGameMessage openSavegameModal;
     private void OnEnable()
     {
-        SaveButton.onClick.AddListener(this.SaveToNewSlot);
+        SaveButton.onClick.AddListener(this.StartSave);
         CancelButton.onClick.AddListener(this.Cancel);
         openSavegameModal = Messages.Get<Modal_SaveGameMessage>();
         openSavegameModal.AddListener(this.OpenSaveModal);
@@ -31,7 +31,7 @@ public class ModalSaveGame : MonoBehaviour
     }
     private void OnDisable()
     {
-        SaveButton.onClick.RemoveListener(this.SaveToNewSlot);
+        SaveButton.onClick.RemoveListener(this.StartSave);
         CancelButton.onClick.RemoveListener(this.Cancel);
         openSavegameModal.RemoveListener(this.OpenSaveModal);
         openSavegameModal = null;
@@ -47,7 +47,7 @@ public class ModalSaveGame : MonoBehaviour
         targetAlpha = 1;
     }
 
-    private void SaveToNewSlot()
+    private void StartSave()
     {
         //we're making a new save that doesn't need a specific slot
         if (saveSlot == -1)
@@ -55,6 +55,9 @@ public class ModalSaveGame : MonoBehaviour
             //so get us an unused one
             saveSlot = SaveManager.GetUnusedSaveSlot();
         }
+
+        //just make it fade out when anything is clicked
+        targetAlpha = 0;
 
         //do we have a save?
         if (SaveManager.HasSaveGame(saveSlot, false))

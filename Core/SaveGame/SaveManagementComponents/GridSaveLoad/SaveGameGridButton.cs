@@ -1,3 +1,4 @@
+using Snowdrama.UI;
 using System;
 using System.Globalization;
 using System.IO;
@@ -17,6 +18,10 @@ public class SaveGameGridButton : MonoBehaviour
     [Header("Save Toggles")]
     [SerializeField] private GameObject SaveInfo;
     [SerializeField] private GameObject NoSaveInfo;
+
+    [Header("Router Stuff")]
+    //this is here so when loading we can force close the menu
+    public UIRouter containingMenu;
 
     private void Start()
     {
