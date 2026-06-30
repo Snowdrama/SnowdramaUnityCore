@@ -14,6 +14,7 @@ public class LoadGameGridButton : MonoBehaviour
 
     [Header("Save Info")]
     [SerializeField] private Image saveImage;
+    [SerializeField] private Image noSaveImage;
     [SerializeField] private TMP_Text saveName;
     [SerializeField] private TMP_Text saveDate;
 
@@ -83,15 +84,18 @@ public class LoadGameGridButton : MonoBehaviour
             var tex = new Texture2D(2, 2);
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            noSaveImage.sprite = defaultSaveSprite;
         }
         else
         {
             saveImage.sprite = defaultSaveSprite;
+            noSaveImage.sprite = defaultSaveSprite;
         }
     }
     public void NoSave(int saveSlot)
     {
         saveImage.sprite = defaultSaveSprite;
+        noSaveImage.sprite = defaultSaveSprite;
         currentSaveData = new SaveGameInfo()
         {
             saveSlot = saveSlot,

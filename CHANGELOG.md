@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.8.0]
+- Added UI Router to the Save/Load buttons so they can call close on things like a Pause Screen when you load the game. 
+- Fixed Save/Load buttons with no screenshot showing no icon
+
 ## [0.7.9]
 - Added additional gap options to the vertical/horizontal flex tools
 - Moved the Save & Load prefabs to a "sample" so they can be imported into a project
