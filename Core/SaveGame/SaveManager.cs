@@ -228,8 +228,8 @@ public class SaveManager : MonoBehaviour
             //Debug.Log(fileContents);
             loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
             GameDataManager.SetLoadedSave(loadedSave);
+            Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(loadedSave);
 
-            //TODO: Maybe don't do this here? Let another thing handle this with SaveGameLoadedMessage?
             if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
             {
                 Debug.Log($"Let's load the scene! autoLoadScene: {autoLoadScene}: {loadedSave.SceneToLoadOnLoad}");
@@ -237,7 +237,6 @@ public class SaveManager : MonoBehaviour
             }
 
             SaveInfoFile();
-            //Messages.GetOnce<SaveGameLoadedMessage>().Dispatch();
             Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
             return true;
         }
