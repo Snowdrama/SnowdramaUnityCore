@@ -37,7 +37,14 @@ public class TooltipDisplay : MonoBehaviour
         this.data = data;
         tooltipText.text = data.tooltipText;
 
-        rectTransform = this.GetComponent<RectTransform>();
+        if (rectTransform == null)
+        {
+            rectTransform = this.GetComponent<RectTransform>();
+        }
+        if (tooltipTextTransform == null)
+        {
+            tooltipTextTransform = tooltipText.GetComponent<RectTransform>();
+        }
 
         rectTransform.offsetMin = Vector2.zero;
         rectTransform.offsetMax = Vector2.zero;
