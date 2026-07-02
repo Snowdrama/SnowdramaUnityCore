@@ -35,6 +35,11 @@ public class TooltipDisplay : MonoBehaviour
     {
         Debug.Log($"Setting Data for: {data.id}");
         this.data = data;
+        if (tooltipText == null)
+        {
+            tooltipText = this.transform.GetChild(0).GetComponent<TMP_Text>();
+        }
+
         tooltipText.text = data.tooltipText;
 
         if (rectTransform == null)
@@ -58,7 +63,7 @@ public class TooltipDisplay : MonoBehaviour
         tooltipTextTransform.anchorMin = new Vector2(0, 0);
         tooltipTextTransform.anchorMax = new Vector2(1, 1);
         tooltipTextTransform.offsetMin = new Vector2(10, 10);
-        tooltipTextTransform.offsetMax = new Vector2(10, 10);
+        tooltipTextTransform.offsetMax = new Vector2(-10, -10);
     }
 
     private Action onRemove;
