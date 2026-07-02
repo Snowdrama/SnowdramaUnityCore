@@ -228,7 +228,9 @@ public class SaveManager : MonoBehaviour
             //Debug.Log(fileContents);
             loadedSave = JsonConvert.DeserializeObject<GameData>(fileContents, settings);
             GameDataManager.SetLoadedSave(loadedSave);
+            Debug.Log($"<color=#0FF>Dispatching the SaveGameLoadedMessage!!!</color>");
             Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(loadedSave);
+            Debug.Log($"<color=#0FF>Post SaveGameLoaded Message!!!</color>");
 
             if (autoLoadScene == true && !string.IsNullOrEmpty(loadedSave.SceneToLoadOnLoad))
             {
