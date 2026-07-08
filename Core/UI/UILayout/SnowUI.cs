@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Snowdrama.UI
 {
-    public class SnowUI : MonoBehaviour
+    public class SnowUIGroup : SnowUI, ISnowUILayout
     {
         [Header("Gap")]
         [Range(0, 1), SerializeField] protected float gapX = 0.1f;
@@ -56,8 +56,9 @@ namespace Snowdrama.UI
         private float percentHeight;
 
 
-        public virtual void OnEnable()
+        public override void OnEnable()
         {
+            base.OnEnable();
             if (_children == null)
             {
                 _children = new List<RectTransform>();
@@ -65,8 +66,9 @@ namespace Snowdrama.UI
             }
         }
 
-        public virtual void LateUpdate()
+        public override void LateUpdate()
         {
+            base.OnDisable();
             if (useActive)
             {
                 tempActiveCount = 0;
@@ -79,8 +81,9 @@ namespace Snowdrama.UI
                 }
             }
         }
-        public virtual void UpdateLayout()
+        public override void UpdateLayout()
         {
+            base.UpdateLayout();
         }
 
         protected void ProcessCellPercent(int x, int y, int index, float percent)
@@ -329,6 +332,37 @@ namespace Snowdrama.UI
         {
             return internalColumnCount;
         }
+    }
+
+    public class SnowUI : MonoBehaviour, ISnowUILayout
+    {
+
+        public virtual void OnEnable()
+        {
+        }
+        public virtual void OnDisable()
+        {
+        }
+        public virtual void Update()
+        {
+        }
+        public virtual void LateUpdate()
+        {
+        }
+        public virtual void FixedUpdate()
+        {
+
+        }
+        public virtual void Start()
+        {
+        }
+        public virtual void Awake()
+        {
+        }
+        public virtual void UpdateLayout()
+        {
+        }
+
     }
 
 }

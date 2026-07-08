@@ -5,23 +5,24 @@ using UnityEngine;
 
 namespace Snowdrama.UI
 {
-    [System.Serializable]
-    public struct GridCell
-    {
-        public Color color;
-        public int cellId;
-        public int width;
-        public int height;
-        //unity uses for anchors
-        public Vector2Int bottomLeftCell;
-        public Vector2Int topRightCell;
-
-        public Vector2Int calculatedBottomLeft;
-        public Vector2Int calculatedTopRight;
-    }
     [ExecuteInEditMode]
-    public class UIImageGridLayout : MonoBehaviour
+    public class UIImageGridLayout : SnowUI, ISnowUILayout
     {
+
+        [System.Serializable]
+        public struct UIImageGridLayoutCell
+        {
+            public Color color;
+            public int cellId;
+            public int width;
+            public int height;
+            //unity uses for anchors
+            public Vector2Int bottomLeftCell;
+            public Vector2Int topRightCell;
+
+            public Vector2Int calculatedBottomLeft;
+            public Vector2Int calculatedTopRight;
+        }
 
         public Sprite palette;
         public Sprite styleSprite;
@@ -38,7 +39,7 @@ namespace Snowdrama.UI
         [SerializeField, EditorReadOnly] private int height;
         [SerializeField, EditorReadOnly] private float percentWidthCell;
         [SerializeField, EditorReadOnly] private float percentHeightCell;
-        [SerializeField, EditorReadOnly] private Dictionary<int, GridCell> gridCells = new Dictionary<int, GridCell>();
+        [SerializeField, EditorReadOnly] private Dictionary<int, UIImageGridLayoutCell> gridCells = new Dictionary<int, UIImageGridLayoutCell>();
         [SerializeField, EditorReadOnly] private List<RectTransform> children = new List<RectTransform>();
 
         [Header("Debug")]
@@ -48,37 +49,39 @@ namespace Snowdrama.UI
         [SerializeField] private List<int> debugPaletteValues = new List<int>();
 
         [SerializeField] private List<int> debugKeys = new List<int>();
-        [SerializeField] private List<GridCell> debugCells = new List<GridCell>();
+        [SerializeField] private List<UIImageGridLayoutCell> debugCells = new List<UIImageGridLayoutCell>();
 
 #if UNITY_EDITOR
         // Start is called before the first frame update
-        void Start()
+        public override void Start()
         {
+            base.Start();
             forceUpdate = true;
         }
 
         // Update is called once per frame
-        void Update()
+        public override void Update()
         {
+            base.Update();
             if (forceUpdate)
             {
-                UpdateGrid();
+                this.UpdateLayout();
             }
         }
 
-        private void UpdateGrid()
+        public override void UpdateLayout()
         {
-
+            base.UpdateLayout();
             forceUpdate = false;
-            int paletteIndex = -1;
+            var paletteIndex = -1;
             if (palette == null || styleSprite == null)
             {
                 return;
             }
             paletteList.Clear();
-            for (int y = 0; y < palette.texture.height; y++)
+            for (var y = 0; y < palette.texture.height; y++)
             {
-                for (int x = 0; x < palette.texture.width; x++)
+                for (var x = 0; x < palette.texture.width; x++)
                 {
                     var color = palette.texture.GetPixel(x, y);
                     if (!paletteList.ContainsKey(color) && color.a >= 1.0f)
@@ -96,11 +99,11 @@ namespace Snowdrama.UI
             percentWidthCell = 1.0f / styleSprite.texture.width;
 
             gridCells.Clear();
-            for (int y = 0; y < styleSprite.texture.height; y++)
+            for (var y = 0; y < styleSprite.texture.height; y++)
             {
-                for (int x = 0; x < styleSprite.texture.width; x++)
+                for (var x = 0; x < styleSprite.texture.width; x++)
                 {
-                    int cellID = -1;
+                    var cellID = -1;
                     var colorKey = styleSprite.texture.GetPixel(x, y);
                     if (paletteList.ContainsKey(colorKey))
                     {
@@ -111,7 +114,7 @@ namespace Snowdrama.UI
                         if (gridCells.ContainsKey(cellID))
                         {
                             //a grid already exists for this
-                            GridCell cell = gridCells[cellID];
+                            var cell = gridCells[cellID];
                             cell.color = colorKey;
                             if (x < cell.bottomLeftCell.x)
                             {
@@ -136,7 +139,7 @@ namespace Snowdrama.UI
                         }
                         else
                         {
-                            GridCell tempCell = new GridCell();
+                            var tempCell = new UIImageGridLayoutCell();
                             tempCell.color = colorKey;
                             tempCell.cellId = cellID;
                             tempCell.bottomLeftCell = new Vector2Int(x, y);
@@ -147,9 +150,9 @@ namespace Snowdrama.UI
                 }
             }
             debugKeys = new List<int>(gridCells.Keys);
-            debugCells = new List<GridCell>(gridCells.Values);
+            debugCells = new List<UIImageGridLayoutCell>(gridCells.Values);
 
-            for (int i = 0; i < gridCells.Keys.Count; i++)
+            for (var i = 0; i < gridCells.Keys.Count; i++)
             {
                 Debug.Log($"Chekcing for Key {i} in gridCells: {!gridCells.ContainsKey(i)}");
                 if (!gridCells.ContainsKey(i))
@@ -161,16 +164,16 @@ namespace Snowdrama.UI
             }
 
             children.Clear();
-            foreach (Transform child in transform)
+            foreach (Transform child in this.transform)
             {
                 children.Add(child.GetComponent<RectTransform>());
             }
 
-            for (int i = 0; i < children.Count; i++)
+            for (var i = 0; i < children.Count; i++)
             {
                 if (gridCells.ContainsKey(i))
                 {
-                    GridCell cell = gridCells[i];
+                    var cell = gridCells[i];
                     gridCells[i] = cell;
                     children[i].anchorMin = new Vector2(
                         cell.bottomLeftCell.x * percentWidthCell,

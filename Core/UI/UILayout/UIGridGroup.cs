@@ -4,11 +4,15 @@ using UnityEngine;
 
 namespace Snowdrama.UI
 {
+    public interface ISnowUILayout
+    {
+        void UpdateLayout();
+    }
     /// <summary>
     /// This class fits all the children into the current RectTransform
     /// </summary>
     [ExecuteInEditMode]
-    public class UIGridGroup : SnowUI
+    public class UIGridGroup : SnowUIGroup, ISnowUILayout
     {
 
         [Header("Grid Settings")]
@@ -18,23 +22,23 @@ namespace Snowdrama.UI
         public override void OnEnable()
         {
             base.OnEnable();
-            UpdateLayout();
+            this.UpdateLayout();
         }
 
         public override void LateUpdate()
         {
             base.LateUpdate();
-            if (transform.childCount != children.Count || forceUpdate || currentActiveCount != tempActiveCount)
+            if (this.transform.childCount != this.children.Count || forceUpdate || currentActiveCount != tempActiveCount)
             {
-                UpdateLayout();
+                this.UpdateLayout();
             }
         }
 
         public override void UpdateLayout()
         {
-            CollectChildren();
-            CalculateGrid(children.Count, numberOfColumns, numberOfRows);
-            ProcessChildren();
+            this.CollectChildren();
+            this.CalculateGrid(this.children.Count, numberOfColumns, numberOfRows);
+            this.ProcessChildren();
             forceUpdate = false;
             currentActiveCount = tempActiveCount;
         }

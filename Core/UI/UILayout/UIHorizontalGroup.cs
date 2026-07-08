@@ -9,7 +9,7 @@ namespace Snowdrama.UI
     /// This class fits all the children into horizontal columns based on some size.
     /// </summary>
     [ExecuteInEditMode]
-    public class UIHorizontalGroup : SnowUI
+    public class UIHorizontalGroup : SnowUIGroup, ISnowUILayout
     {
         [Header("Horizonal Settings")]
         public int numberOfColumns = 0;
@@ -17,30 +17,30 @@ namespace Snowdrama.UI
         public override void OnEnable()
         {
             base.OnEnable();
-            UpdateLayout();
+            this.UpdateLayout();
         }
 
         public override void LateUpdate()
         {
             base.LateUpdate();
-            if (transform.childCount != children.Count || forceUpdate || currentActiveCount != tempActiveCount)
+            if (this.transform.childCount != this.children.Count || forceUpdate || currentActiveCount != tempActiveCount)
             {
-                UpdateLayout();
+                this.UpdateLayout();
             }
         }
 
         public override void UpdateLayout()
         {
-            CollectChildren();
-            if (this.shrinkCountToElementCount)
+            this.CollectChildren();
+            if (shrinkCountToElementCount)
             {
-                CalculateRows(children.Count, (children.Count <= numberOfColumns) ? children.Count : numberOfColumns);
+                this.CalculateRows(this.children.Count, (this.children.Count <= numberOfColumns) ? this.children.Count : numberOfColumns);
             }
             else
             {
-                CalculateRows(children.Count, numberOfColumns);
+                this.CalculateRows(this.children.Count, numberOfColumns);
             }
-            ProcessChildren();
+            this.ProcessChildren();
 
             forceUpdate = false;
             currentActiveCount = tempActiveCount;

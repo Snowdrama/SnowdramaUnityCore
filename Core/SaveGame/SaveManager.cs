@@ -42,14 +42,21 @@ public class SaveGameStartingSaveMessage : AMessage { }
 //this is called right after a game saved, useful for triggering things like "Save and Quit"
 public class SaveGameSavingCompletedMessage : AMessage { }
 
+
+
 public class SaveManager : MonoBehaviour
 {
-    private static int autoSaveSlotCount = 4;
+    private class SaveManagerSettings
+    {
+        public int autoSaveSlotCount = 4;
+        public string AutoSaveNameFormat = "Auto Save [VALUE]";
+    }
+    private static SaveManagerSettings saveManagerSettings;
 
     private static int currentSaveSlot = -1;
 
     private static GameData loadedSave = new();
-    private static GameData activeSave = new();
+    //private static GameData activeSave = new();
 
     private static SaveDataStruct saveDataInfo = new();
     private static readonly JsonSerializerSettings settings = new()
@@ -63,8 +70,16 @@ public class SaveManager : MonoBehaviour
         ValidateDirectories();
         NewGame();
 
-
-
+        var SaveManagerSettingsTextAsset = Resources.Load<TextAsset>("SaveManagerSettings");
+        if (SaveManagerSettingsTextAsset == null)
+        {
+            Debug.LogError($"Ensure you create a SaveManagerSettings.jsonc file in the Resources folder! Using default which may be broken!");
+            saveManagerSettings = new SaveManagerSettings();
+        }
+        else
+        {
+            saveManagerSettings = JsonConvert.DeserializeObject<SaveManagerSettings>(SaveManagerSettingsTextAsset.text);
+        }
 
         var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
         if (File.Exists(saveDataInfoPath))
@@ -100,6 +115,7 @@ public class SaveManager : MonoBehaviour
     }
     public static void NewGame(bool autoLoadScene = true)
     {
+        currentSaveSlot = -1;
         //Debug.Log($"Starting new game, loading default data!");
         //load the default save from resources:
         var defaultSaveJson = Resources.Load<TextAsset>("DefaultSave");
@@ -198,6 +214,9 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
+        //set the current save slot so we know which was the last uses
+        currentSaveSlot = saveSlot;
+
         string expectedPath;
         if (isAutoSave)
         {
@@ -264,7 +283,7 @@ public class SaveManager : MonoBehaviour
             index++;
 
             //if we reach the max count we didn't find any empty slot
-            if (index == autoSaveSlotCount)
+            if (index == saveManagerSettings.autoSaveSlotCount)
             {
                 break;
             }
@@ -283,7 +302,7 @@ public class SaveManager : MonoBehaviour
         //say the player has 10 saves, and deletes 3
         //but the current index is 7. We don't want to overwrite 8
         //we want to go back and save to 3 first. 
-        if (index >= autoSaveSlotCount)
+        if (index >= saveManagerSettings.autoSaveSlotCount)
         {
             //we couldn't find a slot.
 
@@ -300,7 +319,7 @@ public class SaveManager : MonoBehaviour
             saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
 
             //make sure we never go over the auto save count so if the auto save index == it should be 0
-            saveDataInfo.currentAutoSaveIndex %= autoSaveSlotCount;
+            saveDataInfo.currentAutoSaveIndex %= saveManagerSettings.autoSaveSlotCount;
 
             //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
             //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
@@ -415,7 +434,7 @@ public class SaveManager : MonoBehaviour
         var autoSaveInfo = new SaveGameInfo()
         {
             saveSlot = saveSlot,
-            name = $"Autosave {saveSlot}",
+            name = saveManagerSettings.AutoSaveNameFormat.Replace("[VALUE]", $"{saveSlot}"),
             dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",

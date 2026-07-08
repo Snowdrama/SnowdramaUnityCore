@@ -8,7 +8,7 @@ namespace Snowdrama.UI
     /// This class fits all the children into horizontal columns based on some size.
     /// </summary>
     [ExecuteInEditMode]
-    public class UIHorizontalFlex : MonoBehaviour
+    public class UIHorizontalFlex : MonoBehaviour, ISnowUILayout
     {
         [Header("Horizonal Settings")]
         public float[] ratio = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
