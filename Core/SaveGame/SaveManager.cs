@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditorInternal;
 using UnityEngine;
 
 [System.Serializable]
@@ -43,8 +44,13 @@ public class SaveGameSavingCompletedMessage : AMessage { }
 
 public class SaveManager : MonoBehaviour
 {
+    private static int autoSaveSlotCount = 4;
+
+    private static int currentSaveSlot = -1;
+
     private static GameData loadedSave = new();
     private static GameData activeSave = new();
+
     private static SaveDataStruct saveDataInfo = new();
     private static readonly JsonSerializerSettings settings = new()
     {
@@ -56,6 +62,10 @@ public class SaveManager : MonoBehaviour
     {
         ValidateDirectories();
         NewGame();
+
+
+
+
         var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
         if (File.Exists(saveDataInfoPath))
         {
@@ -70,24 +80,12 @@ public class SaveManager : MonoBehaviour
             saveDataInfo = new SaveDataStruct();
         }
 
-        //foreach (var file in saveDataInfo.saveLocations.Values)
-        //{
-        //    Debug.Log($"Found Load: {file.name} {file.filePath}");
-        //}
-
-        //foreach (var file in saveDataInfo.autoSaveLocations.Values)
-        //{
-        //    Debug.Log($"Found Load: {file.name} {file.filePath}");
-        //}
-
 #if UNITY_EDITOR
         //load save 0 by default in case we're testing
         //then we can load into any scene with the save 0 data
         if (saveDataInfo.saveLocations.Count == 0)
         {
-            //Debug.Log("Loading DefaultSave In Editor for testing!");
-            //Debug.Log("Loading DefaultSave In Editor for testing!");
-            //Debug.Log("Loading DefaultSave In Editor for testing!");
+            //force saving a new game if there's no slot 0
             NewGame();
             //Debug.Log($"Force Saving Save 0, Modify the save there for testing");
             //Debug.Log($"SavePath: {Application.persistentDataPath}");
@@ -95,11 +93,7 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            //Debug.Log("Loading Save 0 In Editor for testing!");
-            //Debug.Log("Loading Save 0 In Editor for testing!");
-            //Debug.Log("Loading Save 0 In Editor for testing!");
-            //Debug.Log($"Modify the Save0 for testing");
-            //Debug.Log($"SavePath: {Application.persistentDataPath}");
+            //Debug.Log($"Loading save 0 in editor for testing: {Application.persistentDataPath}");
             LoadSave(0, false, false);
         }
 #endif
@@ -258,7 +252,8 @@ public class SaveManager : MonoBehaviour
         }
         return index;
     }
-    public static int GetUnusedAutoSaveSlot()
+
+    public static int GetAutoSaveToUse()
     {
         var index = 0;
         //This assumes that there's no way the player
@@ -267,7 +262,55 @@ public class SaveManager : MonoBehaviour
         while (saveDataInfo.autoSaveLocations.ContainsKey(index))
         {
             index++;
+
+            //if we reach the max count we didn't find any empty slot
+            if (index == autoSaveSlotCount)
+            {
+                break;
+            }
+
+            //hard cap to prevent this stalling if somehow the player
+            //makes 1024 saves... the cap SHOULD stop this... but...
+            //this will save my ass some day I bet
+            if (index == 1024)
+            {
+                break;
+            }
         }
+
+        //we want to use an unused slot if we can find one
+        //in case the player manually deletes an auto save
+        //say the player has 10 saves, and deletes 3
+        //but the current index is 7. We don't want to overwrite 8
+        //we want to go back and save to 3 first. 
+        if (index >= autoSaveSlotCount)
+        {
+            //we couldn't find a slot.
+
+            //sort the list by the date modified so we always overwrite the oldest save.
+            var listOfAutoSaves = saveDataInfo.autoSaveLocations.OrderBy(x => x.Value.dateModified).ToArray();
+
+            //foreach (var item in listOfAutoSaves)
+            //{
+            //    Debug.Log($"AutoSave[{item.Key}]: {item.Value.dateModified}");
+            //}
+            //Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
+
+            //get the oldest key and use that auto save key, this can be out of order so you need to get the key
+            saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
+
+            //make sure we never go over the auto save count so if the auto save index == it should be 0
+            saveDataInfo.currentAutoSaveIndex %= autoSaveSlotCount;
+
+            //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
+            //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
+
+        }
+        else
+        {
+            saveDataInfo.currentAutoSaveIndex = index;
+        }
+
         return index;
     }
     public static bool SaveGameToCurrentSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
@@ -353,41 +396,14 @@ public class SaveManager : MonoBehaviour
     }
     public static void AutoSave(GameData gameData, string version = null)
     {
+        var unusedSlot = GetAutoSaveToUse();
+
+        AutoSaveToSlot(unusedSlot, gameData, version);
+    }
+    public static void AutoSaveToSlot(int saveSlot, GameData gameData, string version = null)
+    {
         ValidateDirectories();
-        var unusedSlot = GetUnusedAutoSaveSlot();
-        //we always want to use an unused slot if we can find one
-        //in case the player manually deletes an auto save
-        //say the player has 10 saves, and deletes 3
-        //but the current index is 7. We don't want to overwrite 8
-        //we want to go back and save to 3 first. 
-
-        if (unusedSlot >= 10)
-        {
-            //we couldn't find a slot.
-            var listOfAutoSaves = saveDataInfo.autoSaveLocations.OrderBy(x => x.Value.dateModified).ToArray();
-
-            foreach (var item in listOfAutoSaves)
-            {
-                //Debug.Log($"AutoSave[{item.Key}]: {item.Value.dateModified}");
-            }
-            //Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
-
-            //get the oldest key and use that auto save key:
-            saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
-            //arbitrary loop on auto save 4, good for a game with "16" saves 4 auto saves, and 12 non auto saves 
-            saveDataInfo.currentAutoSaveIndex %= 4;
-
-
-            //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
-            //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
-
-        }
-        else
-        {
-            saveDataInfo.currentAutoSaveIndex = unusedSlot;
-        }
-
-
+        //get the current loaded scene so we reload that scene on load
         gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
 
         //create the file contents
@@ -395,24 +411,25 @@ public class SaveManager : MonoBehaviour
         var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.currentAutoSaveIndex}.json";
         File.WriteAllText(filePath, fileContents);
 
-        //Debug.Log($"Auto Save[{saveDataInfo.currentAutoSaveIndex}]: {filePath}");
+        //update the save info
         var autoSaveInfo = new SaveGameInfo()
         {
-            saveSlot = saveDataInfo.currentAutoSaveIndex,
-            name = $"Autosave {saveDataInfo.currentAutoSaveIndex}",
+            saveSlot = saveSlot,
+            name = $"Autosave {saveSlot}",
             dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
             filePath = filePath,
             version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
             isAutoSave = true,
         };
 
-        if (!saveDataInfo.autoSaveLocations.ContainsKey(saveDataInfo.currentAutoSaveIndex))
+        //write to the save slot
+        if (!saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
         {
-            saveDataInfo.autoSaveLocations.Add(saveDataInfo.currentAutoSaveIndex, autoSaveInfo);
+            saveDataInfo.autoSaveLocations.Add(saveSlot, autoSaveInfo);
         }
         else
         {
-            saveDataInfo.autoSaveLocations[saveDataInfo.currentAutoSaveIndex] = autoSaveInfo;
+            saveDataInfo.autoSaveLocations[saveSlot] = autoSaveInfo;
         }
 
         SaveInfoFile();
