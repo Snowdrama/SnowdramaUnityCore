@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.8.1]
+- Added the ability to manually auto save to a specific slot vs automatically picking a slot
+- Added tooltip system 
+- Fix to the tooltip offset code. 
+- Add textbox sizing to the tooltip
+- Fix to SaveManager triggering the SaveGameLoadedMessage on load 
+
 ## [0.8.0]
 - Added UI Router to the Save/Load buttons so they can call close on things like a Pause Screen when you load the game. 
 - Fixed Save/Load buttons with no screenshot showing no icon
