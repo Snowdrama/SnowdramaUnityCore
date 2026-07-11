@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEditorInternal;
 using UnityEngine;
 
 [System.Serializable]
@@ -41,7 +40,6 @@ public class SaveGameStartingSaveMessage : AMessage { }
 
 //this is called right after a game saved, useful for triggering things like "Save and Quit"
 public class SaveGameSavingCompletedMessage : AMessage { }
-
 
 
 public class SaveManager : MonoBehaviour
