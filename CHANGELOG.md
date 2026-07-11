@@ -8,7 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added tooltip system 
 - Fix to the tooltip offset code. 
 - Add textbox sizing to the tooltip
-- Fix to SaveManager triggering the SaveGameLoadedMessage on load 
+- Fix to SaveManager triggering the SaveGameLoadedMessage on load
+- Change to save buttons to Show if it's an auto save or not.
+- Fix to the save/load grid to handle auto save stuff.
+- change to SnowUI to use an interface, so I can use SnowUI with the game grid for more layout options for the Save/Load "grid"
 
 ## [0.8.0]
 - Added UI Router to the Save/Load buttons so they can call close on things like a Pause Screen when you load the game. 

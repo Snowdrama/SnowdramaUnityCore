@@ -23,7 +23,7 @@ public class SaveGameGrid : MonoBehaviour
     [SerializeField] private int saveCount = 16;
 
     [Header("UI")]
-    [SerializeField] private UIGridGroup grid;
+    [SerializeField] private SnowUI grid;
 
     [Header("Debug")]
     [SerializeField] private List<SaveGameGridButton> buttons = new List<SaveGameGridButton>();
