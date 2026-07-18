@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a button in menu to create default save manager options file
 - Fixed the default save json having null color and color array data
 - Fixed capitalization in some other small things with SceneController/GameDataManager
+- Fix to null reference error in save grid when setting button name
 
 ## [0.8.1]
 - Added the ability to manually auto save to a specific slot vs automatically picking a slot
