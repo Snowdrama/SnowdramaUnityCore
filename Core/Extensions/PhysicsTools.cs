@@ -20,10 +20,10 @@ public class PhysicsTools
     /// the ground to the peak or from
     /// the peak of the jump to the ground.
     /// </param>
-    /// <returns>A value for gravity</returns>
-    public static double DeriveGravity(double jumpHeight, double timeToReachGround)
+    /// <returns>A value for gravity NOTE: THIS IS NEGATIVE FOR A REASON GRAVITY IS DOWN</returns>
+    public static double DeriveGravity(double jumpHeight, double timeToReachPeak)
     {
-        return 2 * jumpHeight / (timeToReachGround * timeToReachGround);
+        return -(2 * jumpHeight / (timeToReachPeak * timeToReachPeak));
     }
 
 
@@ -49,12 +49,11 @@ public class PhysicsTools
     /// the ground to the peak or from
     /// the peak of the jump to the ground.
     /// </param>
-    /// <returns>A value for gravity</returns>
+    /// <returns>A value for gravity NOTE: THIS IS NEGATIVE FOR A REASON GRAVITY IS DOWN</returns>
     public static float DeriveGravity(float jumpHeight, float timeToReachPeak)
     {
-        return 2 * jumpHeight / (timeToReachPeak * timeToReachPeak);
+        return -(2 * jumpHeight / (timeToReachPeak * timeToReachPeak));
     }
-
 
     /// <summary>
     /// Derives the force needed to reach a certain height given some gravity and some time
@@ -73,6 +72,8 @@ public class PhysicsTools
     /// the peak of the jump to the ground.
     /// </param>
     /// <param name="gravity">
+    /// THIS MUST BE NEGATIVE TO WORK!
+    /// 
     /// How strong the influence of gravity is.
     /// 
     /// Use PhysicsTools.DeriveGravity to get a gravity 
@@ -102,6 +103,8 @@ public class PhysicsTools
     /// the peak of the jump to the ground.
     /// </param>
     /// <param name="gravity">
+    /// THIS MUST BE NEGATIVE TO WORK!
+    /// 
     /// How strong the influence of gravity is.
     /// 
     /// Use PhysicsTools.DeriveGravity to get a gravity 
