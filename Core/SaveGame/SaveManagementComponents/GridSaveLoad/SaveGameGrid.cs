@@ -81,14 +81,15 @@ public class SaveGameGrid : MonoBehaviour
             {
                 //create a new button then parent it to us
                 var newButton = Instantiate(SaveGameButtonPrefab);
-                newButton.name = $"SaveGameButton_{foundSave.name}";
                 newButton.transform.SetParent(this.transform, false);
                 if (foundSave != null)
                 {
+                    newButton.name = $"SaveGameButton_{i}_{foundSave.name}";
                     newButton.SetSaveData(foundSave);
                 }
                 else
                 {
+                    newButton.name = $"SaveGameButton_{i}_EmptySave";
                     newButton.NoSave(i);
                 }
                 buttons.Add(newButton);
