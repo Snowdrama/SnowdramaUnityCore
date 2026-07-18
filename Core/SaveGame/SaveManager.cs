@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 public class SaveDataStruct
@@ -46,7 +49,8 @@ public class SaveManager : MonoBehaviour
 {
     private class SaveManagerSettings
     {
-        public int autoSaveSlotCount = 4;
+        public bool ShowConsoleMessages = true;
+        public int AutoSaveSlotCount = 4;
         public string AutoSaveNameFormat = "Auto Save [VALUE]";
     }
     private static SaveManagerSettings saveManagerSettings;
@@ -281,7 +285,7 @@ public class SaveManager : MonoBehaviour
             index++;
 
             //if we reach the max count we didn't find any empty slot
-            if (index == saveManagerSettings.autoSaveSlotCount)
+            if (index == saveManagerSettings.AutoSaveSlotCount)
             {
                 break;
             }
@@ -300,7 +304,7 @@ public class SaveManager : MonoBehaviour
         //say the player has 10 saves, and deletes 3
         //but the current index is 7. We don't want to overwrite 8
         //we want to go back and save to 3 first. 
-        if (index >= saveManagerSettings.autoSaveSlotCount)
+        if (index >= saveManagerSettings.AutoSaveSlotCount)
         {
             //we couldn't find a slot.
 
@@ -317,7 +321,7 @@ public class SaveManager : MonoBehaviour
             saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
 
             //make sure we never go over the auto save count so if the auto save index == it should be 0
-            saveDataInfo.currentAutoSaveIndex %= saveManagerSettings.autoSaveSlotCount;
+            saveDataInfo.currentAutoSaveIndex %= saveManagerSettings.AutoSaveSlotCount;
 
             //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
             //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
@@ -569,4 +573,60 @@ public class SaveManager : MonoBehaviour
             Directory.CreateDirectory($"{Application.persistentDataPath}/AutoSaves");
         }
     }
+
+
+
+
+    #region Debug
+    private static void DebugLog(string log, GameObject target = null)
+    {
+        if (saveManagerSettings.ShowConsoleMessages)
+        {
+            Debug.Log(log, target);
+        }
+    }
+    private static void DebugLogWarning(string log, GameObject target = null)
+    {
+        if (saveManagerSettings.ShowConsoleMessages)
+        {
+            Debug.LogWarning(log, target);
+        }
+    }
+    private static void DebugLogError(string log, GameObject target = null)
+    {
+        if (saveManagerSettings.ShowConsoleMessages)
+        {
+            Debug.LogError(log, target);
+        }
+    }
+    #endregion
+
+#if UNITY_EDITOR
+
+    [MenuItem("Snowdrama/Required/Create Save Manager Settings JSON")]
+    public static void CreateSaveManagerSettingsJSON()
+    {
+        SaveManagerSettings defaultData = new()
+        {
+            ShowConsoleMessages = true,
+            AutoSaveSlotCount = 4,
+            AutoSaveNameFormat = "Auto Save [VALUE]",
+        };
+
+        var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+        if (!File.Exists($"Assets/Resources/SaveManagerSettings.jsonc"))
+        {
+            File.WriteAllText($"Assets/Resources/SaveManagerSettings.jsonc", dataString);
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            Debug.LogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
+                "Can't overwrite SaveManagerSettings.jsonc because it already exists! " +
+                "Overwriting this would delete any scene configuration you have! " +
+                "Check the SaveManagerSettings.jsonc file and ensure you actually want to delete it! " +
+                "If this ACTUALLY intended please manually delete the SaveManagerSettings.jsonc and run again. ");
+        }
+    }
+#endif
 }

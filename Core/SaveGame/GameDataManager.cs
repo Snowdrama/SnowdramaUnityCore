@@ -344,7 +344,7 @@ public class GameDataManager : MonoBehaviour
 
 #if UNITY_EDITOR
 
-    [MenuItem("Snowdrama/Required/Create Default Game Data JSON")]
+    [MenuItem("Snowdrama/Required/Create Default Save JSON")]
     public static void CreateSceneJSON()
     {
         GameData defaultGameDataStruct = new()
@@ -355,21 +355,23 @@ public class GameDataManager : MonoBehaviour
             doubleData = new(),
             intData = new(),
             stringData = new(),
-            Vector2Data = new Dictionary<string, Vector2>(),
-            Vector2IntData = new Dictionary<string, Vector2Int>(),
-            Vector3Data = new Dictionary<string, Vector3>(),
-            Vector3IntData = new Dictionary<string, Vector3Int>(),
-            Vector4Data = new Dictionary<string, Vector4>(),
-            boolArrayData = new Dictionary<string, bool[]>(),
-            intArrayData = new Dictionary<string, int[]>(),
-            floatArrayData = new Dictionary<string, float[]>(),
-            doubleArrayData = new Dictionary<string, double[]>(),
-            stringArrayData = new Dictionary<string, string[]>(),
-            Vector2ArrayData = new Dictionary<string, Vector2[]>(),
-            Vector2IntArrayData = new Dictionary<string, Vector2Int[]>(),
-            Vector3ArrayData = new Dictionary<string, Vector3[]>(),
-            Vector3IntArrayData = new Dictionary<string, Vector3Int[]>(),
-            Vector4ArrayData = new Dictionary<string, Vector4[]>(),
+            Vector2Data = new(),
+            Vector2IntData = new(),
+            Vector3Data = new(),
+            Vector3IntData = new(),
+            Vector4Data = new(),
+            boolArrayData = new(),
+            intArrayData = new(),
+            floatArrayData = new(),
+            doubleArrayData = new(),
+            stringArrayData = new(),
+            Vector2ArrayData = new(),
+            Vector2IntArrayData = new(),
+            Vector3ArrayData = new(),
+            Vector3IntArrayData = new(),
+            Vector4ArrayData = new(),
+            ColorData = new(),
+            ColorArrayData = new(),
             objectData = new(),
         };
 

@@ -759,7 +759,7 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            DebugLogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
+            Debug.LogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
                 "Can't overwrite SceneLayoutJSON.jsonc because it already exists! " +
                 "Overwriting this would delete any scene configuration you have! " +
                 "Check the SceneLayoutJSON.json file and ensure you actually want to delete it! " +
