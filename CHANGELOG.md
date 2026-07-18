@@ -3,13 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [0.8.2]
+## [0.8.3] 2026-18-07
+- Added cursor manager to help with figuring out if the cursor should be shown or not 
+
+## [0.8.2] 2026-17-07
 - Added a button in menu to create default save manager options file
 - Fixed the default save json having null color and color array data
 - Fixed capitalization in some other small things with SceneController/GameDataManager
 - Fix to null reference error in save grid when setting button name
 
-## [0.8.1]
+## [0.8.1] 2026-01-07
 - Added the ability to manually auto save to a specific slot vs automatically picking a slot
 - Added tooltip system 
 - Fix to the tooltip offset code. 
@@ -19,15 +22,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fix to the save/load grid to handle auto save stuff.
 - change to SnowUI to use an interface, so I can use SnowUI with the game grid for more layout options for the Save/Load "grid"
 
-## [0.8.0]
+## [0.8.0] 2026-30-06
 - Added UI Router to the Save/Load buttons so they can call close on things like a Pause Screen when you load the game. 
 - Fixed Save/Load buttons with no screenshot showing no icon
 
-## [0.7.9]
+## [0.7.9] 2026-26-06
 - Added additional gap options to the vertical/horizontal flex tools
 - Moved the Save & Load prefabs to a "sample" so they can be imported into a project
 
-## [0.7.8]
+## [0.7.8] 2026-23-06
 - Added toggling of UI elements based on the fade state of the canvas group for UI Routes
 - Finished the save grid stuff
 - Merged the save modal into one modal
