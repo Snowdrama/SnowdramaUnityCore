@@ -15,12 +15,14 @@ public class PauseMenuController : MonoBehaviour
         if (pauseRouter.GetOpenRouteCount() == 0)
         {
             PauseManager.RequestUnpause("PauseController");
+            CursorManager.CursorSourceHidden("PauseController");
             paused = false;
         }
 
         if (pauseRouter.GetOpenRouteCount() >= 1)
         {
             PauseManager.RequestPause("PauseController");
+            CursorManager.CursorSourceVisible("PauseController");
             paused = true;
         }
     }

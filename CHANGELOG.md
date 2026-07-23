@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.8.3] 2026-18-07
-- Added cursor manager to help with figuring out if the cursor should be shown or not 
+- Added cursor manager to help with figuring out if the cursor should be shown or not
+- Updated PauseMenuController to trigger CursorManager to also show the cursor on pause
 
 ## [0.8.2] 2026-17-07
 - Added a button in menu to create default save manager options file
