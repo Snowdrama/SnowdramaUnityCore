@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-
 /// <summary>
 /// This assumes that most of the time for a game, you want the cursor to be locked
 /// 

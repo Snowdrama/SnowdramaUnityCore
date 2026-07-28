@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -26,17 +27,22 @@ namespace Snowdrama.UI
             set
             {
                 _routeActive = value;
-                if (_routeActive)
+                if (value != _routeActive)
                 {
-                    targetAlpha = 1f;
-                    canvasGroup.interactable = true;
-                    canvasGroup.blocksRaycasts = true;
-                }
-                else
-                {
-                    targetAlpha = 0f;
-                    canvasGroup.interactable = false;
-                    canvasGroup.blocksRaycasts = false;
+                    if (_routeActive)
+                    {
+                        //targetAlpha = 1f;
+                        canvasGroup.interactable = true;
+                        canvasGroup.blocksRaycasts = true;
+                        this.StartCoroutine(this.FadeIn());
+                    }
+                    else
+                    {
+                        //targetAlpha = 0f;
+                        canvasGroup.interactable = false;
+                        canvasGroup.blocksRaycasts = false;
+                        this.StartCoroutine(this.FadeOut());
+                    }
                 }
             }
         }
@@ -66,10 +72,10 @@ namespace Snowdrama.UI
                 }
             }
         }
-        [Header("Debug")]
-        [SerializeField] private float currentAlpha;
-        [SerializeField] private float targetAlpha;
-        [SerializeField] private float currentAlphaVelocity;
+        //[Header("Debug")]
+        //[SerializeField] private float currentAlpha;
+        //[SerializeField] private float targetAlpha;
+        //[SerializeField] private float currentAlphaVelocity;
 
         private void Start()
         {
@@ -132,20 +138,51 @@ namespace Snowdrama.UI
             _lastSelected = null;
         }
 
-        private void Update()
-        {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
-            canvasGroup.alpha = currentAlpha;
+        //private void Update()
+        //{
+        //    currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+        //    canvasGroup.alpha = currentAlpha;
 
-            if (currentAlpha <= 0.05f)
+        //    if (currentAlpha <= 0.05f)
+        //    {
+        //        this.ElementsActive = false;
+        //    }
+        //    else
+        //    {
+        //        this.ElementsActive = true;
+        //    }
+        //    currentAlpha = currentAlpha.Clamp(0, 1);
+        //}
+
+        private IEnumerator FadeIn()
+        {
+            this.ElementsActive = true;
+            var currentAlpha = 0.0f;
+            var targetAlpha = 1.0f;
+            var currentAlphaVelocity = 0.0f;
+            while (!Mathf.Approximately(currentAlpha, targetAlpha))
             {
-                this.ElementsActive = false;
+                currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+                canvasGroup.alpha = currentAlpha;
+
+                //break execution
+                yield return null;
             }
-            else
+        }
+        private IEnumerator FadeOut()
+        {
+            var currentAlpha = 0.0f;
+            var targetAlpha = 0.0f;
+            var currentAlphaVelocity = 0.0f;
+            while (!Mathf.Approximately(currentAlpha, targetAlpha))
             {
-                this.ElementsActive = true;
+                currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+                canvasGroup.alpha = currentAlpha;
+
+                //break execution
+                yield return null;
             }
-            currentAlpha = currentAlpha.Clamp(0, 1);
+            this.ElementsActive = false;
         }
     }
 }
