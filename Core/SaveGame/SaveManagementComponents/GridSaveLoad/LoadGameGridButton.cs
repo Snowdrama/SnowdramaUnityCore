@@ -11,6 +11,7 @@ public class LoadGameGridButton : MonoBehaviour
     private SaveGameInfo currentSaveData;
 
     [SerializeField] private Sprite defaultSaveSprite;
+    [SerializeField] private Button button;
 
     [Header("Save Info")]
     [SerializeField] private Image saveImage;
@@ -147,11 +148,13 @@ public class LoadGameGridButton : MonoBehaviour
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             noSaveImage.sprite = defaultSaveSprite;
+            this.GetComponent<Button>().interactable = true;
         }
         else
         {
             saveImage.sprite = defaultSaveSprite;
             noSaveImage.sprite = defaultSaveSprite;
+            this.GetComponent<Button>().interactable = false;
         }
     }
     public void NoSave(int saveSlot, bool isAutoSave)
