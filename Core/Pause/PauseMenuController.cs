@@ -12,33 +12,52 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] private UIRouter _pauseRouter;
     [SerializeField] private List<InputActionReference> _pauseActions;
     [SerializeField] private List<InputActionReference> _cancelActions;
-    private bool paused;
     [Header("Background")]
-    [SerializeField] private Image _pauseMenuBackground;
-    [SerializeField] private Color _targetBackgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.25f);
-    private Color _currentBackgroundColor;
+    [SerializeField] private CanvasGroup _backgroundCanvasGroup;
     [SerializeField] private float showHideTime = 0.25f;
 
+    [Header("Debug")]
+    [SerializeField, EditorReadOnly] private bool paused;
+    [SerializeField, EditorReadOnly] private float currentAlpha = 0.0f;
+    [SerializeField, EditorReadOnly] private float targetAlpha = 0.0f;
+    [SerializeField, EditorReadOnly] private float currentAlphaVelocity = 0.0f;
     private void Start()
     {
-        _currentBackgroundColor = _pauseMenuBackground.color;
+        this.PauseOpen = false;
     }
 
-    public void OnPause()
+
+    private bool _pauseOpen;
+    private bool PauseOpen
     {
-        this.StartCoroutine(this.FadeIn());
-        PauseManager.RequestPause("PauseController");
-        CursorManager.CursorSourceVisible("PauseController");
-        paused = true;
+        get { return _pauseOpen; }
+        set
+        {
+            Debug.Log("Pausing Value...");
+            _pauseOpen = value;
+            if (_pauseOpen)
+            {
+                Debug.Log("Pause is Open!");
+                paused = true;
+                targetAlpha = 1f;
+                PauseManager.RequestPause("PauseController");
+                CursorManager.CursorSourceVisible("PauseController");
+                _backgroundCanvasGroup.interactable = true;
+                _backgroundCanvasGroup.blocksRaycasts = true;
+            }
+            else
+            {
+                Debug.Log("Pause is Closed!");
+                paused = false;
+                targetAlpha = 0f;
+                PauseManager.RequestUnpause("PauseController");
+                CursorManager.CursorSourceHidden("PauseController");
+                _backgroundCanvasGroup.interactable = false;
+                _backgroundCanvasGroup.blocksRaycasts = false;
+            }
+        }
     }
 
-    public void OnUnpause()
-    {
-        this.StartCoroutine(this.FadeOut());
-        PauseManager.RequestUnpause("PauseController");
-        CursorManager.CursorSourceHidden("PauseController");
-        paused = false;
-    }
     private void OnEnable()
     {
         foreach (var pauseAction in _pauseActions)
@@ -77,15 +96,18 @@ public class PauseMenuController : MonoBehaviour
     {
         if (context.started)
         {
+            Debug.Log("Pausing...");
             if (!paused)
             {
+                Debug.Log("Pausing!");
                 _pauseRouter.OpenRoute(_pauseRouteName);
-                this.OnPause();
+                this.PauseOpen = true;
             }
             else
             {
+                Debug.Log("Unpausing");
                 _pauseRouter.CloseAll();
-                this.OnUnpause();
+                this.PauseOpen = false;
             }
         }
     }
@@ -99,39 +121,14 @@ public class PauseMenuController : MonoBehaviour
                 _pauseRouter.Back();
                 if (_pauseRouter.GetOpenRouteCount() == 0)
                 {
-                    this.OnUnpause();
+                    this.PauseOpen = false;
                 }
             }
         }
     }
-
-
-    private IEnumerator FadeIn()
+    private void Update()
     {
-        var currentAlpha = 0.0f;
-        var targetAlpha = _targetBackgroundColor.a;
-        var currentAlphaVelocity = 0.0f;
-        while (!Mathf.Approximately(currentAlpha, targetAlpha))
-        {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
-            _currentBackgroundColor.a = currentAlpha;
-
-            //break execution
-            yield return null;
-        }
-    }
-    private IEnumerator FadeOut()
-    {
-        var currentAlpha = 0.0f;
-        var targetAlpha = 0.0f;
-        var currentAlphaVelocity = 0.0f;
-        while (!Mathf.Approximately(currentAlpha, targetAlpha))
-        {
-            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
-            _currentBackgroundColor.a = currentAlpha;
-
-            //break execution
-            yield return null;
-        }
+        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+        _backgroundCanvasGroup.alpha = currentAlpha;
     }
 }

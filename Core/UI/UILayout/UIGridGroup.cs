@@ -6,6 +6,7 @@ namespace Snowdrama.UI
 {
     public interface ISnowUILayout
     {
+        void MarkDirtyLayout();
         void UpdateLayout();
     }
     /// <summary>

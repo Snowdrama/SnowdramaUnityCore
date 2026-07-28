@@ -110,7 +110,7 @@ public class CursorManager : MonoBehaviour
         if (!visibleSources.Contains(name))
         {
             visibleSources.Add(name);
-            instance.UpdateCursorState(ControlSchemeManager.CurrentSchemeType);
+            instance?.UpdateCursorState(ControlSchemeManager.CurrentSchemeType);
         }
     }
     public static void CursorSourceHidden(string name)
@@ -123,7 +123,7 @@ public class CursorManager : MonoBehaviour
         if (visibleSources.Contains(name))
         {
             visibleSources.Remove(name);
-            instance.UpdateCursorState(ControlSchemeManager.CurrentSchemeType);
+            instance?.UpdateCursorState(ControlSchemeManager.CurrentSchemeType);
         }
     }
 }

@@ -363,6 +363,10 @@ namespace Snowdrama.UI
         {
         }
 
+        public virtual void MarkDirtyLayout()
+        {
+        }
+
     }
 
 }

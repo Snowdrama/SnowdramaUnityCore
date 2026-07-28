@@ -51,7 +51,6 @@ namespace Snowdrama.UI
         [SerializeField] private List<int> debugKeys = new List<int>();
         [SerializeField] private List<UIImageGridLayoutCell> debugCells = new List<UIImageGridLayoutCell>();
 
-#if UNITY_EDITOR
         // Start is called before the first frame update
         public override void Start()
         {
@@ -65,6 +64,21 @@ namespace Snowdrama.UI
             base.Update();
             if (forceUpdate)
             {
+                this.UpdateLayout();
+            }
+        }
+
+        private bool dirtyLayout;
+        public override void MarkDirtyLayout()
+        {
+            dirtyLayout = true;
+        }
+
+        public override void LateUpdate()
+        {
+            if (dirtyLayout)
+            {
+                dirtyLayout = false;
                 this.UpdateLayout();
             }
         }
@@ -166,6 +180,7 @@ namespace Snowdrama.UI
             children.Clear();
             foreach (Transform child in this.transform)
             {
+                Debug.Log($"Found Child {child.name}");
                 children.Add(child.GetComponent<RectTransform>());
             }
 
@@ -188,6 +203,5 @@ namespace Snowdrama.UI
                 }
             }
         }
-#endif
     }
 }

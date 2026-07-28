@@ -53,6 +53,7 @@ public class LoadGameGrid : MonoBehaviour
             }
         }
         buttons.Clear();
+        grid.UpdateLayout();
 
         var saves = SaveManager.GetSaveList();
 
@@ -130,7 +131,6 @@ public class LoadGameGrid : MonoBehaviour
                 this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
             }
         }
-
         grid.UpdateLayout();
     }
 

@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.8.4] 2026-18-07
-- Added a background image to the PauseMenuController so the whole menu can use 1 image instead of each route needing it's own,fixes undesired behavior with fading the canvas group on the route
-- Switched to using Coroutines for UI animations(fade in/fade out) so they no longer call SmoothDamp when idle.
+- Added a single CanvasGroup reference to the PauseMenuController so the whole menu can use 1 CanvasGroup to show a background for all 
+menus in the pause menu instead of each route needing it's own, fixes undesired behavior with crossfading background in each route
 
 ## [0.8.3] 2026-18-07
 - Added cursor manager to help with figuring out if the cursor should be shown or not
