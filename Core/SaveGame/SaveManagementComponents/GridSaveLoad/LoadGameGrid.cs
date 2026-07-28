@@ -53,12 +53,8 @@ public class LoadGameGrid : MonoBehaviour
             }
         }
         buttons.Clear();
-        grid.UpdateLayout();
 
         var saves = SaveManager.GetSaveList();
-
-
-
 
         //Sorry future me but this is complex
         if (MixAutoSaves)
@@ -131,7 +127,7 @@ public class LoadGameGrid : MonoBehaviour
                 this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
             }
         }
-        grid.UpdateLayout();
+        grid.MarkDirtyLayout();
     }
 
 

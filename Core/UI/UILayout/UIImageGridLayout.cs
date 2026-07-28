@@ -68,17 +68,15 @@ namespace Snowdrama.UI
             }
         }
 
-        private bool dirtyLayout;
         public override void MarkDirtyLayout()
         {
-            dirtyLayout = true;
+            forceUpdate = true;
         }
 
         public override void LateUpdate()
         {
-            if (dirtyLayout)
+            if (this.transform.childCount != children.Count || forceUpdate)
             {
-                dirtyLayout = false;
                 this.UpdateLayout();
             }
         }

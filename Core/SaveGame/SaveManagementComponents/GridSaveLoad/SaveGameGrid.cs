@@ -104,7 +104,7 @@ public class SaveGameGrid : MonoBehaviour
             }
 
         }
-        grid.UpdateLayout();
+        grid.MarkDirtyLayout();
     }
 
     private void Start()

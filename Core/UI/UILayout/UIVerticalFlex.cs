@@ -163,5 +163,10 @@ namespace Snowdrama.UI
                 }
             }
         }
+
+        public void MarkDirtyLayout()
+        {
+            forceUpdate = true;
+        }
     }
 }
