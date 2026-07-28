@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a single CanvasGroup reference to the PauseMenuController so the whole menu can use 1 CanvasGroup to show a background for all 
 menus in the pause menu instead of each route needing it's own, fixes undesired behavior with crossfading background in each route
 - Fixes to allow SnowUI to be marked to note the layout is dirty and update the layout in LateUpdate
+- Make load button not interactable if it has no save data
 
 ## [0.8.3] 2026-18-07
 - Added cursor manager to help with figuring out if the cursor should be shown or not
