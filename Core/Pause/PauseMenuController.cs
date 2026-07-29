@@ -130,5 +130,11 @@ public class PauseMenuController : MonoBehaviour
     {
         currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
         _backgroundCanvasGroup.alpha = currentAlpha;
+
+        //ensure if we closed all routes then we unpause
+        if (_pauseRouter.GetOpenRouteCount() == 0)
+        {
+            this.PauseOpen = false;
+        }
     }
 }
