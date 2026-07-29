@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [0.8.4] 2026-18-07
+## [0.8.5] 2026-29-07
+- Fix to pause menu controller to check to ensure to hide the background and unpause when items are closed via a button and not the pause or cancel hotkey
+
+
+## [0.8.4] 2026-28-07
 - Added a single CanvasGroup reference to the PauseMenuController so the whole menu can use 1 CanvasGroup to show a background for all 
 menus in the pause menu instead of each route needing it's own, fixes undesired behavior with crossfading background in each route
 - Fixes to allow SnowUI to be marked to note the layout is dirty and update the layout in LateUpdate
