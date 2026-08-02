@@ -3,9 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.8.6] 2026-01-08
+- Added Vector2/3/2Int/3Int extensions that add a "DirectionTo" function because I can never remember the subtraction order to get a direction vector.
+
 ## [0.8.5] 2026-29-07
 - Fix to pause menu controller to check to ensure to hide the background and unpause when items are closed via a button and not the pause or cancel hotkey
-
 
 ## [0.8.4] 2026-28-07
 - Added a single CanvasGroup reference to the PauseMenuController so the whole menu can use 1 CanvasGroup to show a background for all 

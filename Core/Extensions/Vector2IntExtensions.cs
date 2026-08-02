@@ -14,4 +14,14 @@ public static class Vector2IntExtensions
     {
         return (size.x * pos.y) + pos.x;
     }
+    /// <summary>
+    /// Silly wrapper because I can never remember the order of how to subtract a vector to get a direction.
+    /// </summary>
+    /// <param name="from">The starting point. </param>
+    /// <param name="to">The end point. </param>
+    /// <returns>A vector that goes from the starting point to the end point. </returns>
+    public static Vector2Int DirectionTo(this Vector2Int from, Vector2Int to)
+    {
+        return to - from;
+    }
 }

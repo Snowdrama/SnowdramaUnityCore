@@ -3,7 +3,7 @@ public static class Vector2Extensions
 {
     public static Vector2 VectorFromAngleRads(float angle)
     {
-        Vector2 V = new Vector2();
+        var V = new Vector2();
         V.x = Mathf.Cos(angle);
         V.y = Mathf.Sin(angle);
         return V.normalized;
@@ -52,7 +52,7 @@ public static class Vector2Extensions
 
     public static float AngleFromVector(this Vector2 dir)
     {
-        float angle = Mathf.Rad2Deg * Mathf.Atan2(dir.y, dir.x);
+        var angle = Mathf.Rad2Deg * Mathf.Atan2(dir.y, dir.x);
         if (angle < 0)
         {
             angle += 360;
@@ -100,7 +100,7 @@ public static class Vector2Extensions
     public static float AngleTo(this Vector2 self, Vector2 to)
     {
         Vector2 direction = to - self;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         if (angle < 0f) angle += 360f;
         return angle;
     }
@@ -115,7 +115,7 @@ public static class Vector2Extensions
     public static float AngleToInRads(this Vector2 self, Vector2 to)
     {
         Vector2 direction = to - self;
-        float angle = Mathf.Atan2(direction.y, direction.x);
+        var angle = Mathf.Atan2(direction.y, direction.x);
         if (angle < 0f) angle += 360f;
         return angle;
     }
@@ -158,5 +158,15 @@ public static class Vector2Extensions
     public static Vector2 FindAspectRatio(this Vector2 size)
     {
         return new Vector2();
+    }
+    /// <summary>
+    /// Silly wrapper because I can never remember the order of how to subtract a vector to get a direction.
+    /// </summary>
+    /// <param name="from">The starting point. </param>
+    /// <param name="to">The end point. </param>
+    /// <returns>A vector that goes from the starting point to the end point. </returns>
+    public static Vector2 DirectionTo(this Vector2 from, Vector2 to)
+    {
+        return to - from;
     }
 }

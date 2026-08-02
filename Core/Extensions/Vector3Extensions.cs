@@ -31,4 +31,14 @@ public static class Vector3Extensions
         return new Vector3(Mathf.Clamp(val.x, min.x, max.x), Mathf.Clamp(val.y, min.y, max.y), Mathf.Clamp(val.z, min.z, max.z));
     }
 
+    /// <summary>
+    /// Silly wrapper because I can never remember the order of how to subtract a vector to get a direction.
+    /// </summary>
+    /// <param name="from">The starting point. </param>
+    /// <param name="to">The end point. </param>
+    /// <returns>A vector that goes from the starting point to the end point. </returns>
+    public static Vector3 DirectionTo(this Vector3 from, Vector3 to)
+    {
+        return to - from;
+    }
 }
