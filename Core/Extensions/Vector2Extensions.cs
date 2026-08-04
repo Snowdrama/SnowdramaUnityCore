@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 public static class Vector2Extensions
 {
     public static Vector2 VectorFromAngleRads(float angle)
@@ -99,7 +101,7 @@ public static class Vector2Extensions
     /// <returns></returns>
     public static float AngleTo(this Vector2 self, Vector2 to)
     {
-        Vector2 direction = to - self;
+        var direction = to - self;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         if (angle < 0f) angle += 360f;
         return angle;
@@ -114,7 +116,7 @@ public static class Vector2Extensions
     /// <returns></returns>
     public static float AngleToInRads(this Vector2 self, Vector2 to)
     {
-        Vector2 direction = to - self;
+        var direction = to - self;
         var angle = Mathf.Atan2(direction.y, direction.x);
         if (angle < 0f) angle += 360f;
         return angle;
@@ -168,5 +170,31 @@ public static class Vector2Extensions
     public static Vector2 DirectionTo(this Vector2 from, Vector2 to)
     {
         return to - from;
+    }
+
+
+    public static Vector2 RandomDirection()
+    {
+        return Vector2Extensions.VectorFromAngle((float)UnityEngine.Random.Range(0, Mathf.PI));
+    }
+
+    public static float AsRandomRange(this Vector2 range)
+    {
+        return UnityEngine.Random.Range(range.x, range.y);
+    }
+
+    public static Vector2 RandomPositionInRange(float minX, float maxX, float minY, float maxY, bool capUnitLength = true)
+    {
+        var x = UnityEngine.Random.Range(minX, maxX);
+        var y = UnityEngine.Random.Range(minY, maxY);
+
+        var value = new Vector2(x, y);
+
+        if (capUnitLength && value.magnitude >= 1.0f)
+        {
+            return value.normalized;
+        }
+
+        return value;
     }
 }
