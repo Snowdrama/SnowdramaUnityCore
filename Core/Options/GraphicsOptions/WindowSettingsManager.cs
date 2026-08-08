@@ -38,6 +38,35 @@ public class WindowSettingsManager : MonoBehaviour
     public const string RESOLUTION_SETTING_KEY = "ResolutionIndex";
     public const string FULLSCREEN_SETTING_KEY = "FullscreenMode";
 
+    [Header("Debug")]
+    [SerializeField] private Vector2 _debugCurrentWindowSize = new Vector2(0, 0);
+    [SerializeField] private Vector2 _debugMonitorResolution = new Vector2(0, 0);
+    [Header("Current Selection Debug")]
+    [SerializeField] private Vector2 _debugCurrentSelectedResolution = new Vector2(0, 0);
+    [SerializeField] private int _debugCurrentSelectedResolutionIndex = 0;
+    [SerializeField] private List<ResolutionOption> _debugResolitions = new();
+
+    private void Update()
+    {
+        //this tries to get the window size
+        _debugCurrentWindowSize = new Vector2(Screen.width, Screen.height);
+        //this attempts to get the monitor resoltion not the current window size
+        _debugMonitorResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+
+        //this is set on start or loaded from the save
+        _debugCurrentSelectedResolution = new Vector2(CurrentResolution.width, CurrentResolution.height);
+        _debugCurrentSelectedResolutionIndex = CurrentResolutionIndex;
+
+        if (_debugResolitions.Count != UniqueResolutions.Count)
+        {
+            _debugResolitions.Clear();
+            for (var i = 0; i < UniqueResolutions.Count; i++)
+            {
+                _debugResolitions.Add(UniqueResolutions[i]);
+            }
+        }
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
     {
@@ -124,7 +153,6 @@ public class WindowSettingsManager : MonoBehaviour
         return index >= 0 && index < _resolutions.Count;
     }
 
-
     /// <summary>
     /// Returns the largest size display from the _resolutions list
     /// </summary>
@@ -143,8 +171,8 @@ public class WindowSettingsManager : MonoBehaviour
 
         var bestTargetHzFound = 1.0f;
         //find the largest possible resoltion
-        Debug.Log($"<color=orange>Resolution?: ({Screen.currentResolution.width}, {Screen.currentResolution.height}) -> (Area: {Screen.width * Screen.height}");
-
+        Debug.Log($"<color=orange>Current Screen Resolution: ({Screen.currentResolution.width}, {Screen.currentResolution.height}) -> (Area: {Screen.currentResolution.width * Screen.currentResolution.height})");
+        Debug.Log($"<color=orange>Current Window Size: ({Screen.width}, {Screen.height}) -> (Area: {Screen.width * Screen.height})");
 
         for (var i = 0; i < _resolutions.Count; i++)
         {
@@ -152,12 +180,19 @@ public class WindowSettingsManager : MonoBehaviour
             var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
             var area = rez.width * rez.height;
 
-            Debug.Log($"<color=orange>Testing[{i}]: ({rez.width}, {rez.height}) @ {hz}-> (area: {area})");
+            Debug.Log($"<color=yellow>Testing[{i}]: ({rez.width}, {rez.height}) @ {hz} -> area: {area} == {targetArea} && hz: {hz} == {bestTargetHzFound}");
 
-            if (targetArea == area && hz <= bestTargetHzFound)
+            if (targetArea == area)
             {
-                targetAreaFound = i;
-                bestTargetHzFound = hz;
+                Debug.Log($"<color=green>Found the matching the target area index: {i}!");
+                //targetAreaFound = i;
+
+                if (hz <= bestTargetHzFound)
+                {
+                    Debug.Log($"<color=green>Found a better screen framerate: {i}!");
+                    targetAreaFound = i;
+                    bestTargetHzFound = hz;
+                }
             }
 
             if (area > largestArea)
@@ -167,8 +202,9 @@ public class WindowSettingsManager : MonoBehaviour
             }
         }
 
-        if(targetAreaFound >= 0)
+        if (targetAreaFound >= 0)
         {
+            Debug.Log($"<color=green>Size with matching screen area and Best Hz: {largestAreaIndex}!");
             var rez = _resolutions[targetAreaFound];
             var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
             return targetAreaFound;
