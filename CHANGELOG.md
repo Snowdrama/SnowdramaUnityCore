@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [0.8.7] 2026-01-08
+## [0.8.8] 2026-09-08
+- Added new messages TransitionRequestedMessage and TransitionCompleteMessage to the transition driver/scene controller. Requires using: Messages.GetHub("TransitionDriver")
+
+## [0.8.7] 2026-06-08
 - Made changes to WindowSettingsManager to try and make the usage easier and make more sense of how it comes to the chosen resolution
 
 ## [0.8.6] 2026-01-08

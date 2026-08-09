@@ -12,8 +12,10 @@ public class SceneController : MonoBehaviour
     //transition related
     private const string TransitionHubName = "TransitionDriver"; //this is the default name
     private static MessageHub TransitionMessageHub;
+    private static TransitionReqestedMessage TransitionReqestedMessage;
     private static StartHideTransitionMessage StartHideTransitionMessage;
     private static StartShowTransitionMessage StartShowTransitionMessage;
+    private static TransitionCompleteMessage TransitionCompleteMessage;
 
     public static List<string> RequiredScenes = new();
     public static Dictionary<string, WrapperSceneData> WrapperScenes = new();
@@ -179,6 +181,8 @@ public class SceneController : MonoBehaviour
         //don't do something while transitioning
         if (IsTransitioning) { return; }
 
+        TransitionReqestedMessage?.Dispatch(sceneName);
+
         //now we're starting the transition
         IsTransitioning = true;
 
@@ -219,20 +223,25 @@ public class SceneController : MonoBehaviour
         //We're done!
         //TODO: Add any cleanup stuff here...
         IsTransitioning = false;
+        TransitionCompleteMessage?.Dispatch();
     }
 
     private void OnEnable()
     {
 
         TransitionMessageHub = Messages.GetHub(TransitionHubName);
+        TransitionReqestedMessage = TransitionMessageHub.Get<TransitionReqestedMessage>();
         StartHideTransitionMessage = TransitionMessageHub.Get<StartHideTransitionMessage>();
         StartShowTransitionMessage = TransitionMessageHub.Get<StartShowTransitionMessage>();
+        TransitionCompleteMessage = TransitionMessageHub.Get<TransitionCompleteMessage>();
     }
 
     private void OnDisable()
     {
+        TransitionMessageHub.Return<TransitionReqestedMessage>();
         TransitionMessageHub.Return<StartHideTransitionMessage>();
         TransitionMessageHub.Return<StartShowTransitionMessage>();
+        TransitionMessageHub.Return<TransitionCompleteMessage>();
         Messages.ReturnHub(TransitionHubName);
     }
 

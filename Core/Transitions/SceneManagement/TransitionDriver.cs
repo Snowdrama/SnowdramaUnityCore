@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace Snowdrama.Transition
 {
+    public class TransitionReqestedMessage : AMessage<string> { }
     public class StartHideTransitionMessage : AMessage<float, float, List<string>, Action, Action> { }
     public class StartShowTransitionMessage : AMessage<float, Action> { }
+    public class TransitionCompleteMessage : AMessage { }
     [ExecuteAlways]
     public class TransitionDriver : MonoBehaviour
     {
