@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.8.9] 2026-22-08
+- Change to scene controller to add additional debug logs. 
+- Fix to pause menu controller not setting the state of the background canvas group on start. 
+- Added Enum extensions for helpful serialization tools.
+- Change to cursor manager to add visible state settings for gamepad and touch mode. 
+- Change to control scheme manager to add default control scheme. 
+- Started experimental translation tools. 
+
 ## [0.8.8] 2026-09-08
 - Added new messages TransitionRequestedMessage and TransitionCompleteMessage to the transition driver/scene controller. Requires using: Messages.GetHub("TransitionDriver")
 
