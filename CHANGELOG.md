@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Change to cursor manager to add visible state settings for gamepad and touch mode. 
 - Change to control scheme manager to add default control scheme. 
 - Started experimental translation tools. 
+- Changes to PauseMenuController and UIRoute to toggle the group on and off when the group alpha is low enough
+- Change to Control scheme manager to show the current scheme as a debug in the editor
 
 ## [0.8.8] 2026-09-08
 - Added new messages TransitionRequestedMessage and TransitionCompleteMessage to the transition driver/scene controller. Requires using: Messages.GetHub("TransitionDriver")
