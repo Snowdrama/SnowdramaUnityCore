@@ -32,10 +32,14 @@ public class ControlSchemeManager : MonoBehaviour
     [SerializeField] private InputActionReference[] mouseInputs;
     [SerializeField] private InputActionReference[] gamepadInputs;
     [SerializeField] private InputActionReference[] touchInputs;
-
-    private void OnEnable()
+    [Header("Debug")]
+    [SerializeField, EditorReadOnly] private ControlSchemeType debugCurrentSchemeType;
+    private void Start()
     {
         CurrentSchemeType = DefaultSchemeType;
+    }
+    private void OnEnable()
+    {
         foreach (var input in mouseInputs)
         {
             input.action.performed += this.OnMousePerformed;
@@ -72,6 +76,10 @@ public class ControlSchemeManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        debugCurrentSchemeType = CurrentSchemeType;
+    }
     public void OnMousePerformed(InputAction.CallbackContext context)
     {
         RequestSchemeType(ControlSchemeType.KBM);

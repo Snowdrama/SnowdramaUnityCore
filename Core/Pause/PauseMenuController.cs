@@ -133,8 +133,22 @@ public class PauseMenuController : MonoBehaviour
     }
     private void Update()
     {
-        _currentAlpha = Mathf.SmoothDamp(_currentAlpha, _targetAlpha, ref _currentAlphaVelocity, _showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
-        _backgroundCanvasGroup.alpha = _currentAlpha;
+        //only update if it's different than the target
+        if (Mathf.Abs(_backgroundCanvasGroup.alpha - _targetAlpha) > 0.01f)
+        {
+            _currentAlpha = Mathf.SmoothDamp(_currentAlpha, _targetAlpha, ref _currentAlphaVelocity, _showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+            _backgroundCanvasGroup.alpha = _currentAlpha;
+
+            //if we're aproximately 0 then hide
+            if (_backgroundCanvasGroup.alpha < 0.01f)
+            {
+                _backgroundCanvasGroup.gameObject.SetActive(false);
+            }
+            else
+            {
+                _backgroundCanvasGroup.gameObject.SetActive(true);
+            }
+        }
 
         //ensure if we closed all routes then we unpause
         if (_pauseRouter.GetOpenRouteCount() == 0)
