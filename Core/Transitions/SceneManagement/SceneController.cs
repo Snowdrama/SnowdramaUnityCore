@@ -84,7 +84,7 @@ public class SceneController : MonoBehaviour
 
         sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
 
-        Debug.Log($"Loading Scene Management Data, ShowConsoleMessages? -> {sceneManagementData.ShowConsoleMessages}");
+        DebugLog($"Loading Scene Management Data, ShowConsoleMessages? -> {sceneManagementData.ShowConsoleMessages}");
 
         DebugLog(jsonDoc.text);
 
@@ -163,7 +163,6 @@ public class SceneController : MonoBehaviour
 
         //finally we will use the calculated states to load the scenes
         //this is in case the current loaded scene has dependencies
-
         LoadCalculatedScenes();
     }
     #endregion
@@ -313,9 +312,9 @@ public class SceneController : MonoBehaviour
                 calculatedScenes_ToLoad.Add(targetScene_Next);
             }
 
-            Debug.Log($"Scenes: {Scenes} ");
-            Debug.Log($"Scenes Count: {Scenes.Count}");
-            Debug.Log($"Scenes Count: {loadedScene_Current}");
+            DebugLog($"Scenes: {Scenes} ");
+            DebugLog($"Scenes Count: {Scenes.Count}");
+            DebugLog($"Scenes Count: {loadedScene_Current}");
 
             var loadedSceneData = Scenes[loadedScene_Current];
 
@@ -411,6 +410,23 @@ public class SceneController : MonoBehaviour
 
     private static void LoadCalculatedScenes()
     {
+        foreach (var item in calculatedScenes_ToUnload)
+        {
+            DebugLog($"<color=orange>Unloading: {item}");
+        }
+        foreach (var item in calculatedScenes_ToUnload_Wrappers)
+        {
+            DebugLog($"<color=orange>Unloading Wrapper: {item}");
+        }
+        foreach (var item in calculatedScenes_ToLoad)
+        {
+            DebugLog($"<color=green>Loading: {item}");
+        }
+        foreach (var item in calculatedScenes_ToLoad_Wrappers)
+        {
+            DebugLog($"<color=green>Loading Wrapper: {item}");
+        }
+
         //first let's unload any scenes that need to be 
         UnloadScenes_Normal(calculatedScenes_ToUnload);
         UnloadScenes_Wrappers(calculatedScenes_ToUnload_Wrappers);
@@ -426,7 +442,7 @@ public class SceneController : MonoBehaviour
     {
         DebugLogWarning($"Number of Scenes to Unload: {scenesToLoad.Count}");
 
-        foreach (var scene in scenesToLoad) { Debug.Log($"<color=orange>{scene}</color>"); }
+        foreach (var scene in scenesToLoad) { DebugLog($"<color=orange>{scene}</color>"); }
 
 
         for (var i = 0; i < scenesToLoad.Count; i++)
@@ -547,6 +563,7 @@ public class SceneController : MonoBehaviour
             asyncOperation = asyncOperation,
             complete = false,
         });
+        DebugLog($"Starting unload of: {sceneToUnload} progress: {asyncOperation.progress}");
     }
     //private static void UnloadScene_Required(string sceneToUnload)
     //{
@@ -637,8 +654,10 @@ public class SceneController : MonoBehaviour
     }
     private static void UnloadScene_Wrapper_Complete(AsyncOperation obj)
     {
+        DebugLogError($"Async Unload Complete Checking for complete status");
         for (var i = 0; i < asyncUnloadData.Count; i++)
         {
+            DebugLogError($"Async Unload Complete Checking for complete status: {asyncUnloadData[i].sceneName}");
             if (asyncUnloadData[i].asyncOperation == obj)
             {
                 DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");

@@ -39,7 +39,7 @@ public static class EnumerableExtensions
     public static T GetRandom<T>(this IEnumerable<T> source)
     {
         if (source == null) throw new ArgumentNullException("source");
-        int count = source.Count();
+        var count = source.Count();
         if (count == 0) throw new Exception("GetRandom can't be called since list has no values");
 
         return source.ElementAt(UnityEngine.Random.Range(0, count));
@@ -60,12 +60,12 @@ public static class EnumerableExtensions
         {
             throw new ArgumentNullException(nameof(sourceList));
         }
-        List<T> newList = new List<T>(sourceList);
-        int size = newList.Count;
-        for (int i = 0; i < size; i++)
+        var newList = new List<T>(sourceList);
+        var size = newList.Count;
+        for (var i = 0; i < size; i++)
         {
-            T temp = newList[i];
-            int randIndex = random.Next(0, size);
+            var temp = newList[i];
+            var randIndex = random.Next(0, size);
             newList[i] = newList[randIndex];
             newList[randIndex] = temp;
         }

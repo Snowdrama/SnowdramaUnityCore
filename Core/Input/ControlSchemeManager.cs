@@ -13,6 +13,7 @@ public class ControlSchemeChangedMessage : AMessage<ControlSchemeType> { }
 
 public class ControlSchemeManager : MonoBehaviour
 {
+    [SerializeField] private ControlSchemeType DefaultSchemeType = ControlSchemeType.None;
     public static ControlSchemeType CurrentSchemeType = ControlSchemeType.None;
     private static ControlSchemeChangedMessage changeMesage;
     public static void RequestSchemeType(ControlSchemeType type)
@@ -34,6 +35,7 @@ public class ControlSchemeManager : MonoBehaviour
 
     private void OnEnable()
     {
+        CurrentSchemeType = DefaultSchemeType;
         foreach (var input in mouseInputs)
         {
             input.action.performed += this.OnMousePerformed;

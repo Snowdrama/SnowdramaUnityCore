@@ -24,12 +24,17 @@ public class CursorManager : MonoBehaviour
     [SerializeField] private CursorLockMode kbmMode = CursorLockMode.Locked;
     [SerializeField] private CursorLockMode kbmMode_sourcesVisible = CursorLockMode.Confined;
     [Header("Touch Mode")]
+    [SerializeField] private bool touchVisible = false;
     [SerializeField] private CursorLockMode touchMode = CursorLockMode.Locked;
 
     private static List<string> visibleSources = new List<string>();
     private static ControlSchemeChangedMessage changeMesage;
     [Header("Debug")]
+    [SerializeField, EditorReadOnly] private ControlSchemeType debugCurrentSchemeType;
     [SerializeField, EditorReadOnly] private List<string> debugVisibleSources = new List<string>();
+    [SerializeField, EditorReadOnly] private bool debugVisible;
+    [SerializeField, EditorReadOnly] private CursorLockMode debugCurrentLockMode;
+
     private void Start()
     {
         if (instance != null)
@@ -67,7 +72,9 @@ public class CursorManager : MonoBehaviour
         //if (sourceCount != newCount)
         //{
         //}
-
+        debugCurrentSchemeType = ControlSchemeManager.CurrentSchemeType;
+        debugCurrentLockMode = Cursor.lockState;
+        debugVisible = Cursor.visible;
         debugVisibleSources = visibleSources;
         this.UpdateCursorState(ControlSchemeManager.CurrentSchemeType);
     }
@@ -82,17 +89,21 @@ public class CursorManager : MonoBehaviour
             case ControlSchemeType.KBM:
                 if (visibleSources.Count > 0)
                 {
+                    Cursor.visible = kbmVisible_sourcesVisible;
                     Cursor.lockState = kbmMode_sourcesVisible;
                 }
                 else
                 {
+                    Cursor.visible = kbmVisible;
                     Cursor.lockState = kbmMode;
                 }
                 break;
             case ControlSchemeType.Gamepad:
+                Cursor.visible = gamepadVisible;
                 Cursor.lockState = gamepadMode;
                 break;
             case ControlSchemeType.Touch:
+                Cursor.visible = touchVisible;
                 Cursor.lockState = touchMode;
                 break;
             default:

@@ -24,6 +24,7 @@ public class PauseMenuController : MonoBehaviour
     private void Start()
     {
         this.PauseOpen = false;
+        this.UpdateState();
     }
 
     private bool _pauseOpen;
@@ -35,27 +36,32 @@ public class PauseMenuController : MonoBehaviour
             if (_pauseOpen != value)
             {
                 _pauseOpen = value;
-                if (_pauseOpen)
-                {
-                    _paused = true;
-                    _targetAlpha = 1f;
-                    PauseManager.RequestPause("PauseController");
-                    CursorManager.CursorSourceVisible("PauseController");
-                    _backgroundCanvasGroup.interactable = true;
-                    _backgroundCanvasGroup.blocksRaycasts = true;
-                }
-                else
-                {
-                    _paused = false;
-                    _targetAlpha = 0f;
-                    PauseManager.RequestUnpause("PauseController");
-                    CursorManager.CursorSourceHidden("PauseController");
-                    _backgroundCanvasGroup.interactable = false;
-                    _backgroundCanvasGroup.blocksRaycasts = false;
-                }
+                this.UpdateState();
             }
         }
     }
+    private void UpdateState()
+    {
+        if (_pauseOpen)
+        {
+            _paused = true;
+            _targetAlpha = 1f;
+            PauseManager.RequestPause("PauseController");
+            CursorManager.CursorSourceVisible("PauseController");
+            _backgroundCanvasGroup.interactable = true;
+            _backgroundCanvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            _paused = false;
+            _targetAlpha = 0f;
+            PauseManager.RequestUnpause("PauseController");
+            CursorManager.CursorSourceHidden("PauseController");
+            _backgroundCanvasGroup.interactable = false;
+            _backgroundCanvasGroup.blocksRaycasts = false;
+        }
+    }
+
 
     private void OnEnable()
     {
