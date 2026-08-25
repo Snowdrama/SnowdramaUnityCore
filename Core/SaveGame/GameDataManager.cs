@@ -309,48 +309,48 @@ public class GameDataManager : MonoBehaviour
     #region Dictionary Data
 
     #region Int Dictionary
-    public void SetIntDictionary(string name, Dictionary<string, int> value)
+    public static void SetIntDictionary(string name, Dictionary<string, int> value)
     {
         data.SetIntDictionary(name, value);
     }
 
-    public Dictionary<string, int> GetIntDictionary(string name, Dictionary<string, int> defaultValue = default)
+    public static Dictionary<string, int> GetIntDictionary(string name, Dictionary<string, int> defaultValue = default)
     {
         return data.GetIntDictionary(name, defaultValue);
     }
     #endregion
 
     #region Float Dictionary
-    public void SetFloatDictionary(string name, Dictionary<string, float> value)
+    public static void SetFloatDictionary(string name, Dictionary<string, float> value)
     {
         data.SetFloatDictionary(name, value);
     }
 
-    public Dictionary<string, float> GetFloatDictionary(string name, Dictionary<string, float> defaultValue = default)
+    public static Dictionary<string, float> GetFloatDictionary(string name, Dictionary<string, float> defaultValue = default)
     {
         return data.GetFloatDictionary(name, defaultValue);
     }
     #endregion
 
     #region String Dictionary
-    public void SetStringDictionary(string name, Dictionary<string, string> value)
+    public static void SetStringDictionary(string name, Dictionary<string, string> value)
     {
         data.SetStringDictionary(name, value);
     }
 
-    public Dictionary<string, string> GetStringDictionary(string name, Dictionary<string, string> defaultValue = default)
+    public static Dictionary<string, string> GetStringDictionary(string name, Dictionary<string, string> defaultValue = default)
     {
         return data.GetStringDictionary(name, defaultValue);
     }
     #endregion
 
     #region Bool Dictionary
-    public void SetBoolDictionary(string name, Dictionary<string, bool> value)
+    public static void SetBoolDictionary(string name, Dictionary<string, bool> value)
     {
         data.SetBoolDictionary(name, value);
     }
 
-    public Dictionary<string, bool> GetBoolDictionary(string name, Dictionary<string, bool> defaultValue = default)
+    public static Dictionary<string, bool> GetBoolDictionary(string name, Dictionary<string, bool> defaultValue = default)
     {
         return data.GetBoolDictionary(name, defaultValue);
     }
