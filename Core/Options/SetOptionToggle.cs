@@ -1,20 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
-
-public class SetOptionToggle : MonoBehaviour
+namespace Snowdrama
 {
-    public string toggleName;
-    public bool defaultToggle;
-    private Toggle toggle;
-    private void Start()
+    public class SetOptionToggle : MonoBehaviour
     {
-        toggle = this.GetComponent<Toggle>();
-        toggle.onValueChanged.AddListener(OnValueChanged);
-        toggle.SetIsOnWithoutNotify(Options.GetBoolValue(toggleName, defaultToggle));
-    }
+        public string toggleName;
+        public bool defaultToggle;
+        private Toggle toggle;
+        private void Start()
+        {
+            toggle = this.GetComponent<Toggle>();
+            toggle.onValueChanged.AddListener(this.OnValueChanged);
+            toggle.SetIsOnWithoutNotify(Options.GetBoolValue(toggleName, defaultToggle));
+        }
 
-    public void OnValueChanged(bool value)
-    {
-        Options.SetBoolValue(toggleName, value);
+        public void OnValueChanged(bool value)
+        {
+            Options.SetBoolValue(toggleName, value);
+        }
     }
 }

@@ -2,69 +2,72 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class WindowFullscreenDropdown : MonoBehaviour
+namespace Snowdrama
 {
-    private TMP_Dropdown _dropdown;
-    private readonly List<FullScreenMode> _modes = new()
+    public class WindowFullscreenDropdown : MonoBehaviour
     {
-        FullScreenMode.FullScreenWindow,     // Borderless
-        FullScreenMode.ExclusiveFullScreen,  // Exclusive
-        FullScreenMode.Windowed              // Windowed
-    };
-    [Header("Optional")]
-    [SerializeField] private WindowResolutionDropdown WindowResolutionDropdown;
-    private void Awake()
-    {
-        _dropdown = this.GetComponent<TMP_Dropdown>();
-    }
-
-    private void OnEnable()
-    {
-        this.Populate();
-        _dropdown.onValueChanged.AddListener(this.OnChanged);
-    }
-
-    private void OnDisable()
-    {
-        _dropdown.onValueChanged.RemoveListener(this.OnChanged);
-    }
-
-    private void Populate()
-    {
-        _dropdown.ClearOptions();
-
-        var options = new List<TMP_Dropdown.OptionData>
+        private TMP_Dropdown _dropdown;
+        private readonly List<FullScreenMode> _modes = new()
         {
-            new TMP_Dropdown.OptionData("Borderless"),
-            new TMP_Dropdown.OptionData("Exclusive Fullscreen"),
-            new TMP_Dropdown.OptionData("Windowed")
+            FullScreenMode.FullScreenWindow,     // Borderless
+            FullScreenMode.ExclusiveFullScreen,  // Exclusive
+            FullScreenMode.Windowed              // Windowed
         };
-
-        _dropdown.AddOptions(options);
-        _dropdown.value = this.GetCurrentIndex();
-        _dropdown.RefreshShownValue();
-    }
-
-    private int GetCurrentIndex()
-    {
-        var current = Screen.fullScreenMode;
-
-        for (var i = 0; i < _modes.Count; i++)
+        [Header("Optional")]
+        [SerializeField] private WindowResolutionDropdown WindowResolutionDropdown;
+        private void Awake()
         {
-            if (_modes[i] == current)
-                return i;
+            _dropdown = this.GetComponent<TMP_Dropdown>();
         }
 
-        return 0;
-    }
-    private void OnChanged(int index)
-    {
-        var mode = _modes[index];
-        WindowSettingsManager.SetFullscreenMode(mode);
-
-        if (WindowResolutionDropdown != null)
+        private void OnEnable()
         {
-            WindowResolutionDropdown.Refresh();
+            this.Populate();
+            _dropdown.onValueChanged.AddListener(this.OnChanged);
+        }
+
+        private void OnDisable()
+        {
+            _dropdown.onValueChanged.RemoveListener(this.OnChanged);
+        }
+
+        private void Populate()
+        {
+            _dropdown.ClearOptions();
+
+            var options = new List<TMP_Dropdown.OptionData>
+            {
+                new TMP_Dropdown.OptionData("Borderless"),
+                new TMP_Dropdown.OptionData("Exclusive Fullscreen"),
+                new TMP_Dropdown.OptionData("Windowed")
+            };
+
+            _dropdown.AddOptions(options);
+            _dropdown.value = this.GetCurrentIndex();
+            _dropdown.RefreshShownValue();
+        }
+
+        private int GetCurrentIndex()
+        {
+            var current = Screen.fullScreenMode;
+
+            for (var i = 0; i < _modes.Count; i++)
+            {
+                if (_modes[i] == current)
+                    return i;
+            }
+
+            return 0;
+        }
+        private void OnChanged(int index)
+        {
+            var mode = _modes[index];
+            WindowSettingsManager.SetFullscreenMode(mode);
+
+            if (WindowResolutionDropdown != null)
+            {
+                WindowResolutionDropdown.Refresh();
+            }
         }
     }
 }
