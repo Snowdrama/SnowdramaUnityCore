@@ -72,7 +72,7 @@ public class LoadGameGridButton : MonoBehaviour
                     disableTime = 0.0f,
                     pressCallback = () =>
                     {
-                        SaveManager.LoadSave(currentSaveData.saveSlot, false);
+                        SaveManager.LoadSave(currentSaveData.saveSlot, currentSaveData.isAutoSave);
                         //force close the menu if we load something
                         containingMenu?.CloseAll();
                     }
@@ -86,7 +86,7 @@ public class LoadGameGridButton : MonoBehaviour
         }
         else
         {
-            SaveManager.LoadSave(currentSaveData.saveSlot, false);
+            SaveManager.LoadSave(currentSaveData.saveSlot, currentSaveData.isAutoSave);
             //force close the menu if we load something
             containingMenu?.CloseAll();
         }

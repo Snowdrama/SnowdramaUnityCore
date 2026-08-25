@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added Int/Float/String/Bool dictionaries to GameData, so nested dictionaries. 
 - Continued work on Translation stuff: STILL NOT WORKING but pushed with this update
 - Added a simple script for creating tabbed menus
+- Added dedicated LoadSave/LoadAutoSave functions in SaveManager that wrap the existing LoadSave function for ease of use. 
 
 ## [0.8.9] 2026-22-08
 - Change to scene controller to add additional debug logs. 

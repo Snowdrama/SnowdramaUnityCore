@@ -260,6 +260,18 @@ public class SaveManager : MonoBehaviour
 
         return false;
     }
+
+    public static void LoadSave(int slot)
+    {
+        LoadSave(slot, false);
+    }
+
+    public static void LoadAutoSave(int slot)
+    {
+        LoadSave(slot, true);
+    }
+
+
     #endregion
     public static int GetUnusedSaveSlot()
     {
@@ -415,6 +427,7 @@ public class SaveManager : MonoBehaviour
         Messages.GetOnce<SaveGameSavingCompletedMessage>().Dispatch();
         return true;
     }
+
     public static void AutoSave(GameData gameData, string version = null)
     {
         var unusedSlot = GetAutoSaveToUse();
