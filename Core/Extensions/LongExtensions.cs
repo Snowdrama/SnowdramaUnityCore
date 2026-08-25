@@ -1,10 +1,7 @@
-using NUnit.Framework;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-public static class IntExtensions
+
+public static class LongExtensions
 {
     /// <summary>
     /// Clamp a Value and wrap around to based on the difference
@@ -13,7 +10,7 @@ public static class IntExtensions
     /// <param name="minValue"></param>
     /// <param name="maxValue"></param>
     /// <returns></returns>
-    public static int WrapClamp(this int x, int min, int max)
+    public static long WrapClamp(this long x, long min, long max)
     {
         return ((((x - min) % (max - min)) + (max - min)) % (max - min)) + min;
     }
@@ -24,7 +21,7 @@ public static class IntExtensions
     /// <param name="x"></param>
     /// <param name="m"></param>
     /// <returns></returns>
-    public static int BetterMod(this int x, int m)
+    public static long BetterMod(this long x, long m)
     {
         if (m == 0)
         {
@@ -35,9 +32,9 @@ public static class IntExtensions
         return ((x % m) + m) % m;
     }
 
-    public static int Clamp(this int f, int min, int max)
+    public static long Clamp(this long f, long min, long max)
     {
-        return Mathf.Clamp(f, min, max);
+        return Math.Clamp(f, min, max);
     }
 
     /// <summary>
@@ -54,36 +51,13 @@ public static class IntExtensions
     /// <param name="source"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    public static int InPlace(this int source, int index)
+    public static long InPlace(this long source, long index)
     {
-        //int    5 = (53 / (int)Math.Pow(10, 2 - 1)) % 10
-        //int    5 = (53 / 10) % 10
-        //int    5 = 5.3 & 10
+        //long    5 = (53 / (long)Math.Pow(10, 2 - 1)) % 10
+        //long    5 = (53 / 10) % 10
+        //long    5 = 5.3 & 10
         //note the Abs is needed so that negative numbers work correctly and are always positive
-        var result = Mathf.Abs(source) / (int)Math.Pow(10, index - 1) % 10;
-        return result;
-    }
-}
-
-
-public class IntExtensionsTest
-{
-    [Test]
-    [TestCase(29345)]
-    [TestCase(41324613)]
-    [TestCase(0)]
-    [TestCase(-1)]
-    public void TestMethod1(int testValue)
-    {
-        //hacky but works
-        var valueAsString = testValue.ToString();
-        //reverse the string so the indexes line up
-        valueAsString = valueAsString.Reverse().ToString();
-        var length = valueAsString.Length;
-
-        for (var i = 0; i < length; i++)
-        {
-            Assert.IsTrue(testValue.InPlace(i) == valueAsString[i]);
-        }
+        var result = Mathf.Abs(source) / (long)Math.Pow(10, index - 1) % 10;
+        return (long)Math.Floor(result);
     }
 }

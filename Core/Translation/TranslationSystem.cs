@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,11 +21,12 @@ public class TranslationSystem : MonoBehaviour
     private static Dictionary<string, string> translationByKey = new Dictionary<string, string>();
     //private static Dictionary<string, string> translationByValue = new Dictionary<string, string>();
 
-    private static TranslationLanguageType _currentLanguage = TranslationLanguageType.English;
-    public static TranslationLanguageType CurrentLanguage
+    private static SupportedLanguages SupportedLanguages;
+    private static string _currentLanguage = "en-us";
+    public static string CurrentLanguage
     {
         get { return _currentLanguage; }
-        set
+        private set
         {
             //only modify on change
             if (_currentLanguage != value)
@@ -41,13 +43,28 @@ public class TranslationSystem : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
     {
+        //load a list of all supported languages from the resources
+        var supportedLanguageJSON = Resources.Load<TextAsset>("Translation/SupportedLanguages");
+        if (supportedLanguageJSON == null)
+        {
+            Debug.LogError("Can't find Translation/SupportedLanguages.jsonc " +
+                "Please use the menu item: Snowdrama -> Transitions -> Create SupportedLanguages.jsonc " +
+                "to create one in the Resources folder");
+            return;
+        }
+        SupportedLanguages = JsonConvert.DeserializeObject<SupportedLanguages>(supportedLanguageJSON.text);
+
         //use the current lanuage if the Option doesn't exist for Language which should be english
-        //
-        CurrentLanguage = Options.GetStringValue(
-                "Language", //get the string in the 'Language' key in the options
-                nameof(CurrentLanguage) //This will be "English" by default
-                                        //Shortcut to convert a string to an enum
-            ).ToEnumType<TranslationLanguageType>(TranslationLanguageType.English);
+        _currentLanguage = Options.GetStringValue("Language", "en");
+
+        //check if the thing loaded from the options is supported
+        if (SupportedLanguages.LanguageCodeSupported(_currentLanguage))
+        {
+            _currentLanguage = "en";
+        }
+        //note '_currentLanguage' is used above because we manually call LoadTranslation
+        //Everywhere else 'CurrentLanguage' should be used
+        LoadTranslation();
     }
 
     private static void LoadTranslation()
@@ -56,6 +73,18 @@ public class TranslationSystem : MonoBehaviour
         //If it doesn't exist load english
         //parse the CSV
         //Load the translation data in to the dictionary by key/value
+
+        //first check if it's in the application persistent data folder
+
+
+
+        //then check if we have an offocial translation:
+        //TODO: Move out of resources?
+        var loadedTranslation = Resources.Load<TextAsset>($"Translation/lang/{CurrentLanguage}");
+        if (loadedTranslation == null)
+        {
+            //we didn't load anything so somehow a "supported translation" was not valid
+        }
     }
 
     public static string TR(string key)
@@ -70,8 +99,54 @@ public class TranslationSystem : MonoBehaviour
     }
 }
 
-public enum TranslationLanguageType
+public class LanguageCodeAttribute : Attribute
 {
-    English,
-    Spanish,
+    private string code;
+    public LanguageCodeAttribute(string code)
+    {
+        this.code = code;
+    }
+}
+
+[System.Serializable]
+public struct LanguageData
+{
+    /// <summary>
+    /// The real name of the language like, English, Spanish, German, Japanese
+    /// </summary>
+    public string LanguageName;
+
+    /// <summary>
+    /// The language code like 'en', 'es', 'de', 'jp'
+    /// </summary>
+    public string LanguageCode;
+}
+
+[System.Serializable]
+public class SupportedLanguages
+{
+    public LanguageData[] languages;
+
+    public bool LanguageCodeSupported(string languageCode)
+    {
+        foreach (var item in languages)
+        {
+            if (item.LanguageCode == languageCode)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool LanguageSupported(string languageName)
+    {
+        foreach (var item in languages)
+        {
+            if (item.LanguageName == languageName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

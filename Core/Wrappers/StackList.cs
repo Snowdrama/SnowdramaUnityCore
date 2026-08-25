@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// something that behaves like a stack
-/// but is actually a list internally
+/// This behaves like a stack but is actually a list internally
+/// 
+/// Useful for situations where you want a list but want 
+/// to treat it like a stack(push/pop/peek)
+/// 
 /// </summary>
 /// <typeparam name="T">The type the 'stack' holds</typeparam>
 public class StackList<T> : IEnumerable<T>

@@ -1,6 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Linq;
+using UnityEngine;
 
+/// <summary>
+/// Creates a loot table that allows you to create
+/// weighted loot tables
+/// 
+/// 
+/// 
+/// This is a wrapper around TableList
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class LootTable<T>
 {
     private System.Random rand = new System.Random();
@@ -21,9 +33,9 @@ public class LootTable<T>
             throw new Exception("Item List and Chance List of Loot Table must be the same length");
         }
 
-        for (int i = 0; i < itemList.Count; i++)
+        for (var i = 0; i < itemList.Count; i++)
         {
-            Add(itemList[i], chanceList[i]);
+            this.Add(itemList[i], chanceList[i]);
         }
     }
 
@@ -39,6 +51,8 @@ public class LootTable<T>
     }
 
     /// <summary>
+    /// The traditional random item roll
+    /// 
     /// "D&D" or other die roll style RPG loot table
     /// 
     /// It adds up all the chances and places them in a range from 0-MAX
@@ -94,7 +108,7 @@ public class LootTable<T>
     /// <returns>A list of items to get from the loot table</returns>
     public List<T> GetRandomWeighted(int rollCount = 1)
     {
-        List<T> itemsFromLoot = new List<T>();
+        var itemsFromLoot = new List<T>();
 
         //do we want to throw an error here? 
         if (rollCount <= 0)
@@ -108,13 +122,13 @@ public class LootTable<T>
             totalPercents += (double)lootRoll.Right;
         }
         //roll once for each loot item we want
-        for (int i = 0; i < rollCount; i++)
+        for (var i = 0; i < rollCount; i++)
         {
             //roll for each of the loot we want.
-            double roll = rand.NextDouble() * totalPercents;
+            var roll = rand.NextDouble() * totalPercents;
 
             //current starts at 0 and adds the lootRoll value
-            double currentRoll = 0.0d;
+            var currentRoll = 0.0d;
             foreach (var lootRoll in lootTable)
             {
                 // 0 < roll < 1
@@ -178,7 +192,7 @@ public class LootTable<T>
     /// <returns>A list of all the dropped items</returns>
     public List<T> GetRandomFullTable()
     {
-        List<T> itemsFromLoot = new List<T>();
+        var itemsFromLoot = new List<T>();
         //roll a random value for each element in the loot table
         foreach (var lootRoll in lootTable)
         {
@@ -233,7 +247,7 @@ public class LootTable<T>
             diminishingTable = new TableList<T, double>(lootTable);
         }
 
-        List<T> itemsFromLoot = new List<T>();
+        var itemsFromLoot = new List<T>();
 
         //do we want to throw an error here? 
         if (rollCount <= 0)
@@ -242,7 +256,7 @@ public class LootTable<T>
         }
 
         //roll once for each loot item we want
-        for (int i = 0; i < rollCount; i++)
+        for (var i = 0; i < rollCount; i++)
         {
             double totalPercents = 0;
             foreach (var lootRoll in diminishingTable)
@@ -251,13 +265,13 @@ public class LootTable<T>
             }
 
             //roll for each of the loot we want.
-            double roll = rand.NextDouble() * totalPercents;
+            var roll = rand.NextDouble() * totalPercents;
 
             //current starts at 0 and adds the lootRoll value
-            double currentRoll = 0.0d;
+            var currentRoll = 0.0d;
 
-            int found = -1;
-            for (int j = 0; j < diminishingTable.Count; j++)
+            var found = -1;
+            for (var j = 0; j < diminishingTable.Count; j++)
             {
                 var currentItem = diminishingTable.Get(j);
                 if (roll > currentRoll && roll <= (currentRoll + currentItem.Right))
@@ -312,12 +326,13 @@ public class LootTable<T>
     /// Tail: 10
     /// Ancient Fairy Dust of Doom: 5
     /// 
-    /// and the percent increases by 5 every time you get the item 
+    /// and the minimum percent increases by 5 every time you get the item 
     /// in the slot, it ensures you are able to eventually guarantee
     /// every item in the table, even the Ancient Fairy Dust of Doom.
     /// 
     /// As an example After 10 rolls of the full table the AFDOD 
     /// would be a 55% chance if you didn't roll it before then. 
+    /// 
     /// </summary>
     public TableList<T, double> currentFullTable;
     /// <summary>
@@ -326,32 +341,178 @@ public class LootTable<T>
     /// </summary>
     public List<T> GetRandomFullTableWeightIncrease(double weightIncrease = 5.0d)
     {
+        //copy in the original table if it's null
         if (currentFullTable == null)
         {
             currentFullTable = new TableList<T, double>(lootTable);
         }
 
-        List<T> itemsFromLoot = new List<T>();
+        var itemsFromLoot = new List<T>();
 
-        for (int i = 0; i < currentFullTable.Count; i++)
+        //roll against every item in the table a random percent
+        //if you get the item reset the value to the default chance
+        //otherwise increase the weight
+        for (var i = 0; i < currentFullTable.Count; i++)
         {
             var item = currentFullTable.Get(i);
             //In this case it's represented as a percentage
             if ((rand.NextDouble() * 100.0) < item.Right)
             {
+                //we got the item so add it to the list
                 itemsFromLoot.Add(item.Left);
+
+                //when getting an item, the percent chance
+                //goes back down to the default value
                 currentFullTable.right[i] = lootTable.right[i];
             }
             else
             {
+                //we didn't get the item, increase the % by weightIncrease
                 currentFullTable.right[i] += weightIncrease;
             }
         }
 
-        //roll a random value for each element in the loot table
-        foreach (var lootRoll in currentFullTable)
-        {
-        }
         return itemsFromLoot;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #region Debug
+
+    public List<(T item, double weight, double roll, double min, double max)> GetRandomDiminishing_Debug(int rollCount)
+    {
+        //ensure the list isn't null
+        if (diminishingTable == null)
+        {
+            diminishingTable = new TableList<T, double>(lootTable);
+        }
+
+        var itemsFromLoot = new List<(T, double, double, double, double)>();
+
+        //do we want to throw an error here? 
+        if (rollCount <= 0)
+        {
+            return itemsFromLoot;
+        }
+
+        //roll once for each loot item we want
+        for (var i = 0; i < rollCount; i++)
+        {
+            double totalPercents = 0;
+            foreach (var lootRoll in diminishingTable)
+            {
+                totalPercents += (double)lootRoll.Right;
+            }
+
+            var roll = rand.NextDouble() * totalPercents;
+
+            //current starts at 0 and adds the lootRoll value
+            var currentRoll = 0.0d;
+
+            var found = -1;
+            for (var j = 0; j < diminishingTable.Count; j++)
+            {
+                var currentItem = diminishingTable.Get(j);
+                var min = currentRoll;
+                var max = currentRoll + currentItem.Right;
+                if (roll > min && roll <= max)
+                {
+                    itemsFromLoot.Add((currentItem.Left, currentItem.Right, roll, min, max));
+                    found = j;
+                    break;
+                }
+                currentRoll += currentItem.Right;
+            }
+            if (found >= 0)
+            {
+                diminishingTable.RemoveAt(found);
+            }
+
+            //ensure the loot table still has items
+            if (diminishingTable.Count == 0)
+            {
+                //if not fill it back up
+                //fill the table back up
+                diminishingTable = new TableList<T, double>(lootTable);
+            }
+        }
+
+        return itemsFromLoot;
+    }
+
+    public List<(T, double, double)> GetRandomFullTableWeightIncreaseDebug(double weightIncrease = 5.0d)
+    {
+        //copy in the original table if it's null
+        if (currentFullTable == null)
+        {
+            currentFullTable = new TableList<T, double>(lootTable);
+        }
+
+        var itemsFromLoot = new List<(T, double, double)>();
+
+        //roll against every item in the table a random percent
+        //if you get the item reset the value to the default chance
+        //otherwise increase the weight
+        for (var i = 0; i < currentFullTable.Count; i++)
+        {
+            var item = currentFullTable.Get(i);
+            //In this case it's represented as a percentage
+            var roll = rand.NextDouble() * 100.0;
+            if (roll < item.Right)
+            {
+                //we got the item so add it to the list
+                itemsFromLoot.Add((item.Left, roll, item.Right));
+
+                //when getting an item, the percent chance
+                //goes back down to the default value
+                currentFullTable.right[i] = lootTable.right[i];
+            }
+            else
+            {
+                //we didn't get the item, increase the % by weightIncrease
+                currentFullTable.right[i] += weightIncrease;
+            }
+        }
+
+        return itemsFromLoot;
+    }
+
+    #endregion
+
+
+    #region XML Loader
+    public static LootTable<T> FromXML(string resourcePath)
+    {
+        var xmlString = Resources.Load<TextAsset>(resourcePath).text;
+        using (var reader = XmlReader.Create(xmlString))
+        {
+            var doc = XDocument.Load(reader);
+            var root = doc.Root;
+        }
+
+        return null;
+    }
+    public static void ToXML()
+    {
+
+    }
+    #endregion
+
+    public static LootTable<T> FromJSON()
+    {
+        return null;
     }
 }

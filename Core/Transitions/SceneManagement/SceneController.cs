@@ -76,13 +76,13 @@ public class SceneController : MonoBehaviour
 
         if (jsonDoc == null)
         {
-            DebugLogError("Can't find SceneControllerJSON. " +
+            Debug.LogError("Can't find SceneControllerJSON. " +
                 "Please use Create -> Snowdrama -> Transitions -> Create Scene ControllerJson " +
                 "to create one in the Resources folder");
             return;
         }
 
-        sceneManagementData = JsonUtility.FromJson<SceneManagementData>(jsonDoc.text);
+        sceneManagementData = JsonConvert.DeserializeObject<SceneManagementData>(jsonDoc.text);
 
         DebugLog($"Loading Scene Management Data, ShowConsoleMessages? -> {sceneManagementData.ShowConsoleMessages}");
 

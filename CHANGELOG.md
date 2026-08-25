@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.9.0] 2026-25-08
+- Updates to Loot table, it's now been tested to make sure it works correctly. 
+- Added Int/Double/Float Option class a wrapper to help with things like toggling a list or things that need temporary state like sliders
+- Added a Graphics Options tools for setting the graphics quality in the options menu. 
+- Added Int/Float/String/Bool dictionaries to GameData, so nested dictionaries. 
+- Continued work on Translation stuff: STILL NOT WORKING but pushed with this update
+- Added a simple script for creating tabbed menus
+
 ## [0.8.9] 2026-22-08
 - Change to scene controller to add additional debug logs. 
 - Fix to pause menu controller not setting the state of the background canvas group on start. 

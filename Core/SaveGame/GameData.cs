@@ -31,6 +31,10 @@ public class GameData
     public Dictionary<string, Vector4[]> Vector4ArrayData;
     public Dictionary<string, Color> ColorData;
     public Dictionary<string, Color[]> ColorArrayData;
+    public Dictionary<string, Dictionary<string, int>> IntDictionaryData;
+    public Dictionary<string, Dictionary<string, float>> FloatDictionaryData;
+    public Dictionary<string, Dictionary<string, string>> StringDictionaryData;
+    public Dictionary<string, Dictionary<string, bool>> BoolDictionaryData;
 
     //TODO: Add save/load images with B64 encoding? Save game screenshot images?
     //public Dictionary<int, string> imageData = new Dictionary<int, string>();
@@ -763,6 +767,150 @@ public class GameData
         }
         //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
         if (ColorArrayData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
+    #endregion
+
+    #region Dictionary Data
+
+    #region Int Dictionary
+    public void SetIntDictionary(string name, Dictionary<string, int> value)
+    {
+        if (IntDictionaryData == null)
+        {
+            IntDictionaryData = new Dictionary<string, Dictionary<string, int>>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!IntDictionaryData.ContainsKey(name))
+        {
+            IntDictionaryData.Add(name, value);
+        }
+        else
+        {
+            IntDictionaryData[name] = value;
+        }
+    }
+
+    public Dictionary<string, int> GetIntDictionary(string name, Dictionary<string, int> defaultValue = default)
+    {
+        if (IntDictionaryData == null)
+        {
+            IntDictionaryData = new Dictionary<string, Dictionary<string, int>>();
+        }
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (IntDictionaryData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
+    #region Float Dictionary
+    public void SetFloatDictionary(string name, Dictionary<string, float> value)
+    {
+        if (FloatDictionaryData == null)
+        {
+            FloatDictionaryData = new Dictionary<string, Dictionary<string, float>>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!FloatDictionaryData.ContainsKey(name))
+        {
+            FloatDictionaryData.Add(name, value);
+        }
+        else
+        {
+            FloatDictionaryData[name] = value;
+        }
+    }
+
+    public Dictionary<string, float> GetFloatDictionary(string name, Dictionary<string, float> defaultValue = default)
+    {
+        if (FloatDictionaryData == null)
+        {
+            FloatDictionaryData = new Dictionary<string, Dictionary<string, float>>();
+        }
+        //Debug.Log($"Getting Float for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (FloatDictionaryData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
+    #region String Dictionary
+    public void SetStringDictionary(string name, Dictionary<string, string> value)
+    {
+        if (StringDictionaryData == null)
+        {
+            StringDictionaryData = new Dictionary<string, Dictionary<string, string>>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!StringDictionaryData.ContainsKey(name))
+        {
+            StringDictionaryData.Add(name, value);
+        }
+        else
+        {
+            StringDictionaryData[name] = value;
+        }
+    }
+
+    public Dictionary<string, string> GetStringDictionary(string name, Dictionary<string, string> defaultValue = default)
+    {
+        if (StringDictionaryData == null)
+        {
+            StringDictionaryData = new Dictionary<string, Dictionary<string, string>>();
+        }
+        //Debug.Log($"Getting String for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (StringDictionaryData.TryGetValue(name, out var value))
+        {
+            //Debug.Log($"Found Value! Returning: {value}");
+            return value;
+        }
+        //Debug.LogWarning($"No Value Found Returning: {value}");
+        return defaultValue;
+    }
+    #endregion
+
+    #region Bool Dictionary
+    public void SetBoolDictionary(string name, Dictionary<string, bool> value)
+    {
+        if (BoolDictionaryData == null)
+        {
+            BoolDictionaryData = new Dictionary<string, Dictionary<string, bool>>();
+        }
+        //Debug.Log($"Setting Color for name: {name} = {name}");
+        if (!BoolDictionaryData.ContainsKey(name))
+        {
+            BoolDictionaryData.Add(name, value);
+        }
+        else
+        {
+            BoolDictionaryData[name] = value;
+        }
+    }
+
+    public Dictionary<string, bool> GetBoolDictionary(string name, Dictionary<string, bool> defaultValue = default)
+    {
+        if (BoolDictionaryData == null)
+        {
+            BoolDictionaryData = new Dictionary<string, Dictionary<string, bool>>();
+        }
+        //Debug.Log($"Getting Bool for name: {name} = {name} Has Key? {floatData.ContainsKey(name)}");
+        if (BoolDictionaryData.TryGetValue(name, out var value))
         {
             //Debug.Log($"Found Value! Returning: {value}");
             return value;

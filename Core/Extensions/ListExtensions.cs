@@ -79,6 +79,47 @@ public static class ListExtensions
         list = list.Where(x => x != null).ToList();
     }
 
+    /// <summary>
+    /// Boilerplate wrapper for adding only if the item
+    /// isn't already in the list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="item"></param>
+    public static void AddIfDoesntExist<T>(this IList<T> list, T item) where T : class
+    {
+        //prevent adding null items
+        if (item != null && !list.Contains(item))
+        {
+            list.Add(item);
+        }
+    }
+
+    /// <summary>
+    /// Boilerplate wrapper for removing only if the item
+    /// is already in the list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="item"></param>
+    public static void RemoveIfExists<T>(this IList<T> list, T item) where T : class
+    {
+        if (list.Contains(item))
+        {
+            list.Remove(item);
+        }
+    }
+
+    /// <summary>
+    /// Gets a reandom item from the list
+    /// 
+    /// Throws an exception if the list is empty
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="Exception"></exception>
     public static T GetRandom<T>(this IList<T> source)
     {
         if (source == null) throw new ArgumentNullException("source");
@@ -86,6 +127,14 @@ public static class ListExtensions
 
         return source.ElementAt(RandomAndNoise.RandomRange(0, source.Count));
     }
+
+    /// <summary>
+    /// Gets a number of items from the randomized list
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
     public static IList<T> GetRandomCount<T>(this IList<T> source, int count)
     {
         var randomizedList = source.ShuffleList();
