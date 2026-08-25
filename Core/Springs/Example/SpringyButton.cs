@@ -2,7 +2,7 @@ using Snowdrama.Spring;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Snowdrama.Core
+namespace Snowdrama
 {
     public class SpringyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

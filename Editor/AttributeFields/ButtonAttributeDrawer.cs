@@ -1,14 +1,14 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace Snowdrama.Core
+namespace Snowdrama
 {
     [CustomPropertyDrawer(typeof(ButtonAttribute))]
     public class ButtonDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            string methodName = (attribute as ButtonAttribute).MethodName;
+            var methodName = (this.attribute as ButtonAttribute).MethodName;
             Object target = property.serializedObject.targetObject;
             System.Type type = target.GetType();
             System.Reflection.MethodInfo method = type.GetMethod(methodName);
