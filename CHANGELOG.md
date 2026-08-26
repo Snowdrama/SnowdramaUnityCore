@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 ## [0.9.1] 2026-26-08
-- Change to TranslationSystem to add the Create Asset Menu for the SupportedLanguages.jsonc, now you can create it by using the `Snowdrama -> Required -> Create SupportedLanguages JSON` button in the top menu 
-- Moved Options into the Snowdrama namespace. Any code using options will need a using Snowdrama; added or a qualifier like Snowdrama.Options when using it in custom code.
+- Change to `TranslationSystem` to add the Create Asset Menu for the `SupportedLanguages.jsonc`, now you can create it by using the `Snowdrama -> Required -> Create SupportedLanguages JSON` button in the top menu 
+- Moved `Options` into the Snowdrama namespace. Any code using options will need a using Snowdrama; added or a qualifier like `Snowdrama.Options` when using it in custom code.
+- Changed the `WindowSettingsManager` to use a field for Resolutions, the resolution list is cached first time it's accessed. It should be accessed with the public Resolutions and not _resolutions even within the `WindowSettingsManager`
+- Changed `WindowSettingsManager` to not save or load to the option in editor, it will only use the options tool in builds. In editor it will always run the resolution code
+- `WindowSettingsManager` now has a settings json file, needed to be created from `Snowdrama -> Required -> Create WindowSettingsManager Settings JSON`
+- Tags now have a function for asking the Tags class if it has a tag
+- `MessagedSoundPool` now used OnEnable/OnDisable to get its messages, it also throws an error if there's no sound players.
+
 
 ## [0.9.0] 2026-25-08
 - Updates to Loot table, it's now been tested to make sure the algorithms work as expected. 

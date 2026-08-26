@@ -76,6 +76,11 @@ public partial class MessagedSoundPool : MonoBehaviour
 
     public void PlaySound(AudioClip stream, string busName, float volume)
     {
+        if (players.Count <= 0)
+        {
+            Debug.LogError("Tried to play a sound but there's no players");
+            return;
+        }
         for (var i = 0; i < players.Count; i++)
         {
             if (!players[i].isPlaying)
@@ -116,6 +121,11 @@ public partial class MessagedSoundPool : MonoBehaviour
             Debug.LogError("Tried to play a 2D sound but not using 2D sound pool, See MessagedSoundPool");
             return;
         }
+        if (players.Count <= 0)
+        {
+            Debug.LogError("Tried to play a 2D sound but there's no players");
+            return;
+        }
         for (var i = 0; i < players.Count; i++)
         {
             if (!players[i].isPlaying)
@@ -152,6 +162,12 @@ public partial class MessagedSoundPool : MonoBehaviour
         if (!use3DPlayers)
         {
             Debug.LogError("Tried to play a 3D sound but not using 3D sound pool, See MessagedSoundPool");
+            return;
+        }
+
+        if (players.Count <= 0)
+        {
+            Debug.LogError("Tried to play a 3D sound but there's no players");
             return;
         }
 

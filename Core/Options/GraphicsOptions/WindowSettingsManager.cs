@@ -114,7 +114,7 @@ namespace Snowdrama
             if (settingsJson == null)
             {
                 Debug.LogError("Can't find WindowSettingsManagerSettings.jsonc " +
-                    "Please use the menu item: Snowdrama -> Transitions -> Create WindowSettingsManagerSettings.jsonc " +
+                    "Please use the menu item: Snowdrama -> Required -> Create WindowSettingsManagerSettings JSON" +
                     "to create one in the Resources folder");
                 return;
             }
