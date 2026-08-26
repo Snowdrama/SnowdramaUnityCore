@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +28,6 @@ namespace Snowdrama
                 return $"{width}x{height} @ {refreshRate.numerator / refreshRate.denominator}Hz";
             }
         }
-        public static IReadOnlyList<ResolutionOption> UniqueResolutions => Resolutions.Distinct().ToList();
         public static List<ResolutionOption> GetOptionsForResolution(ResolutionOption res)
         {
             return Resolutions
@@ -40,8 +40,24 @@ namespace Snowdrama
         {
             get
             {
+                //ensure it's not null
+                if (_resolutions == null)
+                {
+                    _resolutions = new List<ResolutionOption>();
+                }
+
                 //it's already set up so just return it
-                if (_resolutions != null) { return _resolutions; }
+                if (_resolutions.Count > 0)
+                {
+                    //Debug.Log($"<color=#08F>Returning Existing Resolution List...");
+                    //Debug.Log($"<color=#08F>_resolutions != null: {_resolutions != null} ");
+                    //Debug.Log($"<color=#08F>_resolutions.Count > 0: {_resolutions.Count > 0}");
+                    return _resolutions;
+                }
+
+                //Debug.Log($"<color=blue>Generating Resolution List...");
+                //Debug.Log($"<color=blue>_resolutions != null: {_resolutions != null} ");
+                //Debug.Log($"<color=blue>_resolutions.Count > 0: {_resolutions.Count > 0}");
 
                 //if it's null build the list
                 _resolutions = Screen.resolutions
@@ -58,16 +74,41 @@ namespace Snowdrama
                     .OrderBy(r => r.width)
                     .ThenBy(r => r.height)
                     .ThenBy(r => r.refreshRate.numerator)
+                    .Distinct()
                     .ToList();
+                Debug.Log($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
                 return _resolutions;
             }
         }
 
         //default is -1 until a valid resolution is chosen
-        private static int _resolutionIndex = -1;
         private static FullScreenMode _fullscreenMode;
-        public static int CurrentResolutionIndex => _resolutionIndex;
-        public static ResolutionOption CurrentResolution => UniqueResolutions[CurrentResolutionIndex];
+        private static int _resolutionIndex = -1;
+        public static int ResolutionIndex
+        {
+            get { return _resolutionIndex; }
+            set
+            {
+                if (_resolutionIndex != value)
+                {
+                    _resolutionIndex = value;
+                    //TODO: Write Resolution To The Options?
+                }
+            }
+        }
+        public static ResolutionOption CurrentResolution
+        {
+            get
+            {
+                if (ResolutionIndex == -1)
+                {
+                    //if we're -1 we should try and get the largest screen size
+                    ResolutionIndex = GetLargestScreenSize();
+                }
+
+                return Resolutions[ResolutionIndex];
+            }
+        }
         public static FullScreenMode CurrentFullScreenMode => _fullscreenMode;
 
         public const string RESOLUTION_SETTING_KEY = "ResolutionIndex";
@@ -95,14 +136,14 @@ namespace Snowdrama
 
             //this is set on start or loaded from the save
             _debugCurrentSelectedResolution = new Vector2(CurrentResolution.width, CurrentResolution.height);
-            _debugCurrentSelectedResolutionIndex = CurrentResolutionIndex;
+            _debugCurrentSelectedResolutionIndex = ResolutionIndex;
 
-            if (_debugResolutions.Count != UniqueResolutions.Count)
+            if (_debugResolutions.Count != Resolutions.Count)
             {
                 _debugResolutions.Clear();
-                for (var i = 0; i < UniqueResolutions.Count; i++)
+                for (var i = 0; i < Resolutions.Count; i++)
                 {
-                    _debugResolutions.Add(UniqueResolutions[i]);
+                    _debugResolutions.Add(Resolutions[i]);
                 }
             }
         }
@@ -128,18 +169,21 @@ namespace Snowdrama
             //only load from the options dealing with the editor
 #if !UNITY_EDITOR
             //only load the screen option in builds
-            _resolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
+            ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
 #endif
-            if (!IsValidIndex(_resolutionIndex))
+
+            //if the index isn't valid, we need to try and get the largest screen size
+            if (!IsValidIndex(ResolutionIndex))
             {
-                _resolutionIndex = GetLargestScreenSize();
+                ResolutionIndex = GetLargestScreenSize();
 
 #if !UNITY_EDITOR
-            //only save the screen option in builds
-                Options.SetIntValue(RESOLUTION_SETTING_KEY, _resolutionIndex);
+                //only save the screen option in builds
+                Options.SetIntValue(RESOLUTION_SETTING_KEY, ResolutionIndex);
 #endif
             }
 
+            //get the full screen mode to see if we're windowed or exclusive fullscreen
             _fullscreenMode = (FullScreenMode)Options.GetIntValue(
                 FULLSCREEN_SETTING_KEY,
                 (int)FullScreenMode.FullScreenWindow
@@ -151,7 +195,7 @@ namespace Snowdrama
             if (!IsValidIndex(index))
                 index = GetLargestScreenSize();
 
-            _resolutionIndex = index;
+            ResolutionIndex = index;
 
 #if !UNITY_EDITOR
             //only save the screen option in builds
@@ -174,10 +218,10 @@ namespace Snowdrama
 
         private static void ApplyResolution()
         {
-            if (!IsValidIndex(_resolutionIndex))
+            if (!IsValidIndex(ResolutionIndex))
                 return;
 
-            var res = Resolutions[_resolutionIndex];
+            var res = Resolutions[ResolutionIndex];
 
             // IMPORTANT: Refresh rate only matters in ExclusiveFullScreen
             if (_fullscreenMode == FullScreenMode.ExclusiveFullScreen)

@@ -31,14 +31,14 @@ namespace Snowdrama
 
             if (WindowSettingsManager.CurrentFullScreenMode == FullScreenMode.ExclusiveFullScreen)
             {
-                foreach (var res in WindowSettingsManager.UniqueResolutions)
+                foreach (var res in WindowSettingsManager.Resolutions)
                 {
                     options.Add(new TMP_Dropdown.OptionData($"{res.width}x{res.height} @ {res.refreshRate.numerator / res.refreshRate.denominator}Hz"));
                 }
             }
             else
             {
-                foreach (var res in WindowSettingsManager.UniqueResolutions)
+                foreach (var res in WindowSettingsManager.Resolutions)
                 {
                     options.Add(new TMP_Dropdown.OptionData($"{res.width}x{res.height} @ {res.refreshRate.numerator / res.refreshRate.denominator}Hz"));
                 }
@@ -58,7 +58,7 @@ namespace Snowdrama
         private int GetCurrentResolutionIndex()
         {
             var current = new Vector2Int(Screen.width, Screen.height);
-            var list = WindowSettingsManager.UniqueResolutions;
+            var list = WindowSettingsManager.Resolutions;
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -72,7 +72,7 @@ namespace Snowdrama
 
         private void OnChanged(int index)
         {
-            var res = WindowSettingsManager.UniqueResolutions[index];
+            var res = WindowSettingsManager.Resolutions[index];
 
             // When resolution changes, pick best refresh automatically
             var options = WindowSettingsManager.GetOptionsForResolution(res);
