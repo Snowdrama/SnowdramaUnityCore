@@ -291,9 +291,10 @@ namespace Snowdrama
 
             if (targetAreaFound >= 0)
             {
-                DebugLog($"<color=green>Size with matching screen area and Best Hz: {largestAreaIndex}!");
+                DebugLog($"<color=green>Size with matching screen area and Best Hz: {targetAreaFound}!");
                 var rez = Resolutions[targetAreaFound];
                 var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
+                DebugLog($"<color=green>Returning Resolution: {rez.width}x{rez.height}:{hz:F2}!");
                 return targetAreaFound;
             }
 
