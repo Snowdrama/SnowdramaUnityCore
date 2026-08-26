@@ -22,7 +22,7 @@ public partial class MessagedSoundPool : MonoBehaviour
     [SerializeField] private AudioMixer Mixer;
     public void Awake()
     {
-        for (int i = 0; i < audioPlayerCount; i++)
+        for (var i = 0; i < audioPlayerCount; i++)
         {
             var newPlayer = new GameObject();
             var audioSource = newPlayer.AddComponent<AudioSource>();
@@ -32,7 +32,7 @@ public partial class MessagedSoundPool : MonoBehaviour
         }
         if (use2DPlayers)
         {
-            for (int i = 0; i < audioPlayerCount; i++)
+            for (var i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new GameObject();
                 var audioSource = newPlayer.AddComponent<AudioSource>();
@@ -43,7 +43,7 @@ public partial class MessagedSoundPool : MonoBehaviour
         }
         if (use3DPlayers)
         {
-            for (int i = 0; i < audioPlayerCount; i++)
+            for (var i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new GameObject();
                 var audioSource = newPlayer.AddComponent<AudioSource>();
@@ -52,21 +52,22 @@ public partial class MessagedSoundPool : MonoBehaviour
                 newPlayer.transform.SetParent(this.transform);
             }
         }
-
+    }
+    public void OnEnable()
+    {
         _playSoundMessage = Messages.Get<PlaySoundMessage>();
-        _playSoundMessage.AddListener(PlaySound);
+        _playSoundMessage.AddListener(this.PlaySound);
         _playSoundMessage2D = Messages.Get<PlaySoundMessage2D>();
-        _playSoundMessage2D.AddListener(PlayPositionedSound2D);
+        _playSoundMessage2D.AddListener(this.PlayPositionedSound2D);
         _playSoundMessage3D = Messages.Get<PlaySoundMessage3D>();
-        _playSoundMessage3D.AddListener(PlayPositionedSound3D);
+        _playSoundMessage3D.AddListener(this.PlayPositionedSound3D);
     }
 
-    public void OnDestroy()
+    public void OnDisable()
     {
-        _playSoundMessage.RemoveListener(PlaySound);
-        _playSoundMessage2D.RemoveListener(PlayPositionedSound2D);
-        _playSoundMessage3D.RemoveListener(PlayPositionedSound3D);
-
+        _playSoundMessage.RemoveListener(this.PlaySound);
+        _playSoundMessage2D.RemoveListener(this.PlayPositionedSound2D);
+        _playSoundMessage3D.RemoveListener(this.PlayPositionedSound3D);
 
         Messages.Return<PlaySoundMessage>();
         Messages.Return<PlaySoundMessage3D>();
@@ -75,7 +76,7 @@ public partial class MessagedSoundPool : MonoBehaviour
 
     public void PlaySound(AudioClip stream, string busName, float volume)
     {
-        for (int i = 0; i < players.Count; i++)
+        for (var i = 0; i < players.Count; i++)
         {
             if (!players[i].isPlaying)
             {
@@ -115,7 +116,7 @@ public partial class MessagedSoundPool : MonoBehaviour
             Debug.LogError("Tried to play a 2D sound but not using 2D sound pool, See MessagedSoundPool");
             return;
         }
-        for (int i = 0; i < players.Count; i++)
+        for (var i = 0; i < players.Count; i++)
         {
             if (!players[i].isPlaying)
             {
@@ -154,7 +155,7 @@ public partial class MessagedSoundPool : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < players.Count; i++)
+        for (var i = 0; i < players.Count; i++)
         {
             if (!players[i].isPlaying)
             {

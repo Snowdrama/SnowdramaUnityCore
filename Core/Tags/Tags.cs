@@ -7,7 +7,7 @@ namespace Snowdrama.TagSystem
     public class Tags : MonoBehaviour
     {
         [Header("Tags"), Tooltip("Assign tags to group this object into a pool related to the tag")]
-        public List<string> tags;
+        public List<string> tags = new List<string>();
         private void OnEnable()
         {
             foreach (var item in tags)
@@ -40,6 +40,20 @@ namespace Snowdrama.TagSystem
         public void UntagObject(string tag)
         {
             TagObjects.UnregisterTaggedObject(tag, this.gameObject);
+        }
+
+        /// <summary>
+        /// Cehck to see if a tag exists in the tag list
+        /// </summary>
+        /// <param name="tag">The tag to check</param>
+        /// <returns>True if the tag is found on the object</returns>
+        public bool HasTag(string tag)
+        {
+            if (tags.Contains(tag))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
