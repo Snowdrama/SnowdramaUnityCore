@@ -120,7 +120,7 @@ namespace Snowdrama
         [Header("Current Selection Debug")]
         [SerializeField, EditorReadOnly] private Vector2 _debugCurrentSelectedResolution = new Vector2(0, 0);
         [SerializeField, EditorReadOnly] private int _debugCurrentSelectedResolutionIndex = 0;
-        [SerializeField, EditorReadOnly] private List<ResolutionOption> _debugResolutions = new();
+        [SerializeField] private List<ResolutionOption> _debugResolutions = new();
 
         private static WindowSettingsManagerSettingJSON _settings = new WindowSettingsManagerSettingJSON()
         {
@@ -210,7 +210,7 @@ namespace Snowdrama
             _fullscreenMode = mode;
 #if !UNITY_EDITOR
             //only save the screen option in builds
-            Options.SetIntValue(RESOLUTION_SETTING_KEY, index);
+            Options.SetIntValue(RESOLUTION_SETTING_KEY, (int)mode);
 #endif
 
             ApplyResolution();

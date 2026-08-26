@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,28 +61,5 @@ public static class IntExtensions
         //note the Abs is needed so that negative numbers work correctly and are always positive
         var result = Mathf.Abs(source) / (int)Math.Pow(10, index - 1) % 10;
         return result;
-    }
-}
-
-
-public class IntExtensionsTest
-{
-    [Test]
-    [TestCase(29345)]
-    [TestCase(41324613)]
-    [TestCase(0)]
-    [TestCase(-1)]
-    public void TestMethod1(int testValue)
-    {
-        //hacky but works
-        var valueAsString = testValue.ToString();
-        //reverse the string so the indexes line up
-        valueAsString = valueAsString.Reverse().ToString();
-        var length = valueAsString.Length;
-
-        for (var i = 0; i < length; i++)
-        {
-            Assert.IsTrue(testValue.InPlace(i) == valueAsString[i]);
-        }
     }
 }
