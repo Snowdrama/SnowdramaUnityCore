@@ -141,21 +141,21 @@ public class LoadGameGridButton : MonoBehaviour
             saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
-        if (File.Exists(currentSaveData.imagePath))
+        //load the image if the save image exists
+        if (!string.IsNullOrEmpty(currentSaveData.imagePath) && File.Exists(currentSaveData.imagePath))
         {
             var imageBytes = File.ReadAllBytes(currentSaveData.imagePath);
             var tex = new Texture2D(2, 2);
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             noSaveImage.sprite = defaultSaveSprite;
-            this.GetComponent<Button>().interactable = true;
         }
         else
         {
             saveImage.sprite = defaultSaveSprite;
             noSaveImage.sprite = defaultSaveSprite;
-            this.GetComponent<Button>().interactable = false;
         }
+        this.GetComponent<Button>().interactable = true;
     }
     public void NoSave(int saveSlot, bool isAutoSave)
     {
@@ -177,6 +177,7 @@ public class LoadGameGridButton : MonoBehaviour
         {
             noSaveTextTMP.text = noSaveText;
         }
+        this.GetComponent<Button>().interactable = false;
     }
 
 }
