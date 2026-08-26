@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace Snowdrama
@@ -59,8 +61,8 @@ namespace Snowdrama
             //use the current lanuage if the Option doesn't exist for Language which should be english
             _currentLanguage = Options.GetStringValue("Language", "en");
 
-            //check if the thing loaded from the options is supported
-            if (SupportedLanguages.LanguageCodeSupported(_currentLanguage))
+            //check if the thing loaded from the options is supported if not default to english
+            if (!SupportedLanguages.LanguageCodeSupported(_currentLanguage))
             {
                 _currentLanguage = "en";
             }
@@ -174,5 +176,40 @@ namespace Snowdrama
             }
             return false;
         }
+#if UNITY_EDITOR
+        [MenuItem("Snowdrama/Required/Create SupportedLanguages JSON")]
+        public static void CreateSupportedLanguagesJSON()
+        {
+            SupportedLanguages defaultData = new()
+            {
+                languages = new LanguageData[]
+                {
+                    new LanguageData()
+                    {
+                        LanguageCode = "en",
+                        LanguageName = "English",
+                    },
+                }
+            };
+
+            var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+            if (!File.Exists($"Assets/Resources/Translation/SupportedLanguages.jsonc"))
+            {
+                File.WriteAllText($"Assets/Resources/Translation/SupportedLanguages.jsonc", dataString);
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                Debug.LogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
+                    "Can't overwrite Translation/SupportedLanguages.jsonc because it already exists! " +
+                    "Overwriting this would delete any scene configuration you have! " +
+                    "Check the Translation/SupportedLanguages.json file and ensure you actually want to delete it! " +
+                    "If this ACTUALLY intended please manually delete the Translation/SupportedLanguages.jsonc and run again. ");
+            }
+        }
+#endif
     }
+
+
+
 }

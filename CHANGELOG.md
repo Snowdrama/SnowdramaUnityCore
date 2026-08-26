@@ -3,12 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+
+## [0.9.1] 2026-26-08
+- Change to TranslationSystem to add the Create Asset Menu for the SupportedLanguages.jsonc, now you can create it by using the `Snowdrama -> Required -> Create SupportedLanguages JSON` button in the top menu 
+- Moved Options into the Snowdrama namespace. Any code using options will need a using Snowdrama; added or a qualifier like Snowdrama.Options when using it in custom code.
+
 ## [0.9.0] 2026-25-08
-- Updates to Loot table, it's now been tested to make sure it works correctly. 
-- Added Int/Double/Float Option class a wrapper to help with things like toggling a list or things that need temporary state like sliders
-- Added a Graphics Options tools for setting the graphics quality in the options menu. 
-- Added Int/Float/String/Bool dictionaries to GameData, so nested dictionaries. 
-- Continued work on Translation stuff: STILL NOT WORKING but pushed with this update
+- Updates to Loot table, it's now been tested to make sure the algorithms work as expected. 
+- EXPERIMENTAL: Added Int/Double/Float Option class a wrapper to help with things like toggling a list or things that need temporary state like sliders. This name may change as I may go with like "IntSelection" or something
+- EXPERIMENTAL: Added a Graphics Options tools for setting the graphics quality in the options menu.
+- Added Int/Float/String/Bool dictionaries to GameData, allowing nested dictionaries for those types. 
+- Continued work on Translation stuff: STILL NOT WORKING but pushed with this update. No compiler errors so safe to update it just won't work. Just ensure to create Resources/Translation/SupportedLanguage.jsonc with 1 language
 - Added a simple script for creating tabbed menus
 - Added dedicated LoadSave/LoadAutoSave functions in SaveManager that wrap the existing LoadSave function for ease of use. 
 
