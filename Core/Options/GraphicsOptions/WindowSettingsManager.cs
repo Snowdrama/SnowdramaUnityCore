@@ -2,9 +2,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor;
 using UnityEngine;
 
 namespace Snowdrama
@@ -310,9 +307,12 @@ namespace Snowdrama
             return Resolutions.Count - 1;
         }
 #if UNITY_EDITOR
-        [MenuItem("Snowdrama/Required/Create WindowSettingsManager Settings JSON")]
+
+        [UnityEditor.MenuItem("Snowdrama/Required/Create WindowSettingsManager Settings JSON(In Resources)")]
         public static void CreateSupportedLanguagesJSON()
         {
+            ProjectViewUtils.OpenFolderInProjectView($"Assets/Resources");
+
             WindowSettingsManagerSettingJSON defaultData = new()
             {
                 ShowConsoleMessages = true,
@@ -322,7 +322,7 @@ namespace Snowdrama
             if (!File.Exists($"Assets/Resources/WindowSettingsManagerSettings.jsonc"))
             {
                 File.WriteAllText($"Assets/Resources/WindowSettingsManagerSettings.jsonc", dataString);
-                AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.Refresh();
             }
             else
             {
@@ -332,6 +332,7 @@ namespace Snowdrama
                     "Check the WindowSettingsManagerSettings.json file and ensure you actually want to delete it! " +
                     "If this ACTUALLY intended please manually delete the WindowSettingsManagerSettings.jsonc and run again. ");
             }
+
         }
 #endif
         #region Debug

@@ -321,13 +321,13 @@ public class SceneController : MonoBehaviour
             //is this scene already loaded? And are we trying to load it again
             if (calculatedScenes_ToLoad.Contains(loadedSceneData.Name))
             {
-                DebugLogWarning($"Trying to load scene {loadedSceneData.Name} but it's already loaded. " +
+                DebugLog($"Trying to load scene {loadedSceneData.Name} but it's already loaded. " +
                     $"Do we want to Reload? {loadedSceneData.ReloadIfSceneExists}");
 
                 //check if we want to reload the scene
                 if (loadedSceneData.ReloadIfSceneExists)
                 {
-                    DebugLogWarning($"We DO want to reload");
+                    DebugLog($"We DO want to reload");
                     //unload because we also want to unload and reload
                     //and we're already in the calculatedScenes_ToLoad
                     calculatedScenes_ToUnload.Add(loadedSceneData.Name);
@@ -339,14 +339,14 @@ public class SceneController : MonoBehaviour
                 else
                 {
                     //we are already loaded so do nothing
-                    DebugLogWarning($"Nope so remove us from the load list");
+                    DebugLog($"Nope so remove us from the load list");
                     calculatedScenes_ToLoad.Remove(loadedSceneData.Name);
                 }
             }
             else
             {
                 //we aren't in target scenes so we're unloading
-                DebugLogWarning($"Scene {loadedSceneData.Name} is loaded but we don't want it anymore, Unloading.");
+                DebugLog($"Scene {loadedSceneData.Name} is loaded but we don't want it anymore, Unloading.");
                 calculatedScenes_ToUnload.Add(loadedSceneData.Name);
             }
         }
@@ -366,12 +366,12 @@ public class SceneController : MonoBehaviour
             //first are we trying to load this scene?
             if (calculatedScenes_ToLoad_Wrappers.Contains(loadedSceneName_Wrapper))
             {
-                DebugLogWarning($"Trying to load scene {loadedSceneName_Wrapper} but it's already loaded. " +
+                DebugLog($"Trying to load scene {loadedSceneName_Wrapper} but it's already loaded. " +
                     $"Do we want to Reload? {loadedSceneData_Wrapper.ReloadIfSceneExists}");
                 //check if we want to reload the scene
                 if (loadedSceneData_Wrapper.ReloadIfSceneExists)
                 {
-                    DebugLogWarning($"We DO want to reload");
+                    DebugLog($"We DO want to reload");
                     //unload and then also reload the scene
                     calculatedScenes_ToUnload_Wrappers.Add(loadedSceneName_Wrapper);
                     calculatedScenes_ToLoad_Wrappers.Add(loadedSceneName_Wrapper);
@@ -379,7 +379,7 @@ public class SceneController : MonoBehaviour
                 else
                 {
                     //we are already loaded so do nothing
-                    DebugLogWarning($"Nope so remove us from the load list");
+                    DebugLog($"Nope so remove us from the load list");
                     calculatedScenes_ToLoad_Wrappers.Remove(loadedSceneName_Wrapper);
                 }
             }
@@ -440,7 +440,7 @@ public class SceneController : MonoBehaviour
     #region Load Functions
     private static void LoadScenes_Normal(List<string> scenesToLoad)
     {
-        DebugLogWarning($"Number of Scenes to Unload: {scenesToLoad.Count}");
+        DebugLog($"<color=cyan>Number of Scenes to Load: {scenesToLoad.Count}");
 
         foreach (var scene in scenesToLoad) { DebugLog($"<color=orange>{scene}</color>"); }
 
@@ -453,6 +453,10 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScenes_Wrappers(List<string> scenesToLoad)
     {
+        DebugLog($"<color=cyan>Number of Wrapper Scenes to Load: {scenesToLoad.Count}");
+
+        foreach (var scene in scenesToLoad) { DebugLog($"<color=orange>{scene}</color>"); }
+
         for (var i = 0; i < scenesToLoad.Count; i++)
         {
             LoadScene_Wrapper(scenesToLoad[i]);
@@ -461,7 +465,7 @@ public class SceneController : MonoBehaviour
 
     private static void LoadScene_Normal(string sceneToLoad)
     {
-        DebugLogWarning($"LoadScene_Normal {sceneToLoad}");
+        DebugLog($"<color=cyan>LoadScene_Normal {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Normal_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -473,7 +477,7 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Wrapper(string sceneToLoad)
     {
-        DebugLogWarning($"LoadScene_Wrapper {sceneToLoad}");
+        DebugLog($"<color=cyan>LoadScene_Wrapper {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Wrappers_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -485,7 +489,7 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Required(string sceneToLoad)
     {
-        DebugLogWarning($"LoadScene_Required {sceneToLoad}");
+        DebugLog($"<color=cyan>LoadScene_Required {sceneToLoad}");
         var asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
         asyncOperation.completed += LoadScene_Required_Complete;
         asyncLoadData.Add(new SceneTransitionAsync_LoadData()
@@ -501,30 +505,26 @@ public class SceneController : MonoBehaviour
 
     private static void UnloadScenes_Normal(List<string> scenesToUnload)
     {
-        DebugLogWarning($"Number of Scenes to Unload: {scenesToUnload.Count}");
+        DebugLog($"<color=magenta>Number of Scenes to Unload: {scenesToUnload.Count}");
+
+        foreach (var scene in scenesToUnload) { DebugLog($"<color=orange>{scene}</color>"); }
+
         for (var i = 0; i < scenesToUnload.Count; i++)
         {
-            DebugLogWarning($"Unloading: {scenesToUnload[i]}");
             UnloadScene_Normal(scenesToUnload[i]);
         }
     }
     private static void UnloadScenes_Wrappers(List<string> wrappersToUnload)
     {
-        DebugLogWarning($"Number of Wrapper Scenes to Unload: {wrappersToUnload.Count}");
+        DebugLog($"<color=magenta>Number of Wrapper Scenes to Unload: {wrappersToUnload.Count}");
+
+        foreach (var scene in wrappersToUnload) { DebugLog($"<color=orange>{scene}</color>"); }
+
         for (var i = 0; i < wrappersToUnload.Count; i++)
         {
-            DebugLogWarning($"Unloading: {wrappersToUnload[i]}");
             UnloadScene_Wrappers(wrappersToUnload[i]);
         }
     }
-
-    //private static void UnloadScenes_Required(List<string> scenesToUnload)
-    //{
-    //    for (int i = 0; i < scenesToUnload.Count; i++)
-    //    {
-    //        UnloadScene_Required(scenesToUnload[i]);
-    //    }
-    //}
 
     private static void UnloadScene_Normal(string sceneToUnload)
     {
@@ -536,7 +536,7 @@ public class SceneController : MonoBehaviour
                 $"likely because scene isn't loaded");
             return;
         }
-        asyncOperation.completed += UnloadSceneComplete;
+        asyncOperation.completed += UnloadScene_Normal_Complete;
         asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
         {
             sceneName = sceneToUnload,
@@ -565,29 +565,18 @@ public class SceneController : MonoBehaviour
         });
         DebugLog($"Starting unload of: {sceneToUnload} progress: {asyncOperation.progress}");
     }
-    //private static void UnloadScene_Required(string sceneToUnload)
-    //{
-    //    DebugLog($"Unloading Scene {sceneToUnload}");
-    //    var asyncOperation = SceneManager.UnloadSceneAsync(sceneToUnload);
-    //    asyncOperation.completed += UnloadScene_Wrapper_Complete;
-    //    asyncUnloadData.Add(new SceneTransitionAsync_LoadData()
-    //    {
-    //        sceneName = sceneToUnload,
-    //        asyncOperation = asyncOperation,
-    //        complete = false,
-    //    });
-    //}
     #endregion
 
     #region Load Complete Callbacks
     private static void LoadScene_Normal_Complete(AsyncOperation obj)
     {
+        DebugLog($"<color=yellow>[LoadScene_Normal_Complete]: Async Load Complete Checking Status... Count:{asyncLoadData.Count}");
         for (var i = 0; i < asyncLoadData.Count; i++)
         {
-            //PLEASE let this work
+            DebugLog($"<color=yellow>[LoadScene_Normal_Complete]: Checking complete status for: {asyncLoadData[i].sceneName}");
             if (asyncLoadData[i].asyncOperation == obj)
             {
-                DebugLogWarning($"LoadScene_Normal_Complete for Scene {asyncLoadData[i].sceneName}");
+                DebugLog($"<color=green>[LoadScene_Normal_Complete]: Load Compltete {asyncLoadData[i].sceneName}");
                 asyncLoadData[i].complete = true;
                 if (loadedScene_Current.Trim().ToLower() != asyncLoadData[i].sceneName.Trim().ToLower())
                 {
@@ -599,13 +588,13 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Wrappers_Complete(AsyncOperation obj)
     {
-        DebugLogWarning($"LoadScene_Wrappers_Complete! asyncLoadData.Count = {asyncLoadData.Count}");
+        DebugLog($"<color=yellow>[LoadScene_Wrappers_Complete]: Async Load Wrapper Complete Checking Status... Count:{asyncLoadData.Count}");
         for (var i = 0; i < asyncLoadData.Count; i++)
         {
-            DebugLogWarning($"LoadScene_Wrappers_Complete Comparing {asyncLoadData[i].sceneName} to obj");
+            DebugLog($"<color=yellow>[LoadScene_Wrappers_Complete]: Checking complete status for: {asyncLoadData[i].sceneName}");
             if (asyncLoadData[i].asyncOperation == obj)
             {
-                DebugLogWarning($"LoadScene_Wrappers_Complete for Scene {asyncLoadData[i].sceneName}");
+                DebugLog($"<color=green>[LoadScene_Wrappers_Complete]: Load Wrapper Compltete: {asyncLoadData[i].sceneName}");
                 asyncLoadData[i].complete = true;
                 if (!loadedScenes_Wrappers.Contains(asyncLoadData[i].sceneName))
                 {
@@ -617,11 +606,13 @@ public class SceneController : MonoBehaviour
     }
     private static void LoadScene_Required_Complete(AsyncOperation obj)
     {
+        DebugLog($"<color=yellow>[LoadScene_Required_Complete]: Async Load Required Complete Checking Status... Count:{asyncLoadData.Count}");
         for (var i = 0; i < asyncLoadData.Count; i++)
         {
+            DebugLog($"<color=yellow>[LoadScene_Required_Complete]: Checking complete status for: {asyncLoadData[i].sceneName}");
             if (asyncLoadData[i].asyncOperation == obj)
             {
-                DebugLogWarning($"LoadScene_Required_Complete for Scene {asyncLoadData[i].sceneName}");
+                DebugLog($"<color=green>[LoadScene_Required_Complete]: Load Complete: {asyncLoadData[i].sceneName}");
                 asyncLoadData[i].complete = true;
                 if (!loadedScenes_Required.Contains(asyncLoadData[i].sceneName))
                 {
@@ -635,13 +626,15 @@ public class SceneController : MonoBehaviour
     #endregion
 
     #region Unload Complete Callbacks
-    private static void UnloadSceneComplete(AsyncOperation obj)
+    private static void UnloadScene_Normal_Complete(AsyncOperation obj)
     {
+        DebugLog($"<color=yellow>[UnloadScene_Normal_Complete]: Async Unload Complete Checking Status... Count:{asyncUnloadData.Count}");
         for (var i = 0; i < asyncUnloadData.Count; i++)
         {
+            DebugLog($"<color=yellow>[UnloadScene_Normal_Complete]: Checking complete status for: {asyncUnloadData[i].sceneName}");
             if (asyncUnloadData[i].asyncOperation == obj)
             {
-                DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
+                DebugLog($"<color=green>[UnloadScene_Normal_Complete]Unload Complete for Scene {asyncUnloadData[i].sceneName}");
                 asyncUnloadData[i].complete = true;
 
                 if (loadedScene_Current == asyncUnloadData[i].sceneName)
@@ -654,13 +647,13 @@ public class SceneController : MonoBehaviour
     }
     private static void UnloadScene_Wrapper_Complete(AsyncOperation obj)
     {
-        DebugLogError($"Async Unload Complete Checking for complete status");
+        DebugLog($"<color=yellow>[UnloadScene_Wrapper_Complete]: Async Unload Complete Checking Status");
         for (var i = 0; i < asyncUnloadData.Count; i++)
         {
-            DebugLogError($"Async Unload Complete Checking for complete status: {asyncUnloadData[i].sceneName}");
+            DebugLog($"<color=yellow>[UnloadScene_Wrapper_Complete]: Checking complete status for: {asyncUnloadData[i].sceneName}");
             if (asyncUnloadData[i].asyncOperation == obj)
             {
-                DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
+                DebugLog($"<color=green>[UnloadScene_Wrapper_Complete]: Unload Complete! for Scene {asyncUnloadData[i].sceneName}");
                 asyncUnloadData[i].complete = true;
 
                 if (loadedScenes_Wrappers.Contains(asyncUnloadData[i].sceneName))
@@ -671,23 +664,6 @@ public class SceneController : MonoBehaviour
         }
         asyncUnloadData = asyncUnloadData.Where(x => x.complete == false).ToList();
     }
-    //private static void UnloadScene_Required_Complete(AsyncOperation obj)
-    //{
-    //    for (int i = 0; i < asyncUnloadData.Count; i++)
-    //    {
-    //        if (asyncUnloadData[i].asyncOperation == obj)
-    //        {
-    //            DebugLogWarning($"Unload Complete for Scene {asyncUnloadData[i].sceneName}");
-    //            asyncUnloadData[i].complete = true;
-
-    //            if (loadedScenes_Required.Contains(asyncUnloadData[i].sceneName))
-    //            {
-    //                loadedScenes_Required.Remove(asyncUnloadData[i].sceneName);
-    //            }
-    //        }
-    //    }
-    //    asyncUnloadData = asyncUnloadData.Where(x => x.complete == false).ToList();
-    //}
     #endregion
 
     #region Debug
