@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.9.2] 2026-28-08
 - Fix to LoadGameGridButton to allow the button to be clickable even if it doesn't have a custom image. 
 - Added ProjectViewUtils, this is a bit hacky for and it's in Extensions for now because of jank with builds and the Snowdrama.Core.asmdef depending on Snowdrama.Core.Editor.asmdef 
+- Changed WindowSettingsManager to now use the ProjectViewUtils to go to the resources folder when you try and make the json file. Eventually will add this to the others but doing this for now
 - Changes to SceneController to change all the DebugLogWarning and DebugLogError to only be DebugLog and only error when an actual error occurs.
 
 ## [0.9.1] 2026-26-08
