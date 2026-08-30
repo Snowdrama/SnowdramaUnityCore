@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.9.3] 2026-28-08
 - Fix to ProjectViewUtils to fix build issues
+- Fix to AudioVolumeManager to automatically pull the Volume from the options to set the volume on start.
 
 ## [0.9.2] 2026-28-08
 - Fix to LoadGameGridButton to allow the button to be clickable even if it doesn't have a custom image. 
