@@ -121,6 +121,9 @@ public static class ProjectViewUtils
 
         var isLocked = (bool)isLockedProperty.GetValue(projectBrowserInstance, null);
         return isLocked;
+#else
+        //if it's a build assume it's not locked
+        return false;
 #endif
     }
 
