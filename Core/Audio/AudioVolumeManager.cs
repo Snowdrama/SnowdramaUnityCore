@@ -61,6 +61,14 @@ namespace Snowdrama
 
         private void Start()
         {
+            //load each 
+            foreach (var data in audioChannels)
+            {
+                //get the value and if not found use the default
+                var linearVolume = Options.GetFloatValue(data.Value.mixerChannelName, data.Value.defaultValue);
+                audioMixer.SetFloat(data.Key, linearVolume.LinearToDecibel());
+            }
+
             foreach (var data in audioChannels)
             {
                 Options.RegisterFloatOptionCallback(data.Key, this.VolumeValueChanged);
