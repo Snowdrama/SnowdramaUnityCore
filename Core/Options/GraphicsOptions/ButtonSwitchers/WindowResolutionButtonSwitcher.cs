@@ -10,64 +10,56 @@ namespace Snowdrama
     {
         [Header("References")]
         [SerializeField] private TMP_Text resolutionText;
-        [SerializeField] private Button leftButton;
-        [SerializeField] private Button rightButton;
+        [SerializeField] private Button prevButton;
+        [SerializeField] private Button nextButton;
         [SerializeField] private Button applyButton;
-
+        private SelectableInt resolutionSelection;
         [SerializeField, EditorReadOnly] private List<WindowSettingsManager.ResolutionOption> resolutionOptions;
-        [SerializeField, EditorReadOnly] private int index = 0;
-        [SerializeField, EditorReadOnly] private bool needsApplying;
-        private void Start()
-        {
-            Debug.Log($"Binding to buttons: {this.name}");
-            leftButton.onClick.AddListener(this.PreviousResolution);
-            rightButton.onClick.AddListener(this.NextResolution);
-            applyButton.onClick.AddListener(this.ApplyResolution);
-            resolutionOptions = WindowSettingsManager.Resolutions.ToList();
-            index = WindowSettingsManager.ResolutionIndex;
-            this.UpdateStuff();
-        }
         private void OnEnable()
         {
             resolutionOptions = WindowSettingsManager.Resolutions.ToList();
-            index = WindowSettingsManager.ResolutionIndex;
-            this.UpdateStuff();
+            resolutionSelection = new SelectableInt(WindowSettingsManager.ResolutionIndex, resolutionOptions.Count);
+
+            prevButton.onClick.AddListener(this.Prev);
+            nextButton.onClick.AddListener(this.Next);
+            applyButton.onClick.AddListener(this.Apply);
+            resolutionSelection.OnChanged += this.OnChange;
+            resolutionSelection.OnApplied += this.OnApplied;
+
+            resolutionSelection.SetValueForceEvents(WindowSettingsManager.ResolutionIndex);
         }
 
-        public void NextResolution()
+        private void OnDisable()
         {
-            Debug.Log($"[{this.name}]Next Was Clicked!", this.gameObject);
-            index++;
-            index = index.WrapClamp(0, resolutionOptions.Count);
-            needsApplying = true;
-            this.UpdateStuff();
+            prevButton.onClick.RemoveListener(this.Prev);
+            nextButton.onClick.RemoveListener(this.Next);
+            applyButton.onClick.RemoveListener(this.Apply);
+            resolutionSelection.OnChanged -= this.OnChange;
+            resolutionSelection.OnApplied -= this.OnApplied;
         }
 
-        public void PreviousResolution()
+        public void Prev()
         {
-            Debug.Log($"[{this.name}]Previous Was Clicked!", this.gameObject);
-            index--;
-            index = index.WrapClamp(0, resolutionOptions.Count);
-            needsApplying = true;
-            this.UpdateStuff();
+            resolutionSelection.Previous();
+        }
+        public void Next()
+        {
+            resolutionSelection.Next();
+        }
+        public void Apply()
+        {
+            resolutionSelection.Apply();
         }
 
-        public void UpdateStuff()
+        public void OnChange(int newIndex, bool needsApplying)
         {
+            Debug.Log("Resolution Changed!");
+            resolutionText.text = resolutionOptions[newIndex].ToString();
             applyButton.interactable = needsApplying;
-
-            if (index >= 0 && index < resolutionOptions.Count)
-            {
-                resolutionText.text = resolutionOptions[index].ToString();
-            }
         }
-
-        public void ApplyResolution()
+        public void OnApplied(int finalIndex)
         {
-            Debug.Log($"[{this.name}]Apply Was Clicked!", this.gameObject);
-            WindowSettingsManager.SetResolution(index);
-            needsApplying = false;
-            this.UpdateStuff();
+            WindowSettingsManager.SetResolution(finalIndex);
         }
     }
 }

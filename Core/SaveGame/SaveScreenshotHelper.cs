@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.AdaptivePerformance.Provider;
 
 public class SaveScreenshotHelper : MonoBehaviour
 {
+    private Texture2D defaultScreenshot;
     public static Texture2D lastScreenshot;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -48,13 +50,28 @@ public class SaveScreenshotHelper : MonoBehaviour
 
     private void TakeScreenshot()
     {
-        currentTime += 30.0f;
-        forceTakeScreenshot = true;
+        //prevent new screenshots for 60 seconds
+        currentTime += 60.0f;
+        //take the screenshot
+        this.Screenshot();
     }
 
     private void Screenshot()
     {
-        var texture = ScreenCapture.CaptureScreenshotAsTexture();
+        var texture = lastScreenshot;
+        try
+        {
+            texture = ScreenCapture.CaptureScreenshotAsTexture();
+        }
+        catch
+        {
+            //something happened so don't do anything
+            if (defaultScreenshot != null)
+            {
+                lastScreenshot = defaultScreenshot;
+            }
+            return;
+        }
         if (texture != null)
         {
             //clean up memory

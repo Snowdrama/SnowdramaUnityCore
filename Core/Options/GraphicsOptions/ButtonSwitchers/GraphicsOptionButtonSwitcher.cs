@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class GraphicsOptionButtonSwitcher : MonoBehaviour
 {
-    [SerializeField] private SelectableInt IntValue;
+    private SelectableInt IntValue;
     [Header("References")]
     [SerializeField] private TMP_Text _modeText;
-    [SerializeField] private Button _nextButton;
     [SerializeField] private Button _previousButton;
+    [SerializeField] private Button _nextButton;
     [SerializeField] private Button _applyButton;
     [Header("Quality List")]
     [Header("BE SURE this is in the same order as 'Edit -> Player Settings -> Quality'")]
