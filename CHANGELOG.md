@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Update to add more things to ArrayExtensions, and EnumerableExtensions
 - Update to StackList to allow for Push/Pop/Peek Bottom as well as making Peek(count) and PeekBottom(count) to get more than one from top and bottom
 - Added QueueList similar to StackList, it uses a List under the hood, but includes helper functions that allow you to use a List like a Queue, like Enqueue and Dequeue
+- Cleanup and simplification of Graphics and Resolution selector
+- Adjust of SaveScreenshotHelper to add a "default" that is used if a screenshot fails
 
 ## [0.9.3] 2026-28-08
 - Fix to ProjectViewUtils to fix build issues
