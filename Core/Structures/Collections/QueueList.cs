@@ -1,38 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// This behaves like a stack but is actually a list internally
+/// A wrapper structure that behaves like Queue<T> but is actually a List<T> internally
 /// 
-/// Useful for situations where you want a list but want 
-/// to treat it like a stack(push/pop/peek)
+/// Useful for situations where you want a list but want to access it like a Queue with push/pop/peek
 /// 
+/// Includes some Queue-Like functions like Enqueue/Dequeue
 /// </summary>
 /// <typeparam name="T">The type the 'stack' holds</typeparam>
-public class StackList<T> : IEnumerable<T>
+public class QueueList<T> : IEnumerable<T>
 {
     private List<T> items = new List<T>();
     public int Count => items.Count;
-    public void Push(T item)
+
+    #region Enqueue
+    public void Enqueue(T item)
     {
-        items.Add(item);
+        items.Insert(0, item);
     }
-    public T Pop()
+    #endregion
+
+    #region Dequeue
+    public T Deqeue()
     {
-        if (items.Count > 0)
-        {
-            var temp = items[items.Count - 1];
-            items.RemoveAt(items.Count - 1);
-            return temp;
-        }
-        else
-            return default(T);
+        var lastItem = items[items.Count - 1];
+        items.RemoveAt(items.Count - 1);
+        return lastItem;
     }
-    public T Peek()
-    {
-        return items[items.Count - 1];
-    }
+    #endregion
+
+    #region List Functions
     public void Remove(T item)
     {
         items.Remove(item);
@@ -41,17 +41,17 @@ public class StackList<T> : IEnumerable<T>
     {
         items.RemoveAt(itemAtPosition);
     }
-
     public void Clear()
     {
         items.Clear();
     }
-
     public bool Contains(T item)
     {
         return items.Contains(item);
     }
+    #endregion
 
+    #region Enumerator/Enumerable
     public IEnumerator<T> GetEnumerator()
     {
         return items.GetEnumerator();
@@ -61,4 +61,5 @@ public class StackList<T> : IEnumerable<T>
     {
         return items.GetEnumerator();
     }
+    #endregion
 }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GraphicsOptionButtonSwitcher : MonoBehaviour
 {
-    [SerializeField] private IntOption IntValue;
+    [SerializeField] private SelectableInt IntValue;
     [Header("References")]
     [SerializeField] private TMP_Text _modeText;
     [SerializeField] private Button _nextButton;
@@ -33,11 +33,10 @@ public class GraphicsOptionButtonSwitcher : MonoBehaviour
         _applyButton.onClick.AddListener(this.Apply);
 
         //always make a new one
-        IntValue = new IntOption(QualitySettings.GetQualityLevel(), _qualityNames.Count);
+        IntValue = new SelectableInt(QualitySettings.GetQualityLevel(), _qualityNames.Count);
         //bind our callbacks for the option changing
         IntValue.OnChanged += this.OnChanged;
         IntValue.OnApplied += this.OnApplied;
-        IntValue.OnNeedsApplying += this.OnNeedsApplying;
 
         //if we're enablign this set the value and force the events to update
         //the buttons and text fields
@@ -65,16 +64,13 @@ public class GraphicsOptionButtonSwitcher : MonoBehaviour
     {
         IntValue.Apply();
     }
-    private void OnChanged(int newValue)
+    private void OnChanged(int newValue, bool needsApplying)
     {
         _modeText.text = _qualityNames[newValue];
-    }
-    private void OnApplied(int newValue)
-    {
-        _modeText.text = _qualityNames[newValue];
-    }
-    private void OnNeedsApplying(bool needsApplying)
-    {
         _applyButton.interactable = needsApplying;
+    }
+    private void OnApplied(int finalValue)
+    {
+        _modeText.text = _qualityNames[finalValue];
     }
 }

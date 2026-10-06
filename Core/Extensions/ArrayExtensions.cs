@@ -4,12 +4,29 @@ using UnityEngine;
 
 public static class ArrayExtensions
 {
+    private static System.Random random = new System.Random();
+
     public static T GetRandom<T>(this T[] source)
     {
         if (source == null) throw new ArgumentNullException("source");
         if (source.Length == 0) throw new Exception("GetRandom can't be called since list has no values");
+        return source[random.Next(0, source.Length)];
+    }
 
-        return source[UnityEngine.Random.Range(0, source.Length)];
+    public static T? GetRandom_EnsureNotSameAsLast<T>(this T[] source, T last)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (source.Length == 0) throw new Exception("GetRandomNoRepeat can't be called since list has no values");
+        if (source.Length == 1) throw new Exception("GetRandomNoRepeat can't be called since to not repeat it needs at least 2 values");
+
+        //get a random one and ensure that it's not the same as the last element
+        var next = source[random.Next(0, source.Length)];
+        while (next != null && next.Equals(last))
+        {
+            next = source[random.Next(0, source.Length)];
+        }
+
+        return next;
     }
 
     public static T[] Shuffle<T>(this T[] sourceList)
@@ -18,24 +35,19 @@ public static class ArrayExtensions
         {
             throw new ArgumentNullException(nameof(sourceList));
         }
-        T[] newList = new T[sourceList.Length];
-        int size = newList.Length;
-        for (int i = 0; i < sourceList.Length; i++)
+        var newList = new T[sourceList.Length];
+        var size = newList.Length;
+        for (var i = 0; i < size; i++)
         {
-            newList[i] = sourceList[i];
-        }
-
-        for (int i = 0; i < size; i++)
-        {
-            //copy the value from newList
-            T temp = newList[i];
-            int randIndex = UnityEngine.Random.Range(0, size);
+            var temp = newList[i];
+            var randIndex = random.Next(0, size);
             newList[i] = newList[randIndex];
             newList[randIndex] = temp;
         }
 
         return newList;
     }
+
     public static void Swap<T>(this T[] sourceList, int firstIndex, int secondIndex)
     {
         if (sourceList == null)
@@ -54,16 +66,16 @@ public static class ArrayExtensions
                 $"the sourceList which has {sourceList.Length} elements.");
         }
 
-        T firstValue = sourceList[firstIndex];
+        var firstValue = sourceList[firstIndex];
         sourceList[firstIndex] = sourceList[secondIndex];
         sourceList[secondIndex] = firstValue;
     }
 
     public static T[] RemoveNullEntries<T>(this T[] list)
     {
-        List<T> newList = new List<T>(list);
+        var newList = new List<T>(list);
 
-        for (int i = newList.Count - 1; i >= 0; i--)
+        for (var i = newList.Count - 1; i >= 0; i--)
         {
             if (Equals(newList[i], null))
             {
@@ -74,6 +86,41 @@ public static class ArrayExtensions
         return newList.ToArray();
     }
 
+    public static bool TryGetValue<T>(this T[] values, int index, out T? result)
+    {
+        if (index >= 0 && index < values.Length)
+        {
+            result = values[index];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool TryGetValue<T>(this T[,] values, Vector2Int index, out T? result)
+    {
+        if (values.IsIndexInBounds(index))
+        {
+            result = values[index.x, index.y];
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
+    public static bool IsIndexInBounds<T>(this T[,] values, Vector2Int index)
+    {
+        if (index.x >= 0 &&
+            index.y >= 0 &&
+            index.x < values.GetLength(0) &&
+            index.y < values.GetLength(1)
+            )
+        {
+            return true;
+        }
+        return false;
+    }
+
     public static bool IndexInBounds<T>(this T[] list, int index)
     {
         if (index >= 0 && index < list.Length)
@@ -82,14 +129,7 @@ public static class ArrayExtensions
         }
         return false;
     }
-    public static bool IndexInBounds<T>(this T[,] list, Vector2Int index)
-    {
-        if (index.x >= 0 && index.x < list.GetLength(0) && index.y >= 0 && index.y < list.GetLength(1))
-        {
-            return true;
-        }
-        return false;
-    }
+
     public static bool IndexInBounds<T>(this T[,] list, int x, int y)
     {
         if (x >= 0 && x < list.GetLength(0) && y >= 0 && y < list.GetLength(1))

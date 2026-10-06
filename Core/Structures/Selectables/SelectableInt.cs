@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 /// <summary>
-/// A wrapper class for option toggles that are longegers
+/// A wrapper class for option toggles that are integers
 /// 
 /// See things like "GraphicsOptionButtonSwitcher" for an example of use
 /// 
@@ -19,13 +19,12 @@ using UnityEngine;
 /// 
 /// </summary>
 [System.Serializable]
-public class LongOption
+public class SelectableInt
 {
-    public Action<long> OnChanged;
-    public Action<long> OnApplied;
-    public Action<bool> OnNeedsApplying;
-    [SerializeField, EditorReadOnly] private long _currentValue = 0;
-    public long CurrentValue
+    public Action<int, bool> OnChanged;
+    public Action<int> OnApplied;
+    [SerializeField, EditorReadOnly] private int _currentValue = 0;
+    public int CurrentValue
     {
         get { return _currentValue; }
         set
@@ -35,8 +34,6 @@ public class LongOption
             {
                 _currentValue = value;
                 OnApplied?.Invoke(_currentValue);
-                //since we applied it, applying is no longer needed
-                this.NeedsApplying = false;
             }
         }
     }
@@ -44,8 +41,8 @@ public class LongOption
     /// <summary>
     /// The temp value is 
     /// </summary>
-    [SerializeField, EditorReadOnly] private long _tempValue = 0;
-    public long TempValue
+    [SerializeField, EditorReadOnly] private int _tempValue = 0;
+    public int TempValue
     {
         get { return _tempValue; }
         set
@@ -57,38 +54,17 @@ public class LongOption
             if (_tempValue != value)
             {
                 _tempValue = value;
-                OnChanged?.Invoke(_tempValue);
-                if (_tempValue != _currentValue)
-                {
-                    this.NeedsApplying = true;
-                }
-                else
-                {
-                    this.NeedsApplying = false;
-                }
-            }
-        }
-    }
-    [SerializeField, EditorReadOnly] private bool _needsApplying;
-    public bool NeedsApplying
-    {
-        get { return _needsApplying; }
-        set
-        {
-            //only modify on change
-            if (_needsApplying != value)
-            {
-                _needsApplying = value;
-                OnNeedsApplying?.Invoke(_needsApplying);
+                OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
             }
         }
     }
 
-    private long _minValue = 0;
-    private long _maxValue = 0;
-
-    public LongOption(long defaultValue, long maxValue, long minValue = 0)
+    private int _minValue = 0;
+    private int _maxValue = 0;
+    private int _changeValue = 0;
+    public SelectableInt(int defaultValue, int maxValue, int minValue = 0, int changeValue = 1)
     {
+        _changeValue = changeValue;
         _minValue = minValue;
         _maxValue = maxValue;
         _currentValue = defaultValue;
@@ -97,12 +73,12 @@ public class LongOption
 
     public void Next()
     {
-        this.TempValue++;
+        this.TempValue += _changeValue;
     }
 
     public void Previous()
     {
-        this.TempValue--;
+        this.TempValue -= _changeValue;
     }
 
     public void Apply()
@@ -114,19 +90,20 @@ public class LongOption
     /// Sets the value without triggering the change/apply actions
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValueNoAction(long newValue)
+    public void SetValueNoAction(int newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
     }
 
     /// <summary>
     /// This sets the value then triggers an apply
     /// 
     /// The events will be triggered as normal if the value has changed
+    /// 
+    /// if the value is not different events will not trigger
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValue(long newValue)
+    public void SetValue(int newValue)
     {
         this.TempValue = newValue;
         this.Apply();
@@ -139,24 +116,25 @@ public class LongOption
     /// when the default value is set
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValueForceEvents(long newValue)
+    public void SetValueForceEvents(int newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
         //the value may not trigger actions
-        //due to already being 0 or -1 or something
-        //force trigger all events on SetValue
-        OnChanged?.Invoke(_tempValue);
+        //when using SetValue if value is
+        //the same as the current value
+        //instead we force events here to ensure that it
+        //both applies as current AND
+        //triggers the event callbacks
+        OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
         OnApplied?.Invoke(_tempValue);
-        OnNeedsApplying?.Invoke(false);
     }
 
-    public void SetMinValue(long newMinValue)
+    public void SetMinValue(int newMinValue)
     {
         _minValue = newMinValue;
     }
 
-    public void SetMaxValue(long newMaxValue)
+    public void SetMaxValue(int newMaxValue)
     {
         _maxValue = newMaxValue;
     }

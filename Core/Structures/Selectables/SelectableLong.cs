@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 /// <summary>
-/// A wrapper class for option toggles that are double
+/// A wrapper class for option toggles that are long
 /// 
 /// See things like "GraphicsOptionButtonSwitcher" for an example of use
 /// 
@@ -19,13 +19,12 @@ using UnityEngine;
 /// 
 /// </summary>
 [System.Serializable]
-public class DoubleOption
+public class SelectableLong
 {
-    public Action<double> OnChanged;
-    public Action<double> OnApplied;
-    public Action<bool> OnNeedsApplying;
-    [SerializeField, EditorReadOnly] private double _currentValue = 0;
-    public double CurrentValue
+    public Action<long, bool> OnChanged;
+    public Action<long> OnApplied;
+    [SerializeField, EditorReadOnly] private long _currentValue = 0;
+    public long CurrentValue
     {
         get { return _currentValue; }
         set
@@ -35,8 +34,6 @@ public class DoubleOption
             {
                 _currentValue = value;
                 OnApplied?.Invoke(_currentValue);
-                //since we applied it, applying is no longer needed
-                this.NeedsApplying = false;
             }
         }
     }
@@ -44,8 +41,8 @@ public class DoubleOption
     /// <summary>
     /// The temp value is 
     /// </summary>
-    [SerializeField, EditorReadOnly] private double _tempValue = 0;
-    public double TempValue
+    [SerializeField, EditorReadOnly] private long _tempValue = 0;
+    public long TempValue
     {
         get { return _tempValue; }
         set
@@ -57,38 +54,17 @@ public class DoubleOption
             if (_tempValue != value)
             {
                 _tempValue = value;
-                OnChanged?.Invoke(_tempValue);
-                if (_tempValue != _currentValue)
-                {
-                    this.NeedsApplying = true;
-                }
-                else
-                {
-                    this.NeedsApplying = false;
-                }
-            }
-        }
-    }
-    [SerializeField, EditorReadOnly] private bool _needsApplying;
-    public bool NeedsApplying
-    {
-        get { return _needsApplying; }
-        set
-        {
-            //only modify on change
-            if (_needsApplying != value)
-            {
-                _needsApplying = value;
-                OnNeedsApplying?.Invoke(_needsApplying);
+                OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
             }
         }
     }
 
-    private double _minValue = 0;
-    private double _maxValue = 0;
-
-    public DoubleOption(double defaultValue, double maxValue, double minValue = 0)
+    private long _minValue = 0;
+    private long _maxValue = 0;
+    private long _changeValue = 0;
+    public SelectableLong(long defaultValue, long maxValue, long minValue = 0, long changeValue = 1)
     {
+        _changeValue = changeValue;
         _minValue = minValue;
         _maxValue = maxValue;
         _currentValue = defaultValue;
@@ -97,12 +73,12 @@ public class DoubleOption
 
     public void Next()
     {
-        this.TempValue++;
+        this.TempValue += _changeValue;
     }
 
     public void Previous()
     {
-        this.TempValue--;
+        this.TempValue -= _changeValue;
     }
 
     public void Apply()
@@ -114,19 +90,20 @@ public class DoubleOption
     /// Sets the value without triggering the change/apply actions
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValueNoAction(double newValue)
+    public void SetValueNoAction(long newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
     }
 
     /// <summary>
     /// This sets the value then triggers an apply
     /// 
     /// The events will be triggered as normal if the value has changed
+    /// 
+    /// if the value is not different events will not trigger
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValue(double newValue)
+    public void SetValue(long newValue)
     {
         this.TempValue = newValue;
         this.Apply();
@@ -139,24 +116,25 @@ public class DoubleOption
     /// when the default value is set
     /// </summary>
     /// <param name="newValue"></param>
-    public void SetValueForceEvents(double newValue)
+    public void SetValueForceEvents(long newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
         //the value may not trigger actions
-        //due to already being 0 or -1 or something
-        //force trigger all events on SetValue
-        OnChanged?.Invoke(_tempValue);
+        //when using SetValue if value is
+        //the same as the current value
+        //instead we force events here to ensure that it
+        //both applies as current AND
+        //triggers the event callbacks
+        OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
         OnApplied?.Invoke(_tempValue);
-        OnNeedsApplying?.Invoke(false);
     }
 
-    public void SetMinValue(double newMinValue)
+    public void SetMinValue(long newMinValue)
     {
         _minValue = newMinValue;
     }
 
-    public void SetMaxValue(double newMaxValue)
+    public void SetMaxValue(long newMaxValue)
     {
         _maxValue = newMaxValue;
     }

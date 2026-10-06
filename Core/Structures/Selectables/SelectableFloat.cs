@@ -19,11 +19,10 @@ using UnityEngine;
 /// 
 /// </summary>
 [System.Serializable]
-public class FloatOption
+public class SelectableFloat
 {
-    public Action<float> OnChanged;
+    public Action<float, bool> OnChanged;
     public Action<float> OnApplied;
-    public Action<bool> OnNeedsApplying;
     [SerializeField, EditorReadOnly] private float _currentValue = 0;
     public float CurrentValue
     {
@@ -35,8 +34,6 @@ public class FloatOption
             {
                 _currentValue = value;
                 OnApplied?.Invoke(_currentValue);
-                //since we applied it, applying is no longer needed
-                this.NeedsApplying = false;
             }
         }
     }
@@ -57,38 +54,17 @@ public class FloatOption
             if (_tempValue != value)
             {
                 _tempValue = value;
-                OnChanged?.Invoke(_tempValue);
-                if (_tempValue != _currentValue)
-                {
-                    this.NeedsApplying = true;
-                }
-                else
-                {
-                    this.NeedsApplying = false;
-                }
-            }
-        }
-    }
-    [SerializeField, EditorReadOnly] private bool _needsApplying;
-    public bool NeedsApplying
-    {
-        get { return _needsApplying; }
-        set
-        {
-            //only modify on change
-            if (_needsApplying != value)
-            {
-                _needsApplying = value;
-                OnNeedsApplying?.Invoke(_needsApplying);
+                OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
             }
         }
     }
 
     private float _minValue = 0;
     private float _maxValue = 0;
-
-    public FloatOption(float defaultValue, float maxValue, float minValue = 0)
+    private float _changeValue = 0;
+    public SelectableFloat(float defaultValue, float maxValue, float minValue = 0, float changeValue = 1)
     {
+        _changeValue = changeValue;
         _minValue = minValue;
         _maxValue = maxValue;
         _currentValue = defaultValue;
@@ -97,12 +73,12 @@ public class FloatOption
 
     public void Next()
     {
-        this.TempValue++;
+        this.TempValue += _changeValue;
     }
 
     public void Previous()
     {
-        this.TempValue--;
+        this.TempValue -= _changeValue;
     }
 
     public void Apply()
@@ -117,13 +93,14 @@ public class FloatOption
     public void SetValueNoAction(float newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
     }
 
     /// <summary>
     /// This sets the value then triggers an apply
     /// 
     /// The events will be triggered as normal if the value has changed
+    /// 
+    /// if the value is not different events will not trigger
     /// </summary>
     /// <param name="newValue"></param>
     public void SetValue(float newValue)
@@ -142,13 +119,14 @@ public class FloatOption
     public void SetValueForceEvents(float newValue)
     {
         _currentValue = _tempValue = newValue;
-        _needsApplying = false;
         //the value may not trigger actions
-        //due to already being 0 or -1 or something
-        //force trigger all events on SetValue
-        OnChanged?.Invoke(_tempValue);
+        //when using SetValue if value is
+        //the same as the current value
+        //instead we force events here to ensure that it
+        //both applies as current AND
+        //triggers the event callbacks
+        OnChanged?.Invoke(_tempValue, _tempValue != _currentValue);
         OnApplied?.Invoke(_tempValue);
-        OnNeedsApplying?.Invoke(false);
     }
 
     public void SetMinValue(float newMinValue)

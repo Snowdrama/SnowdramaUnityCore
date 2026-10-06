@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.9.4] 2026-06-10
+- Cleaning up "Option" classes and renamed to "Selectable"
+- Moved some things around "Wrappers" became "Structures"
+- Removed unfinished ObjectPoolers
+- Update to add more things to ArrayExtensions, and EnumerableExtensions
+- Update to StackList to allow for Push/Pop/Peek Bottom as well as making Peek(count) and PeekBottom(count) to get more than one from top and bottom
+- Added QueueList similar to StackList, it uses a List under the hood, but includes helper functions that allow you to use a List like a Queue, like Enqueue and Dequeue
+
 ## [0.9.3] 2026-28-08
 - Fix to ProjectViewUtils to fix build issues
 - Fix to AudioVolumeManager to automatically pull the Volume from the options to set the volume on start.
