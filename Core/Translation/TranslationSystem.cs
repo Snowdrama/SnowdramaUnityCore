@@ -59,7 +59,7 @@ namespace Snowdrama
             SupportedLanguages = JsonConvert.DeserializeObject<SupportedLanguages>(supportedLanguageJSON.text);
 
             //use the current lanuage if the Option doesn't exist for Language which should be english
-            _currentLanguage = Options.GetStringValue("Language", "en");
+            _currentLanguage = Options.Get<string>("Language", "en");
 
             //check if the thing loaded from the options is supported if not default to english
             if (!SupportedLanguages.LanguageCodeSupported(_currentLanguage))

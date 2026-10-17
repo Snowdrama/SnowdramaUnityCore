@@ -65,22 +65,20 @@ namespace Snowdrama
             foreach (var data in audioChannels)
             {
                 //get the value and if not found use the default
-                var linearVolume = Options.GetFloatValue(data.Value.mixerChannelName, data.Value.defaultValue);
+                var linearVolume = Options.Get<float>(data.Value.mixerChannelName, data.Value.defaultValue);
                 audioMixer.SetFloat(data.Key, linearVolume.LinearToDecibel());
             }
 
             foreach (var data in audioChannels)
             {
-                Options.RegisterFloatOptionCallback(data.Key, this.VolumeValueChanged);
-            }
-        }
-
-        private void VolumeValueChanged(string name, float volume)
-        {
-            if (audioChannels.ContainsKey(name))
-            {
-                var chanel = audioChannels[name];
-                audioMixer.SetFloat(chanel.mixerChannelName, volume.LinearToDecibel());
+                Options.SetCallback<float>(data.Key, (float volume) =>
+                {
+                    if (audioChannels.ContainsKey(data.Key))
+                    {
+                        var chanel = audioChannels[data.Key];
+                        audioMixer.SetFloat(chanel.mixerChannelName, volume.LinearToDecibel());
+                    }
+                });
             }
         }
     }

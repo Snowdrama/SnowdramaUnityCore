@@ -53,7 +53,7 @@ namespace Snowdrama
 
         public void OnChange(int newIndex, bool needsApplying)
         {
-            Debug.Log("Resolution Changed!");
+            Debug.Log($"Resolution Changed! Index: {newIndex}");
             resolutionText.text = resolutionOptions[newIndex].ToString();
             applyButton.interactable = needsApplying;
         }

@@ -166,7 +166,7 @@ namespace Snowdrama
             //only load from the options dealing with the editor
 #if !UNITY_EDITOR
             //only load the screen option in builds
-            ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
+            ResolutionIndex = Options.Get<int>(RESOLUTION_SETTING_KEY, -1);
 #endif
 
             //if the index isn't valid, we need to try and get the largest screen size
@@ -176,12 +176,12 @@ namespace Snowdrama
 
 #if !UNITY_EDITOR
                 //only save the screen option in builds
-                Options.SetIntValue(RESOLUTION_SETTING_KEY, ResolutionIndex);
+                Options.Set<int>(RESOLUTION_SETTING_KEY, ResolutionIndex);
 #endif
             }
 
             //get the full screen mode to see if we're windowed or exclusive fullscreen
-            _fullscreenMode = (FullScreenMode)Options.GetIntValue(
+            _fullscreenMode = (FullScreenMode)Options.Get<int>(
                 FULLSCREEN_SETTING_KEY,
                 (int)FullScreenMode.FullScreenWindow
             );
@@ -196,7 +196,7 @@ namespace Snowdrama
 
 #if !UNITY_EDITOR
             //only save the screen option in builds
-            Options.SetIntValue(RESOLUTION_SETTING_KEY, index);
+            Options.Set<int>(RESOLUTION_SETTING_KEY, index);
 #endif
 
             ApplyResolution();
@@ -207,7 +207,7 @@ namespace Snowdrama
             _fullscreenMode = mode;
 #if !UNITY_EDITOR
             //only save the screen option in builds
-            Options.SetIntValue(RESOLUTION_SETTING_KEY, (int)mode);
+            Options.Set<int>(RESOLUTION_SETTING_KEY, (int)mode);
 #endif
 
             ApplyResolution();
