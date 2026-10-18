@@ -202,11 +202,19 @@ public static class Vector2Extensions
     /// <param name="from">The starting point. </param>
     /// <param name="to">The end point. </param>
     /// <returns>A vector that goes from the starting point to the end point. </returns>
-    public static Vector2 DirectionTo(this Vector2 from, Vector2 to)
+    public static Vector2 VectorTo(this Vector2 from, Vector2 to)
     {
         return to - from;
     }
 
+    /// <summary>
+    /// Get the normalized direction to a target
+    /// </summary>
+    /// <returns></returns>
+    public static Vector2 DirectionTo(this Vector2 from, Vector2 to)
+    {
+        return from.VectorTo(to).normalized;
+    }
 
     /// <summary>
     /// Get a random direction

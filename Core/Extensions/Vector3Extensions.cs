@@ -37,8 +37,17 @@ public static class Vector3Extensions
     /// <param name="from">The starting point. </param>
     /// <param name="to">The end point. </param>
     /// <returns>A vector that goes from the starting point to the end point. </returns>
-    public static Vector3 DirectionTo(this Vector3 from, Vector3 to)
+    public static Vector3 VectorTo(this Vector3 from, Vector3 to)
     {
         return to - from;
+    }
+
+    /// <summary>
+    /// Get the normalized direction to a target
+    /// </summary>
+    /// <returns></returns>
+    public static Vector3 DirectionTo(this Vector3 from, Vector3 to)
+    {
+        return from.VectorTo(to).normalized;
     }
 }
