@@ -122,6 +122,34 @@ namespace Snowdrama.UI
             }
             this.UpdateDebug();
         }
+        public void ToggleRoute(string routeSegment)
+        {
+            if (routes.ContainsKey(routeSegment.ToLower()))
+            {
+                //check to see if we're open
+                if (routesOpened.Count > 0)
+                {
+                    var rs = routesOpened.Peek();
+                    if (rs == routeSegment)
+                    {
+                        this.Back();
+                    }
+                    else
+                    {
+                        this.OpenRoute(routeSegment);
+                    }
+                }
+                else
+                {
+                    this.OpenRoute(routeSegment);
+                }
+            }
+            else
+            {
+                Debug.LogError("No Route with segment: " + routeSegment.ToLower());
+            }
+            this.UpdateDebug();
+        }
 
         public void OpenRouteExclusive(string routeSegment)
         {

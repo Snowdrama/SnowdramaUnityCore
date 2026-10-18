@@ -5,13 +5,13 @@ public static class EnumExtensions
     /// <summary>
     /// Shorthand for turning an enum into a string
     /// 
-    /// Same as 'nameof(Enum.Value)' but formated for parity with 'ToEnumType()'
+    /// Same as 'value.ToString()' but formated for parity with 'ToEnumType()'
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     public static string ToEnumName(this Enum value)
     {
-        return nameof(value);
+        return value.ToString();
     }
 
     /// <summary>
