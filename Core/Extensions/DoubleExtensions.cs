@@ -192,7 +192,7 @@ public static class DoubleExtensions
     //
     //   maxDelta:
     //     The maximum change applied to the current value.
-    public static double MoveTowards(this double current, double target, float maxDelta)
+    public static double MoveTowards(this double current, double target, double maxDelta)
     {
         if (Math.Abs(target - current) <= maxDelta)
         {
