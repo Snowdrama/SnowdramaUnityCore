@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -14,6 +15,22 @@ public partial class MessagedSoundPool : MonoBehaviour
     [SerializeField] private bool use3DPlayers = true;
 
     private List<AudioSource> players = new List<AudioSource>();
+    private Queue<AudioSource> unusedPlayers = new Queue<AudioSource>();
+    private List<AudioSource> usedPlayers = new List<AudioSource>();
+
+    public void Update()
+    {
+        foreach (var player in players)
+        {
+            //if it's not playing it should
+            //be added back to unusedPlayers
+            if (!player.isPlaying)
+            {
+                unusedPlayers.Enqueue(player);
+            }
+        }
+        usedPlayers = usedPlayers.Where(x => !x.isPlaying).ToList();
+    }
 
     private PlaySoundMessage _playSoundMessage;
     private PlaySoundMessage3D _playSoundMessage3D;
@@ -81,32 +98,35 @@ public partial class MessagedSoundPool : MonoBehaviour
             Debug.LogError("Tried to play a sound but there's no players");
             return;
         }
-        for (var i = 0; i < players.Count; i++)
+
+        //Get an unused player
+        if (unusedPlayers.Count > 0)
         {
-            if (!players[i].isPlaying)
+            var player = unusedPlayers.Dequeue();
+            usedPlayers.Add(player);
+            if (player != null)
             {
-
-                players[i].volume = info.volume;
-
+                player.volume = info.volume;
                 var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
-                    players[i].outputAudioMixerGroup = mixerGroups[0];
+                    player.outputAudioMixerGroup = mixerGroups[0];
                 }
                 else
                 {
-                    players[i].outputAudioMixerGroup = null;
+                    player.outputAudioMixerGroup = null;
                 }
 
-                players[i].clip = info.stream;
-                players[i].spatializePostEffects = false;
-                players[i].spatialBlend = 0.0f;
-                players[i].pitch = info.pitch;
-                players[i].transform.position = new Vector2(0, 0);
-                players[i].Play();
+                player.clip = info.stream;
+                player.spatializePostEffects = false;
+                player.spatialBlend = 0.0f;
+                player.pitch = info.pitch;
+                player.transform.position = new Vector2(0, 0);
+                player.Play();
                 return;
             }
         }
+
     }
     /// <summary>
     /// 
@@ -127,28 +147,30 @@ public partial class MessagedSoundPool : MonoBehaviour
             Debug.LogError("Tried to play a 2D sound but there's no players");
             return;
         }
-        for (var i = 0; i < players.Count; i++)
+        //Get an unused player
+        if (unusedPlayers.Count > 0)
         {
-            if (!players[i].isPlaying)
+            var player = unusedPlayers.Dequeue();
+            usedPlayers.Add(player);
+            if (player != null)
             {
-                players[i].volume = info.volume;
+                player.volume = info.volume;
 
                 var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
-                    players[i].outputAudioMixerGroup = mixerGroups[0];
+                    player.outputAudioMixerGroup = mixerGroups[0];
                 }
                 else
                 {
-                    players[i].outputAudioMixerGroup = null;
+                    player.outputAudioMixerGroup = null;
                 }
-                players[i].clip = info.stream;
-                players[i].spatializePostEffects = true;
-                players[i].spatialBlend = 1.0f;
-                players[i].pitch = info.pitch;
-                players[i].transform.position = info.playPosition;
-                players[i].Play();
-                return;
+                player.clip = info.stream;
+                player.spatializePostEffects = true;
+                player.spatialBlend = 1.0f;
+                player.pitch = info.pitch;
+                player.transform.position = info.playPosition;
+                player.Play();
             }
         }
     }
@@ -172,30 +194,33 @@ public partial class MessagedSoundPool : MonoBehaviour
             Debug.LogError("Tried to play a 3D sound but there's no players");
             return;
         }
-
-        for (var i = 0; i < players.Count; i++)
+        //Get an unused player
+        if (unusedPlayers.Count > 0)
         {
-            if (!players[i].isPlaying)
+            var player = unusedPlayers.Dequeue();
+            usedPlayers.Add(player);
+            if (player != null)
             {
-                players[i].volume = info.volume;
+                player.volume = info.volume;
 
                 var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
-                    players[i].outputAudioMixerGroup = mixerGroups[0];
+                    player.outputAudioMixerGroup = mixerGroups[0];
                 }
                 else
                 {
-                    players[i].outputAudioMixerGroup = null;
+                    player.outputAudioMixerGroup = null;
                 }
-                players[i].clip = info.stream;
-                players[i].spatializePostEffects = true;
-                players[i].spatialBlend = 1.0f;
-                players[i].pitch = info.pitch;
-                players[i].transform.position = info.playPosition;
-                players[i].Play();
+                player.clip = info.stream;
+                player.spatializePostEffects = true;
+                player.spatialBlend = 1.0f;
+                player.pitch = info.pitch;
+                player.transform.position = info.playPosition;
+                player.Play();
                 return;
             }
         }
     }
+
 }
