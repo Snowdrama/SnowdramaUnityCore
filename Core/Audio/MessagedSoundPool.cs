@@ -42,6 +42,7 @@ public partial class MessagedSoundPool : MonoBehaviour
         for (var i = 0; i < audioPlayerCount; i++)
         {
             var newPlayer = new GameObject();
+            newPlayer.name = $"MonoSource_{i:N2}";
             var audioSource = newPlayer.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
             players.Add(audioSource);
@@ -52,6 +53,7 @@ public partial class MessagedSoundPool : MonoBehaviour
             for (var i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new GameObject();
+                newPlayer.name = $"2DSource_{i:N2}";
                 var audioSource = newPlayer.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 players.Add(audioSource);
@@ -63,6 +65,7 @@ public partial class MessagedSoundPool : MonoBehaviour
             for (var i = 0; i < audioPlayerCount; i++)
             {
                 var newPlayer = new GameObject();
+                newPlayer.name = $"3DSource_{i:N2}";
                 var audioSource = newPlayer.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 players.Add(audioSource);
