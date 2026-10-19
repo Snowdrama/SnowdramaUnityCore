@@ -55,7 +55,7 @@ public static class DoubleExtensions
     /// <returns></returns>
     public static double Remap(this double value, double fromMin, double fromMax, double toMin, double toMax)
     {
-        return (value - fromMin) / (fromMax - fromMin) * (toMax - toMin) + toMin;
+        return ((value - fromMin) / (fromMax - fromMin) * (toMax - toMin)) + toMin;
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public static class DoubleExtensions
     /// <returns></returns>
     public static double WrapClamp(this double x, double min, double max)
     {
-        return (((x - min) % (max - min)) + (max - min)) % (max - min) + min;
+        return ((((x - min) % (max - min)) + (max - min)) % (max - min)) + min;
     }
 
     /// <summary>
@@ -88,7 +88,18 @@ public static class DoubleExtensions
             return x;
         }
 
-        return (x % m + m) % m;
+        return ((x % m) + m) % m;
+    }
+    /// <summary>
+    /// Lerps a double
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    public static double Lerp(this double start, double end, double amount)
+    {
+        return start + ((end - start) * amount);
     }
 
     /// <summary>
@@ -131,9 +142,14 @@ public static class DoubleExtensions
     {
         double dB;
         if (linear != 0)
+        {
             dB = 20.0f * Math.Log10(linear);
+        }
         else
+        {
             dB = -144.0f;
+        }
+
         return dB;
     }
 
@@ -144,7 +160,7 @@ public static class DoubleExtensions
     /// <returns>A value from 0-1 linearly</returns>
     public static double DecibelToLinear(double dB)
     {
-        double linear = Math.Pow(10.0f, dB / 20.0f);
+        var linear = Math.Pow(10.0f, dB / 20.0f);
         return linear;
     }
 
