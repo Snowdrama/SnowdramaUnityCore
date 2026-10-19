@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.9.5] 2026-18-10
+- Change to UIRouter to add toggling, useful for buttons that open things like inventory
+- Chane to SnowUI that allows the various groups fit to the expected child size
+- Fix EnumExtension issue
+- Added VectorTo and DirectionTo functions for Vector2 and Vector3
+
 ## [0.9.4] 2026-06-10
 - Cleaning up "Option" classes and renamed to "Selectable"
 - Moved some things around "Wrappers" became "Structures"
