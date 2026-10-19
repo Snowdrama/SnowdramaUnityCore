@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class PlaySoundMessage : AMessage<AudioClip, string, float> { }
-public class PlaySoundMessage2D : AMessage<AudioClip, Vector2, string, float> { }
-public class PlaySoundMessage3D : AMessage<AudioClip, Vector3, string, float> { }
+public class PlaySoundMessage : AMessage<(AudioClip clip, string mixerName, float volume, float pitch)> { }
+public class PlaySoundMessage2D : AMessage<(AudioClip clip, Vector2 position, string mixerName, float volume, float pitch)> { }
+public class PlaySoundMessage3D : AMessage<(AudioClip clip, Vector3 position, string mixerName, float volume, float pitch)> { }
 
 public partial class MessagedSoundPool : MonoBehaviour
 {
@@ -74,7 +74,7 @@ public partial class MessagedSoundPool : MonoBehaviour
         Messages.Return<PlaySoundMessage2D>();
     }
 
-    public void PlaySound(AudioClip stream, string busName, float volume)
+    public void PlaySound((AudioClip stream, string busName, float volume, float pitch) info)
     {
         if (players.Count <= 0)
         {
@@ -86,9 +86,9 @@ public partial class MessagedSoundPool : MonoBehaviour
             if (!players[i].isPlaying)
             {
 
-                players[i].volume = volume;
+                players[i].volume = info.volume;
 
-                var mixerGroups = Mixer.FindMatchingGroups(busName);
+                var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];
@@ -98,9 +98,10 @@ public partial class MessagedSoundPool : MonoBehaviour
                     players[i].outputAudioMixerGroup = null;
                 }
 
-                players[i].clip = stream;
+                players[i].clip = info.stream;
                 players[i].spatializePostEffects = false;
                 players[i].spatialBlend = 0.0f;
+                players[i].pitch = info.pitch;
                 players[i].transform.position = new Vector2(0, 0);
                 players[i].Play();
                 return;
@@ -114,7 +115,7 @@ public partial class MessagedSoundPool : MonoBehaviour
     /// <param name="playPosition"></param>
     /// <param name="busName"></param>
     /// <param name="volume">Value 0-1 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound2D(AudioClip stream, Vector2 playPosition, string busName, float volume)
+    public void PlayPositionedSound2D((AudioClip stream, Vector2 playPosition, string busName, float volume, float pitch) info)
     {
         if (!use2DPlayers)
         {
@@ -130,9 +131,9 @@ public partial class MessagedSoundPool : MonoBehaviour
         {
             if (!players[i].isPlaying)
             {
-                players[i].volume = volume;
+                players[i].volume = info.volume;
 
-                var mixerGroups = Mixer.FindMatchingGroups(busName);
+                var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];
@@ -141,10 +142,11 @@ public partial class MessagedSoundPool : MonoBehaviour
                 {
                     players[i].outputAudioMixerGroup = null;
                 }
-                players[i].clip = stream;
+                players[i].clip = info.stream;
                 players[i].spatializePostEffects = true;
                 players[i].spatialBlend = 1.0f;
-                players[i].transform.position = playPosition;
+                players[i].pitch = info.pitch;
+                players[i].transform.position = info.playPosition;
                 players[i].Play();
                 return;
             }
@@ -157,7 +159,7 @@ public partial class MessagedSoundPool : MonoBehaviour
     /// <param name="playPosition"></param>
     /// <param name="busName">The name of the bus to use, if none is used</param>
     /// <param name="volume">Value 0-1 percentage of the bus volume so 100% volume at 50% bus volume is 50% volume</param>
-    public void PlayPositionedSound3D(AudioClip stream, Vector3 playPosition, string busName, float volume)
+    public void PlayPositionedSound3D((AudioClip stream, Vector3 playPosition, string busName, float volume, float pitch) info)
     {
         if (!use3DPlayers)
         {
@@ -175,9 +177,9 @@ public partial class MessagedSoundPool : MonoBehaviour
         {
             if (!players[i].isPlaying)
             {
-                players[i].volume = volume;
+                players[i].volume = info.volume;
 
-                var mixerGroups = Mixer.FindMatchingGroups(busName);
+                var mixerGroups = Mixer.FindMatchingGroups(info.busName);
                 if (mixerGroups != null && mixerGroups.Length > 0)
                 {
                     players[i].outputAudioMixerGroup = mixerGroups[0];
@@ -186,10 +188,11 @@ public partial class MessagedSoundPool : MonoBehaviour
                 {
                     players[i].outputAudioMixerGroup = null;
                 }
-                players[i].clip = stream;
+                players[i].clip = info.stream;
                 players[i].spatializePostEffects = true;
                 players[i].spatialBlend = 1.0f;
-                players[i].transform.position = playPosition;
+                players[i].pitch = info.pitch;
+                players[i].transform.position = info.playPosition;
                 players[i].Play();
                 return;
             }
