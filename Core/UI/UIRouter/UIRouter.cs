@@ -130,7 +130,7 @@ namespace Snowdrama.UI
                 if (routesOpened.Count > 0)
                 {
                     var rs = routesOpened.Peek();
-                    if (rs == routeSegment)
+                    if (rs == routeSegment.ToLower())
                     {
                         this.Back();
                     }
