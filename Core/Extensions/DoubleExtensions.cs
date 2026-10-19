@@ -179,4 +179,34 @@ public static class DoubleExtensions
     {
         return Math.Round(value / snapTarget) * snapTarget;
     }
+
+    // Summary:
+    //     Moves a value current towards target.
+    //
+    // Parameters:
+    //   current:
+    //     The current value.
+    //
+    //   target:
+    //     The value to move towards.
+    //
+    //   maxDelta:
+    //     The maximum change applied to the current value.
+    public static double MoveTowards(this double current, double target, float maxDelta)
+    {
+        if (Math.Abs(target - current) <= maxDelta)
+        {
+            return target;
+        }
+
+        return current + (Math.Sign(target - current) * maxDelta);
+    }
+    public static double Abs(this double current)
+    {
+        return Math.Abs(current);
+    }
+    public static double Sign(this double current)
+    {
+        return Math.Sign(current);
+    }
 }
