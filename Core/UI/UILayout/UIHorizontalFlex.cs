@@ -11,7 +11,8 @@ namespace Snowdrama.UI
     public class UIHorizontalFlex : MonoBehaviour, ISnowUILayout
     {
         [Header("Horizonal Settings")]
-        public float[] ratio = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+        [SerializeField] private float[] desktopRatios = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+        [SerializeField] private float[] webGLRatios = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         public float[] percentageColumns = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
         public bool leftToRight = true;
 
@@ -39,14 +40,7 @@ namespace Snowdrama.UI
         private List<RectTransform> _children = new();
         public List<RectTransform> children
         {
-            get
-            {
-                return _children;
-            }
-            private set
-            {
-                _children = value;
-            }
+            get => _children; private set => _children = value;
         }
         private int currentActiveCount = 0;
         private int tempActiveCount = 0;
@@ -66,14 +60,19 @@ namespace Snowdrama.UI
         private void CalculatePercentage()
         {
             var total = 0.0f;
-            for (var i = 0; i < ratio.Length; i++)
+#if UNITY_WEBGL
+            var ratios = webGLRatios;
+#else
+            var ratios = desktopRatios;
+#endif
+            for (var i = 0; i < ratios.Length; i++)
             {
-                total += ratio[i];
+                total += ratios[i];
             }
-            percentageColumns = new float[ratio.Length];
-            for (var i = 0; i < ratio.Length; i++)
+            percentageColumns = new float[ratios.Length];
+            for (var i = 0; i < ratios.Length; i++)
             {
-                percentageColumns[i] = ratio[i] / total;
+                percentageColumns[i] = ratios[i] / total;
             }
         }
         public void UpdateLayout()

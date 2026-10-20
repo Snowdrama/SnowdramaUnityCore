@@ -13,9 +13,10 @@ namespace Snowdrama.UI
     public class UIVerticalFlex : MonoBehaviour, ISnowUILayout
     {
         [Header("Horizonal Settings")]
-        public float[] ratio = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
-        public float[] percentages = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
-        public bool topDown = true;
+        [SerializeField] private float[] desktopRatios = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+        [SerializeField] private float[] webGLRatios = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
+        [SerializeField] private float[] percentages = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
+        [SerializeField] private bool topDown = true;
 
         [SerializeField] private float spaceBetween = 0.01f;
         [SerializeField] private float spaceTopBot = 0.02f;
@@ -27,7 +28,7 @@ namespace Snowdrama.UI
         [SerializeField] private bool shrinkCountToElementCount;
 
         [Header("Force Update")]
-        public bool forceUpdate = false;
+        [SerializeField] private bool forceUpdate = false;
 
         [Header("Debug")]
         [SerializeField]
@@ -40,14 +41,7 @@ namespace Snowdrama.UI
         private List<RectTransform> _children = new();
         public List<RectTransform> children
         {
-            get
-            {
-                return _children;
-            }
-            private set
-            {
-                _children = value;
-            }
+            get => _children; private set => _children = value;
         }
         private int currentActiveCount = 0;
         private int tempActiveCount = 0;
@@ -67,14 +61,20 @@ namespace Snowdrama.UI
         private void CalculatePercentage()
         {
             var total = 0.0f;
-            for (var i = 0; i < ratio.Length; i++)
+
+#if UNITY_WEBGL
+            var ratios = webGLRatios;
+#else
+            var ratios = desktopRatios;
+#endif
+            for (var i = 0; i < ratios.Length; i++)
             {
-                total += ratio[i];
+                total += ratios[i];
             }
-            percentages = new float[ratio.Length];
-            for (var i = 0; i < ratio.Length; i++)
+            percentages = new float[ratios.Length];
+            for (var i = 0; i < ratios.Length; i++)
             {
-                percentages[i] = ratio[i] / total;
+                percentages[i] = ratios[i] / total;
             }
         }
         public void UpdateLayout()
