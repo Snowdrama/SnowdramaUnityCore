@@ -1,5 +1,4 @@
-﻿using Codice.Client.BaseCommands.BranchExplorer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,14 +54,7 @@ namespace Snowdrama.UI
         private List<RectTransform> _children;
         public List<RectTransform> children
         {
-            get
-            {
-                return _children;
-            }
-            private set
-            {
-                _children = value;
-            }
+            get => _children; private set => _children = value;
         }
         private float percentWidth;
         private float percentHeight;
