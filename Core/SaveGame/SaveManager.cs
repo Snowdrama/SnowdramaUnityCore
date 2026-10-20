@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using JetBrains.Annotations;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -371,9 +373,18 @@ public class SaveManager : MonoBehaviour
         return false;
     }
 
-    public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null, Texture2D image = null)
+    public static bool SaveGame(int saveSlot, GameData gameData, bool force = false, string saveName = null, string version = null, Texture2D image = null, bool saveSceneToLoadOnLoad = true, string overrideSceneToLoadOnLoad = null)
     {
         ValidateDirectories();
+
+        if (!string.IsNullOrEmpty(overrideSceneToLoadOnLoad))
+        {
+            gameData.SceneToLoadOnLoad = overrideSceneToLoadOnLoad;
+        }
+        else if (saveSceneToLoadOnLoad)
+        {
+            gameData.SceneToLoadOnLoad = SceneController.GetCurrentMainScene();
+        }
 
         var filePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.json";
 
@@ -431,7 +442,7 @@ public class SaveManager : MonoBehaviour
     public static void AutoSave(GameData gameData, string version = null)
     {
         var unusedSlot = GetAutoSaveToUse();
-
+        DebugLog($"<color=#F0F>Using Auto Save Slot {unusedSlot}");
         AutoSaveToSlot(unusedSlot, gameData, version);
     }
     public static void AutoSaveToSlot(int saveSlot, GameData gameData, string version = null)

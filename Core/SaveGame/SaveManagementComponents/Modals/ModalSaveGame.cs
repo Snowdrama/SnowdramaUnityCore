@@ -111,7 +111,6 @@ public class ModalSaveGame : MonoBehaviour
                 );
             }
         }
-
     }
 
     private void Complete()
