@@ -12,7 +12,7 @@ public class FileHelper
     {
 #if UNITY_WEBGL
         Debug.Log($"Checking File Exists in WebGL!");
-        return WebGLBinding.HasKeyInStorage(path);
+        return WebGLBinding.HasKeyInLocalStorage(path);
 #else
         Debug.Log($"Checking File Exists! Not WebGL");
         return File.Exists(path);
@@ -23,7 +23,7 @@ public class FileHelper
     {
 #if UNITY_WEBGL
         Debug.Log($"ReadAllText, WebGL");
-        return WebGLBinding.GetFromLocalStorage(path, data);
+        return WebGLBinding.GetFromLocalStorage(path);
 #else
         Debug.Log($"ReadAllText, Not WebGL");
         return File.ReadAllText(path);
