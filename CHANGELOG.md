@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [0.9.6] 2026-21-10
+* BREAKING CHANGE: PlayMusicRequestMessage now uses a Tuple this basically just means you need to wrap parameters with () but the up-side is the parameters are now named
+* BREAKING CHANGE: Added pitch to the MessagedSoundPool The message now is using a tuple!
+* Building WebGLBinding Tools as well as 
+* Added new UI Class SlicedFilledSprite 
+* Added SpriteCover tool which makes a sprite "cover" some area defined ensuring that rect has no gaps
+* Added SpriteCoverFromScreenResolution, used for matching the sprite cover to the screen size, useful for VNs
+* Added desktop vs webgl ratios for HFlex/VFlex UI tools for reformating the size on web
+* Removing some usings that weren't supposed to be there
+* Fix to saves to actually store the scene to load correctly. Can be overridden with a new option in cases where you don't want to override it. 
+* Made a NewGame helper function that's part of the TransitionObject.
+* Added stuff to the DoubleExtensions
+* Sounds from MessagedSoundPool now aren't named "NewGameObject" Though all pools still share sound sources(So 3D soudns can play on things labeled 2D sounds, it works as expected it's just naming)
+* Sound player now uses a queue instead of a List so it ensures that it doesn't keep using the same players
+* Started planning a system for handling cases where you want to randomize the song instead of looping(Not done but the code is in there so mentioning it)
+
 ## [0.9.5] 2026-18-10
 - Change to UIRouter to add toggling, useful for buttons that open things like inventory
 - Chane to SnowUI that allows the various groups fit to the expected child size
