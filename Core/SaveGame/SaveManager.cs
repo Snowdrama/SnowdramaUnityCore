@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
+//using System.IO;
 using System.Linq;
 using UnityEngine;
-using JetBrains.Annotations;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -86,10 +86,10 @@ public class SaveManager : MonoBehaviour
         }
 
         var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
-        if (File.Exists(saveDataInfoPath))
+        if (FileHelper.Exists(saveDataInfoPath))
         {
             //Debug.Log($"Loading SaveDataInfo");
-            var saveDataInfoJson = File.ReadAllText(saveDataInfoPath);
+            var saveDataInfoJson = FileHelper.ReadAllText(saveDataInfoPath);
             //Debug.Log(saveDataInfoJson);
             saveDataInfo = JsonConvert.DeserializeObject<SaveDataStruct>(saveDataInfoJson, settings);
         }
@@ -188,7 +188,7 @@ public class SaveManager : MonoBehaviour
             expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
         }
 
-        if (File.Exists(expectedPath))
+        if (FileHelper.Exists(expectedPath))
         {
             return true;
         }
@@ -236,10 +236,10 @@ public class SaveManager : MonoBehaviour
         //Debug.Log($"Loading Save From: {expectedPath}");
 
 
-        if (File.Exists(expectedPath))
+        if (FileHelper.Exists(expectedPath))
         {
             var savePathToLoad = expectedPath;
-            var fileContents = File.ReadAllText(savePathToLoad);
+            var fileContents = FileHelper.ReadAllText(savePathToLoad);
 
             //Debug.Log($"Loading file from {savePathToLoad}");
             //Debug.Log(fileContents);
@@ -366,7 +366,7 @@ public class SaveManager : MonoBehaviour
 
             //do we have a file there already?
             //if true we can overwrite it lol
-            return File.Exists(filePath);
+            return FileHelper.Exists(filePath);
         }
 
         //auto saves can't be overridden
@@ -389,7 +389,7 @@ public class SaveManager : MonoBehaviour
         var filePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.json";
 
         //fail the save if it exists but we're not forcing it
-        var fileExists = File.Exists(filePath);
+        var fileExists = FileHelper.Exists(filePath);
         if (fileExists && force == false)
         {
             return false;
@@ -401,7 +401,7 @@ public class SaveManager : MonoBehaviour
             var png = ImageConversion.EncodeToJPG(image, 75);
 
             imagePath = $"{Application.persistentDataPath}/Saves/Save{saveSlot}.jpg";
-            File.WriteAllBytes(imagePath, png);
+            FileHelper.WriteAllBytes(imagePath, png);
         }
 
         //Update save info
@@ -430,7 +430,7 @@ public class SaveManager : MonoBehaviour
         Messages.GetOnce<SaveGameStartingSaveMessage>().Dispatch();
         //Debug.Log($"Serializing game data, writing to {filePath}");
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
-        File.WriteAllText(filePath, fileContents);
+        FileHelper.WriteAllText(filePath, fileContents);
 
         SaveInfoFile();
         Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
@@ -454,7 +454,7 @@ public class SaveManager : MonoBehaviour
         //create the file contents
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
         var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.currentAutoSaveIndex}.json";
-        File.WriteAllText(filePath, fileContents);
+        FileHelper.WriteAllText(filePath, fileContents);
 
         //update the save info
         var autoSaveInfo = new SaveGameInfo()
@@ -518,9 +518,9 @@ public class SaveManager : MonoBehaviour
         }
 
         //Debug.Log($"Deleting file:{expectedPath}");
-        if (File.Exists(expectedPath))
+        if (FileHelper.Exists(expectedPath))
         {
-            File.Delete(expectedPath);
+            FileHelper.Delete(expectedPath);
         }
         if (isAutoSave)
         {
@@ -543,7 +543,7 @@ public class SaveManager : MonoBehaviour
 
         //Debug.Log($"Saving Info File! {filePath}");
 
-        File.WriteAllText(filePath, fileContents);
+        FileHelper.WriteAllText(filePath, fileContents);
     }
     public static GameData GetGameData()
     {
@@ -587,14 +587,14 @@ public class SaveManager : MonoBehaviour
     }
     private static void ValidateDirectories()
     {
-        if (!Directory.Exists($"{Application.persistentDataPath}/Saves"))
+        if (!DirectoryHelper.Exists($"{Application.persistentDataPath}/Saves"))
         {
-            Directory.CreateDirectory($"{Application.persistentDataPath}/Saves");
+            DirectoryHelper.CreateDirectory($"{Application.persistentDataPath}/Saves");
         }
 
-        if (!Directory.Exists($"{Application.persistentDataPath}/AutoSaves"))
+        if (!DirectoryHelper.Exists($"{Application.persistentDataPath}/AutoSaves"))
         {
-            Directory.CreateDirectory($"{Application.persistentDataPath}/AutoSaves");
+            DirectoryHelper.CreateDirectory($"{Application.persistentDataPath}/AutoSaves");
         }
     }
 
@@ -638,9 +638,9 @@ public class SaveManager : MonoBehaviour
         };
 
         var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
-        if (!File.Exists($"Assets/Resources/SaveManagerSettings.jsonc"))
+        if (!FileHelper.Exists($"Assets/Resources/SaveManagerSettings.jsonc"))
         {
-            File.WriteAllText($"Assets/Resources/SaveManagerSettings.jsonc", dataString);
+            FileHelper.WriteAllText($"Assets/Resources/SaveManagerSettings.jsonc", dataString);
             AssetDatabase.Refresh();
         }
         else
