@@ -10,7 +10,7 @@ public class FileHelper
 {
     public static bool Exists(string path)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         Debug.Log($"Checking File Exists in WebGL!");
         return WebGLBinding.HasKeyInStorage(path);
 #else
@@ -21,7 +21,7 @@ public class FileHelper
 
     public static string ReadAllText(string path)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         Debug.Log($"ReadAllText, WebGL");
         return WebGLBinding.GetFromLocalStorage(path, data);
 #else
@@ -32,7 +32,7 @@ public class FileHelper
 
     public static void WriteAllBytes(string path, byte[] data)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         //No saving images in WebGL
 #else
         Debug.Log($"WriteAllBytes, Not WebGL");
@@ -42,7 +42,7 @@ public class FileHelper
 
     public static void WriteAllText(string path, string data)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         Debug.Log($"WriteAllText, WebGL");
         WebGLBinding.SetToLocalStorage(path, data);
 #else
@@ -52,7 +52,7 @@ public class FileHelper
     }
     public static void Delete(string path)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         Debug.Log($"Delete, WebGL");
         WebGLBinding.RemoveFromLocalStorage(path);
 #else
@@ -67,7 +67,7 @@ public class DirectoryHelper
 {
     public static bool Exists(string path)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         return true; //no need to check on webgl
 #else
         return Directory.Exists(path);
@@ -75,7 +75,7 @@ public class DirectoryHelper
     }
     public static void CreateDirectory(string path)
     {
-#if WEB_GL
+#if UNITY_WEBGL
         //no need to create on webgl
 #else
         Directory.CreateDirectory(path);
