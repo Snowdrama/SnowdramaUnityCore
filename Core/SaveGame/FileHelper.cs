@@ -1,4 +1,5 @@
 using System.IO;
+using UnityEngine;
 
 /// <summary>
 /// A tool to replace the File calls
@@ -10,8 +11,10 @@ public class FileHelper
     public static bool Exists(string path)
     {
 #if WEB_GL
+        Debug.Log($"Checking File Exists in WebGL!");
         return WebGLBinding.HasKeyInStorage(path);
 #else
+        Debug.Log($"Checking File Exists! Not WebGL");
         return File.Exists(path);
 #endif
     }
@@ -19,8 +22,10 @@ public class FileHelper
     public static string ReadAllText(string path)
     {
 #if WEB_GL
+        Debug.Log($"ReadAllText, WebGL");
         return WebGLBinding.GetFromLocalStorage(path, data);
 #else
+        Debug.Log($"ReadAllText, Not WebGL");
         return File.ReadAllText(path);
 #endif
     }
@@ -28,8 +33,9 @@ public class FileHelper
     public static void WriteAllBytes(string path, byte[] data)
     {
 #if WEB_GL
-        //Nothing
+        //No saving images in WebGL
 #else
+        Debug.Log($"WriteAllBytes, Not WebGL");
         File.WriteAllBytes(path, data);
 #endif
     }
@@ -37,16 +43,20 @@ public class FileHelper
     public static void WriteAllText(string path, string data)
     {
 #if WEB_GL
+        Debug.Log($"WriteAllText, WebGL");
         WebGLBinding.SetToLocalStorage(path, data);
 #else
+        Debug.Log($"WriteAllText, Not WebGL");
         File.WriteAllText(path, data);
 #endif
     }
     public static void Delete(string path)
     {
 #if WEB_GL
+        Debug.Log($"Delete, WebGL");
         WebGLBinding.RemoveFromLocalStorage(path);
 #else
+        Debug.Log($"Delete, Not WebGL");
         File.Delete(path);
 #endif
     }
