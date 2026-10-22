@@ -73,7 +73,7 @@ namespace Snowdrama
                     .ThenBy(r => r.refreshRate.numerator)
                     .Distinct()
                     .ToList();
-                Debug.Log($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
+                DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
                 return _resolutions;
             }
         }
@@ -83,7 +83,7 @@ namespace Snowdrama
         private static int _resolutionIndex = -1;
         public static int ResolutionIndex
         {
-            get { return _resolutionIndex; }
+            get => _resolutionIndex;
             set
             {
                 if (_resolutionIndex != value)
@@ -190,7 +190,9 @@ namespace Snowdrama
         public static void SetResolution(int index)
         {
             if (!IsValidIndex(index))
+            {
                 index = GetLargestScreenSize();
+            }
 
             ResolutionIndex = index;
 
@@ -216,7 +218,9 @@ namespace Snowdrama
         private static void ApplyResolution()
         {
             if (!IsValidIndex(ResolutionIndex))
+            {
                 return;
+            }
 
             var res = Resolutions[ResolutionIndex];
 
