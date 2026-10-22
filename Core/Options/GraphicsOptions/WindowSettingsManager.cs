@@ -11,6 +11,7 @@ namespace Snowdrama
     {
         public bool ShowConsoleMessages;
     }
+
     public class WindowSettingsManager : MonoBehaviour
     {
         [System.Serializable]
@@ -22,41 +23,38 @@ namespace Snowdrama
 
             public override string ToString()
             {
-                return $"{width}x{height} @ {refreshRate.numerator / refreshRate.denominator}Hz";
+                var hz = refreshRate.denominator != 0
+                    ? (float)refreshRate.numerator / refreshRate.denominator
+                    : 0f;
+
+                return $"{width}x{height} @ {hz:0.##}Hz";
             }
         }
+
         public static List<ResolutionOption> GetOptionsForResolution(ResolutionOption res)
         {
             return Resolutions
                 .Where(r => r.width == res.width && r.height == res.height)
-                .OrderBy(r => r.refreshRate.numerator)
+                .OrderByDescending(GetRefreshRateHz)
                 .ToList();
         }
+
         private static List<ResolutionOption> _resolutions;
+
         public static List<ResolutionOption> Resolutions
         {
             get
             {
-                //ensure it's not null
                 if (_resolutions == null)
                 {
                     _resolutions = new List<ResolutionOption>();
                 }
 
-                //it's already set up so just return it
                 if (_resolutions.Count > 0)
                 {
-                    //Debug.Log($"<color=#08F>Returning Existing Resolution List...");
-                    //Debug.Log($"<color=#08F>_resolutions != null: {_resolutions != null} ");
-                    //Debug.Log($"<color=#08F>_resolutions.Count > 0: {_resolutions.Count > 0}");
                     return _resolutions;
                 }
 
-                //Debug.Log($"<color=blue>Generating Resolution List...");
-                //Debug.Log($"<color=blue>_resolutions != null: {_resolutions != null} ");
-                //Debug.Log($"<color=blue>_resolutions.Count > 0: {_resolutions.Count > 0}");
-
-                //if it's null build the list
                 _resolutions = Screen.resolutions
                     .Select(r => new ResolutionOption
                     {
@@ -64,42 +62,39 @@ namespace Snowdrama
                         height = r.height,
                         refreshRate = r.refreshRateRatio
                     })
+                    .Where(r => r.width > 0 && r.height > 0)
                     // remove duplicates (same width/height/refresh)
-                    .GroupBy(r => (r.width, r.height, r.refreshRate.numerator, r.refreshRate.denominator))
+                    .GroupBy(r => (r.width, r.height, r.refreshRate.numerator, r.refreshRate.denominator
+                    ))
                     .Select(g => g.First())
-                    // sort nicely for UI
                     .OrderBy(r => r.width)
                     .ThenBy(r => r.height)
-                    .ThenBy(r => r.refreshRate.numerator)
-                    .Distinct()
+                    .ThenByDescending(GetRefreshRateHz)
                     .ToList();
+
                 DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
 
-                if (_resolutions.Count == 0)
+                if (_resolutions.Count == 0 && Screen.width > 0 && Screen.height > 0)
                 {
-                    _resolutions = new List<ResolutionOption>()
+                    _resolutions.Add(new ResolutionOption
                     {
-                        new ResolutionOption()
+                        width = Screen.width,
+                        height = Screen.height,
+                        refreshRate = new RefreshRate
                         {
-                            width = Screen.width,
-                            height = Screen.height,
-                            refreshRate = new RefreshRate()
-                            {
-                                numerator = 1,
-                                denominator = 60,
-                            }
+                            numerator = 60,
+                            denominator = 1
                         }
-                    };
+                    });
                 }
-
 
                 return _resolutions;
             }
         }
 
-        //default is -1 until a valid resolution is chosen
         private static FullScreenMode _fullscreenMode;
         private static int _resolutionIndex = -1;
+
         public static int ResolutionIndex
         {
             get => _resolutionIndex;
@@ -108,59 +103,72 @@ namespace Snowdrama
                 if (_resolutionIndex != value)
                 {
                     _resolutionIndex = value;
-                    //TODO: Write Resolution To The Options?
                 }
             }
         }
+
         public static ResolutionOption CurrentResolution
         {
             get
             {
-                if (ResolutionIndex == -1)
+                if (Resolutions.Count == 0)
                 {
-                    //if we're -1 we should try and get the largest screen size
+                    return new ResolutionOption
+                    {
+                        width = Screen.width,
+                        height = Screen.height,
+                        refreshRate = new RefreshRate
+                        {
+                            numerator = 60,
+                            denominator = 1
+                        }
+                    };
+                }
+
+                if (!IsValidIndex(ResolutionIndex))
+                {
                     ResolutionIndex = GetLargestScreenSize();
                 }
 
                 return Resolutions[ResolutionIndex];
             }
         }
+
         public static FullScreenMode CurrentFullScreenMode => _fullscreenMode;
 
         public const string RESOLUTION_SETTING_KEY = "ResolutionIndex";
         public const string FULLSCREEN_SETTING_KEY = "FullscreenMode";
 
         [Header("Debug")]
-        [SerializeField, EditorReadOnly] private Vector2 _debugCurrentWindowSize = new Vector2(0, 0);
-        [SerializeField, EditorReadOnly] private Vector2 _debugMonitorResolution = new Vector2(0, 0);
+        [SerializeField, EditorReadOnly] private Vector2 _debugCurrentWindowSize = Vector2.zero;
+        [SerializeField, EditorReadOnly] private Vector2 _debugMonitorResolution = Vector2.zero;
+
         [Header("Current Selection Debug")]
-        [SerializeField, EditorReadOnly] private Vector2 _debugCurrentSelectedResolution = new Vector2(0, 0);
+        [SerializeField, EditorReadOnly] private Vector2 _debugCurrentSelectedResolution = Vector2.zero;
         [SerializeField, EditorReadOnly] private int _debugCurrentSelectedResolutionIndex = 0;
         [SerializeField] private List<ResolutionOption> _debugResolutions = new();
 
-        private static WindowSettingsManagerSettingJSON _settings = new WindowSettingsManagerSettingJSON()
+        private static WindowSettingsManagerSettingJSON _settings = new WindowSettingsManagerSettingJSON
         {
-            ShowConsoleMessages = true,
+            ShowConsoleMessages = true
         };
 
         private void Update()
         {
-            //this tries to get the window size
             _debugCurrentWindowSize = new Vector2(Screen.width, Screen.height);
-            //this attempts to get the monitor resoltion not the current window size
-            _debugMonitorResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+            _debugMonitorResolution = new Vector2(
+                Screen.currentResolution.width,
+                Screen.currentResolution.height
+            );
 
-            //this is set on start or loaded from the save
-            _debugCurrentSelectedResolution = new Vector2(CurrentResolution.width, CurrentResolution.height);
+            var current = CurrentResolution;
+            _debugCurrentSelectedResolution = new Vector2(current.width, current.height);
             _debugCurrentSelectedResolutionIndex = ResolutionIndex;
 
             if (_debugResolutions.Count != Resolutions.Count)
             {
                 _debugResolutions.Clear();
-                for (var i = 0; i < Resolutions.Count; i++)
-                {
-                    _debugResolutions.Add(Resolutions[i]);
-                }
+                _debugResolutions.AddRange(Resolutions);
             }
         }
 
@@ -168,38 +176,49 @@ namespace Snowdrama
         private static void Bootstrap()
         {
             var settingsJson = Resources.Load<TextAsset>("WindowSettingsManagerSettings");
+
             if (settingsJson == null)
             {
-                Debug.LogError("Can't find WindowSettingsManagerSettings.jsonc " +
-                    "Please use the menu item: Snowdrama -> Required -> Create WindowSettingsManagerSettings JSON" +
-                    "to create one in the Resources folder");
-                return;
+                Debug.LogWarning(
+                    "WindowSettingsManagerSettings was not found in a Resources folder. " +
+                    "Using default settings."
+                );
             }
-            _settings = JsonConvert.DeserializeObject<WindowSettingsManagerSettingJSON>(settingsJson.text);
+            else
+            {
+                try
+                {
+                    _settings = JsonConvert.DeserializeObject<WindowSettingsManagerSettingJSON>(
+                        settingsJson.text
+                    );
+                }
+                catch (JsonException exception)
+                {
+                    Debug.LogError(
+                        $"Failed to read WindowSettingsManagerSettings: {exception.Message}"
+                    );
+                }
+            }
+
             LoadSettings();
             ApplyResolution();
         }
 
         private static void LoadSettings()
         {
-            //only load from the options dealing with the editor
 #if !UNITY_EDITOR
-            //only load the screen option in builds
             ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
 #endif
 
-            //if the index isn't valid, we need to try and get the largest screen size
             if (!IsValidIndex(ResolutionIndex))
             {
                 ResolutionIndex = GetLargestScreenSize();
 
 #if !UNITY_EDITOR
-                //only save the screen option in builds
                 Options.SetIntValue(RESOLUTION_SETTING_KEY, ResolutionIndex);
 #endif
             }
 
-            //get the full screen mode to see if we're windowed or exclusive fullscreen
             _fullscreenMode = (FullScreenMode)Options.GetIntValue(
                 FULLSCREEN_SETTING_KEY,
                 (int)FullScreenMode.FullScreenWindow
@@ -208,6 +227,12 @@ namespace Snowdrama
 
         public static void SetResolution(int index)
         {
+            if (Resolutions.Count == 0)
+            {
+                DebugLogWarning("Cannot set a resolution because no resolution options are available.");
+                return;
+            }
+
             if (!IsValidIndex(index))
             {
                 index = GetLargestScreenSize();
@@ -216,7 +241,6 @@ namespace Snowdrama
             ResolutionIndex = index;
 
 #if !UNITY_EDITOR
-            //only save the screen option in builds
             Options.SetIntValue(RESOLUTION_SETTING_KEY, index);
 #endif
 
@@ -226,9 +250,10 @@ namespace Snowdrama
         public static void SetFullscreenMode(FullScreenMode mode)
         {
             _fullscreenMode = mode;
+
 #if !UNITY_EDITOR
-            //only save the screen option in builds
-            Options.SetIntValue(RESOLUTION_SETTING_KEY, (int)mode);
+            // Save the fullscreen mode under its own setting key.
+            Options.SetIntValue(FULLSCREEN_SETTING_KEY, (int)mode);
 #endif
 
             ApplyResolution();
@@ -236,21 +261,24 @@ namespace Snowdrama
 
         private static void ApplyResolution()
         {
-            if (!IsValidIndex(ResolutionIndex))
+            if (Resolutions.Count == 0 || !IsValidIndex(ResolutionIndex))
             {
                 return;
             }
 
             var res = Resolutions[ResolutionIndex];
 
-            // IMPORTANT: Refresh rate only matters in ExclusiveFullScreen
             if (_fullscreenMode == FullScreenMode.ExclusiveFullScreen)
             {
-                Screen.SetResolution(res.width, res.height, _fullscreenMode, res.refreshRate);
+                Screen.SetResolution(
+                    res.width,
+                    res.height,
+                    _fullscreenMode,
+                    res.refreshRate
+                );
             }
             else
             {
-                // Borderless/windowed ignores refresh rate
                 Screen.SetResolution(res.width, res.height, _fullscreenMode);
             }
         }
@@ -260,105 +288,103 @@ namespace Snowdrama
             return index >= 0 && index < Resolutions.Count;
         }
 
-        /// <summary>
-        /// Returns the largest size display from the Resolutions list
-        /// </summary>
-        /// <returns></returns>
         private static int GetLargestScreenSize()
         {
-            //var bestIndexFoundWithRefresh = -1;
-            //var largestWidth = 0.0f;
-            //var largestHeight = 0.0f;
-            //var largestRefreshRate = 0.0f;
-            var largestArea = 0.0f;
-            var largestAreaIndex = 0;
-
-            var targetArea = Screen.currentResolution.width * Screen.currentResolution.height;
-            var targetAreaFound = -1;
-
-            var bestTargetHzFound = 1.0f;
-            //find the largest possible resoltion
-            DebugLog($"<color=orange>Current Screen Resolution: ({Screen.currentResolution.width}, {Screen.currentResolution.height}) -> (Area: {Screen.currentResolution.width * Screen.currentResolution.height})");
-            DebugLog($"<color=orange>Current Window Size: ({Screen.width}, {Screen.height}) -> (Area: {Screen.width * Screen.height})");
-
-            for (var i = 0; i < Resolutions.Count; i++)
+            if (Resolutions.Count == 0)
             {
-                var rez = Resolutions[i];
-                var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
-                var area = rez.width * rez.height;
+                return -1;
+            }
 
-                DebugLog($"<color=yellow>Testing[{i}]: ({rez.width}, {rez.height}) @ {hz} -> area: {area} == {targetArea} && hz: {hz} == {bestTargetHzFound}");
+            var targetWidth = Screen.currentResolution.width;
+            var targetHeight = Screen.currentResolution.height;
 
-                if (targetArea == area)
+            // Prefer the exact current display size, using the highest refresh rate.
+            var matchingIndices = Enumerable.Range(0, Resolutions.Count)
+                .Where(i =>
+                    Resolutions[i].width == targetWidth &&
+                    Resolutions[i].height == targetHeight)
+                .OrderByDescending(i => GetRefreshRateHz(Resolutions[i]))
+                .ToList();
+
+            if (matchingIndices.Count > 0)
+            {
+                return matchingIndices[0];
+            }
+
+            // Otherwise choose the option with the greatest pixel area,
+            // breaking ties by preferring the highest refresh rate.
+            var bestIndex = 0;
+
+            for (var i = 1; i < Resolutions.Count; i++)
+            {
+                var candidate = Resolutions[i];
+                var best = Resolutions[bestIndex];
+
+                var candidateArea = (long)candidate.width * candidate.height;
+                var bestArea = (long)best.width * best.height;
+
+                if (candidateArea > bestArea ||
+                    (candidateArea == bestArea &&
+                     GetRefreshRateHz(candidate) > GetRefreshRateHz(best)))
                 {
-                    DebugLog($"<color=green>Found the matching the target area index: {i}!");
-                    //targetAreaFound = i;
-
-                    if (hz <= bestTargetHzFound)
-                    {
-                        DebugLog($"<color=green>Found a better screen framerate: {i}!");
-                        targetAreaFound = i;
-                        bestTargetHzFound = hz;
-                    }
-                }
-
-                if (area > largestArea)
-                {
-                    largestArea = area;
-                    largestAreaIndex = i;
+                    bestIndex = i;
                 }
             }
 
-            if (targetAreaFound >= 0)
-            {
-                DebugLog($"<color=green>Size with matching screen area and Best Hz: {targetAreaFound}!");
-                var rez = Resolutions[targetAreaFound];
-                var hz = (float)rez.refreshRate.denominator / (float)rez.refreshRate.numerator;
-                DebugLog($"<color=green>Returning Resolution: {rez.width}x{rez.height}:{hz:F2}!");
-                return targetAreaFound;
-            }
-
-            if (largestAreaIndex >= 0)
-            {
-                DebugLog($"<color=green>Size with largest area: {largestAreaIndex}!");
-                return largestAreaIndex;
-            }
-
-            DebugLog($"<color=range>Fallback to resolution index: {Resolutions.Count - 1}! " +
-                $"({Resolutions[Resolutions.Count - 1].width}, {Resolutions[Resolutions.Count - 1].height})");
-            // fallback: highest resolution + highest refresh
-            return Resolutions.Count - 1;
+            return bestIndex;
         }
-#if UNITY_EDITOR
 
-        [UnityEditor.MenuItem("Snowdrama/Required/Create WindowSettingsManager Settings JSON(In Resources)")]
+        private static float GetRefreshRateHz(ResolutionOption resolution)
+        {
+            if (resolution.refreshRate.denominator == 0)
+            {
+                return 0f;
+            }
+
+            return (float)resolution.refreshRate.numerator / resolution.refreshRate.denominator;
+        }
+
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem(
+            "Snowdrama/Required/Create WindowSettingsManager Settings JSON(In Resources)"
+        )]
         public static void CreateSupportedLanguagesJSON()
         {
-            ProjectViewUtils.OpenFolderInProjectView($"Assets/Resources");
+            ProjectViewUtils.OpenFolderInProjectView("Assets/Resources");
 
-            WindowSettingsManagerSettingJSON defaultData = new()
+            var defaultData = new WindowSettingsManagerSettingJSON
             {
-                ShowConsoleMessages = true,
+                ShowConsoleMessages = true
             };
 
-            var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
-            if (!File.Exists($"Assets/Resources/WindowSettingsManagerSettings.jsonc"))
+            var dataString = JsonConvert.SerializeObject(
+                defaultData,
+                new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented
+                }
+            );
+
+            const string path = "Assets/Resources/WindowSettingsManagerSettings.jsonc";
+
+            if (!File.Exists(path))
             {
-                File.WriteAllText($"Assets/Resources/WindowSettingsManagerSettings.jsonc", dataString);
+                Directory.CreateDirectory("Assets/Resources");
+                File.WriteAllText(path, dataString);
                 UnityEditor.AssetDatabase.Refresh();
             }
             else
             {
-                Debug.LogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
-                    "Can't overwrite WindowSettingsManagerSettings.jsonc because it already exists! " +
-                    "Overwriting this would delete any scene configuration you have! " +
-                    "Check the WindowSettingsManagerSettings.json file and ensure you actually want to delete it! " +
-                    "If this ACTUALLY intended please manually delete the WindowSettingsManagerSettings.jsonc and run again. ");
+                Debug.LogError(
+                    "WindowSettingsManagerSettings.jsonc already exists and was not overwritten. " +
+                    "Delete it manually only if you intend to recreate it."
+                );
             }
-
         }
 #endif
+
         #region Debug
+
         private static void DebugLog(string log, GameObject target = null)
         {
             if (_settings.ShowConsoleMessages)
@@ -366,6 +392,7 @@ namespace Snowdrama
                 Debug.Log(log, target);
             }
         }
+
         private static void DebugLogWarning(string log, GameObject target = null)
         {
             if (_settings.ShowConsoleMessages)
@@ -373,6 +400,7 @@ namespace Snowdrama
                 Debug.LogWarning(log, target);
             }
         }
+
         private static void DebugLogError(string log, GameObject target = null)
         {
             if (_settings.ShowConsoleMessages)
@@ -380,6 +408,7 @@ namespace Snowdrama
                 Debug.LogError(log, target);
             }
         }
+
         #endregion
     }
 }
