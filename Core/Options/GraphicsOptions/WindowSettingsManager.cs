@@ -74,6 +74,25 @@ namespace Snowdrama
                     .Distinct()
                     .ToList();
                 DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
+
+                if (_resolutions.Count == 0)
+                {
+                    _resolutions = new List<ResolutionOption>()
+                    {
+                        new ResolutionOption()
+                        {
+                            width = Screen.width,
+                            height = Screen.height,
+                            refreshRate = new RefreshRate()
+                            {
+                                numerator = 1,
+                                denominator = 60,
+                            }
+                        }
+                    };
+                }
+
+
                 return _resolutions;
             }
         }
