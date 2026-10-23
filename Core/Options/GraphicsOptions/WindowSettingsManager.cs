@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Snowdrama
 {
@@ -20,14 +21,11 @@ namespace Snowdrama
             public int width;
             public int height;
             public RefreshRate refreshRate;
+            public float HZ => refreshRate.denominator != 0 ? (float)refreshRate.numerator / refreshRate.denominator : 0f;
 
             public override string ToString()
             {
-                var hz = refreshRate.denominator != 0
-                    ? (float)refreshRate.numerator / refreshRate.denominator
-                    : 0f;
-
-                return $"{width}x{height} @ {hz:0.##}Hz";
+                return $"{width}x{height} @ {this.HZ:0.##}Hz";
             }
         }
 
@@ -199,17 +197,25 @@ namespace Snowdrama
                     );
                 }
             }
-
+            InitializeResolutionsList();
             LoadSettings();
             ApplyResolution();
         }
 
+        private static void InitializeResolutionsList()
+        {
+
+        }
+
         private static void LoadSettings()
         {
+
+            //UNITY_EDITOR code here is supposed to prevent saving/loading options file when testing
 #if !UNITY_EDITOR
             ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
 #endif
 
+            DebugLog("Loading Window Settings!");
             if (!IsValidIndex(ResolutionIndex))
             {
                 ResolutionIndex = GetLargestScreenSize();
@@ -270,16 +276,46 @@ namespace Snowdrama
 
             if (_fullscreenMode == FullScreenMode.ExclusiveFullScreen)
             {
-                Screen.SetResolution(
-                    res.width,
-                    res.height,
-                    _fullscreenMode,
-                    res.refreshRate
-                );
+                //check for orientation when setting resoluition
+                if (Screen.orientation == ScreenOrientation.Portrait)
+                {
+                    var large = Mathf.Max(res.width, res.height);
+                    var small = Mathf.Min(res.width, res.height);
+                    Screen.SetResolution(
+                        small,
+                        large,
+                        _fullscreenMode,
+                        res.refreshRate
+                    );
+                }
+                else
+                {
+                    var large = Mathf.Max(res.width, res.height);
+                    var small = Mathf.Min(res.width, res.height);
+                    Screen.SetResolution(
+                        large,
+                        small,
+                        _fullscreenMode,
+                        res.refreshRate
+                    );
+                }
+
             }
             else
             {
-                Screen.SetResolution(res.width, res.height, _fullscreenMode);
+                //check for orientation when setting resoluition
+                if (Screen.orientation == ScreenOrientation.Portrait)
+                {
+                    var large = Mathf.Max(res.width, res.height);
+                    var small = Mathf.Min(res.width, res.height);
+                    Screen.SetResolution(small, large, _fullscreenMode);
+                }
+                else
+                {
+                    var large = Mathf.Max(res.width, res.height);
+                    var small = Mathf.Min(res.width, res.height);
+                    Screen.SetResolution(small, large, _fullscreenMode);
+                }
             }
         }
 
