@@ -12,7 +12,6 @@ namespace Snowdrama
     //public class OptionValueChanged : AMessage { }
     public class OptionsData
     {
-
         public Dictionary<string, int> intValues;
         public Dictionary<string, float> floatValues;
         public Dictionary<string, bool> boolValues;

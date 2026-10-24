@@ -45,11 +45,13 @@ namespace Snowdrama
             {
                 if (_resolutions == null)
                 {
+                    DebugLog($"<color=yellow>There's no _resolutions, Generating!");
                     _resolutions = new List<ResolutionOption>();
                 }
 
                 if (_resolutions.Count > 0)
                 {
+                    DebugLog($"<color=green>Returning Existing Resolutions!: {_resolutions.Count}");
                     return _resolutions;
                 }
 
@@ -70,10 +72,11 @@ namespace Snowdrama
                     .ThenByDescending(GetRefreshRateHz)
                     .ToList();
 
-                DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count > 0}");
+                DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count}");
 
                 if (_resolutions.Count == 0 && Screen.width > 0 && Screen.height > 0)
                 {
+                    DebugLog($"<color=Red> Oh snap we didn't come up with any resolutions?!?! : Unity: {Screen.resolutions} vs Us: {_resolutions.Count}");
                     _resolutions.Add(new ResolutionOption
                     {
                         width = Screen.width,
@@ -212,8 +215,8 @@ namespace Snowdrama
 
             //UNITY_EDITOR code here is supposed to prevent saving/loading options file when testing
 #if !UNITY_EDITOR
-            ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
 #endif
+            ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
 
             DebugLog("Loading Window Settings!");
             if (!IsValidIndex(ResolutionIndex))
@@ -225,10 +228,13 @@ namespace Snowdrama
 #endif
             }
 
+            //WebGL doesn't care about full sceen mode... 
+#if !UNITY_WEBGL
             _fullscreenMode = (FullScreenMode)Options.GetIntValue(
                 FULLSCREEN_SETTING_KEY,
                 (int)FullScreenMode.FullScreenWindow
             );
+#endif
         }
 
         public static void SetResolution(int index)

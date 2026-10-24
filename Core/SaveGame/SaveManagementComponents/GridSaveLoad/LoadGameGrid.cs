@@ -54,7 +54,15 @@ public class LoadGameGrid : MonoBehaviour
         }
         buttons.Clear();
 
+        Debug.Log("Before GetSaveList");
         var saves = SaveManager.GetSaveList();
+        Debug.Log($"After GetSaveList: saves null={saves == null}");
+
+        Debug.Log($"autoSaveLocations null={saves?.autoSaveLocations == null}, " +
+                  $"count={saves?.autoSaveLocations?.Count}");
+        Debug.Log($"saveLocations null={saves?.saveLocations == null}, " +
+                  $"count={saves?.saveLocations?.Count}");
+
 
         //Sorry future me but this is complex
         if (MixAutoSaves)
@@ -109,7 +117,9 @@ public class LoadGameGrid : MonoBehaviour
                 {
                     autoSaves = autoSaves.OrderBy(x => x.saveSlot).ToList();
                 }
+                Debug.Log($"Before CreateSaveButtons UseAutoSaves: count={autoSaves.Count}");
                 this.CreateSaveButtons(autoSaves, fillWithEmptyAutoSaves, SortByDate, autoSaveCount, true);
+                Debug.Log("After CreateSaveButtons");
             }
 
             if (UseNormalSaves)
@@ -124,10 +134,15 @@ public class LoadGameGrid : MonoBehaviour
                 {
                     normalSaves = normalSaves.OrderBy(x => x.saveSlot).ToList();
                 }
+                Debug.Log($"Before CreateSaveButtons: count={normalSaves.Count}");
                 this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
+                Debug.Log("After CreateSaveButtons");
+
             }
         }
+        Debug.Log("Before MarkDirtyLayout");
         grid.MarkDirtyLayout();
+        Debug.Log("After MarkDirtyLayout");
     }
 
 

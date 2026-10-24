@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[ExecuteAlways]
 public class HideInWebGL : MonoBehaviour
 {
 #if UNITY_WEBGL
