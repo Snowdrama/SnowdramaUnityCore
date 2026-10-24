@@ -71,6 +71,7 @@ public class LoadGameGrid : MonoBehaviour
             var saveList = new List<SaveGameInfo>();
             //merge into 1 list
             //it doesn't matter the order yet
+            Debug.Log($"UseAutoSaves={UseAutoSaves}, UseNormalSaves={UseNormalSaves}");
             if (UseAutoSaves)
             {
                 saveList.AddRange(saves.autoSaveLocations.Values);
@@ -107,7 +108,9 @@ public class LoadGameGrid : MonoBehaviour
             //we're keeping the lists separate so wait and merge them after sorting by date or not
             if (UseAutoSaves)
             {
+                Debug.Log($"Before auto Values; null={saves.autoSaveLocations == null}, count={saves.autoSaveLocations?.Count}");
                 var autoSaves = saves.autoSaveLocations.Values.ToList();
+                Debug.Log("After auto Values");
                 Debug.Log($"Creating {autoSaves.Count} Auto Save Buttons! Max: {autoSaveCount}");
                 if (SortByDate)
                 {
