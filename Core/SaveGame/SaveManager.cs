@@ -1,10 +1,13 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 //using System.IO;
 using System.Linq;
 using UnityEngine;
+using QFSW.QC;
 
+//using QFSW.QC;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -56,19 +59,15 @@ public class SaveManager : MonoBehaviour
         public string AutoSaveNameFormat = "Auto Save [VALUE]";
     }
     private static SaveManagerSettings saveManagerSettings;
-
     private static int currentSaveSlot = -1;
-
     private static GameData loadedSave = new();
-    //private static GameData activeSave = new();
-
     private static SaveDataStruct saveDataInfo = new();
-    private static readonly JsonSerializerSettings settings = new()
-    {
-        Formatting = Formatting.Indented,
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-    };
-
+    /// <summary>
+    /// Formating should be intented to make it easier to read
+    /// 
+    /// Reference loops... Ignore by default because in THEORY you should't do it
+    /// </summary>
+    private static readonly JsonSerializerSettings settings = new() { Formatting = Formatting.Indented, ReferenceLoopHandling = ReferenceLoopHandling.Ignore, };
     private static string saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -677,4 +676,97 @@ public class SaveManager : MonoBehaviour
         }
     }
 #endif
+
 }
+
+
+/*
+
+//BLEH I'm still trying to figure this out to make the above a bit less messy XD
+
+/// <summary>
+/// Save Manager 2 has one main change. 
+/// 
+/// The big thing I wanted to do is also support save slots with multiple saves
+/// 
+/// Example: KOTOR Allows you to select a character and see all the saves for that character. 
+/// So a character is a save slot and a save slot contains multiple saves.
+/// 
+/// This also includes autosaves, so autosaves for a save slot don't overwrite autosaves from other save slots.
+/// </summary>
+public class SaveManager2
+{
+    //this contains the save data itself.
+    public class SaveData
+    {
+        public SaveInfo SaveInfo { get; set; }
+        /// <summary>
+        /// The storage container that has the game data in it
+        /// </summary>
+        public GameData GameData { get; set; }
+    }
+
+    /// <summary>
+    /// The info about a set of save data
+    /// </summary>
+    public class SaveInfo
+    {
+        /// <summary>
+        /// The name ofthe save
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// The date/time the game was saved
+        /// </summary>
+        public DateTime SaveDate { get; set; }
+
+        /// <summary>
+        /// Used for things like a save description or some other per-game identifier
+        /// </summary>
+        public string Extra { get; set; }
+
+        /// <summary>
+        /// This is the relative path to the thing that contains the SaveData
+        /// 
+        /// Example:
+        /// Save1.json
+        /// 
+        /// when combined with a save slot this gets a full path
+        /// Application.persistentDataPath/Saves/Slot1/ + Save1.json
+        /// 
+        /// When used not with a save slot this can be a full path like:
+        /// Application.persistentDataPath/Saves/Save1.json
+        /// </summary>
+        public string SavePath { get; set; }
+    }
+
+    public class SaveSlotInfo
+    {
+        //The save slot has it's own info 
+        public SaveInfo SaveInfo { get; set; }
+
+        /// <summary>
+        /// This is the list of the save info for each save slot
+        /// </summary>
+        public List<SaveInfo> saves;
+
+        /// <summary>
+        /// This is the relative path of all the save slots
+        /// 
+        /// Example:
+        /// Application.persistentDataPath/Saves/Slot1/
+        /// Application.persistentDataPath/Saves/Slot2/
+        /// Application.persistentDataPath/Saves/Slot3/
+        /// </summary>
+        public string SaveSlotPath { get; set; }
+    }
+
+
+    public class SaveInfoManifest
+    {
+        public List<SaveInfo> Saves = new List<SaveInfo>();
+        public List<SaveInfo> AutoSaves = new List<SaveInfo>();
+    }
+}
+
+*/

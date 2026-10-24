@@ -45,13 +45,11 @@ namespace Snowdrama
             {
                 if (_resolutions == null)
                 {
-                    DebugLog($"<color=yellow>There's no _resolutions, Generating!");
                     _resolutions = new List<ResolutionOption>();
                 }
 
                 if (_resolutions.Count > 0)
                 {
-                    DebugLog($"<color=green>Returning Existing Resolutions!: {_resolutions.Count}");
                     return _resolutions;
                 }
 
@@ -73,6 +71,10 @@ namespace Snowdrama
                     .ToList();
 
                 DebugLog($"<color=green>Resolutions Generated!: {_resolutions.Count}");
+                foreach (var item in _resolutions)
+                {
+                    Debug.Log($"Resolution: {item.ToString()}");
+                }
 
                 if (_resolutions.Count == 0 && Screen.width > 0 && Screen.height > 0)
                 {
