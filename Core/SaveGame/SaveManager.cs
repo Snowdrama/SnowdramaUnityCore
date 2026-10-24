@@ -68,6 +68,9 @@ public class SaveManager : MonoBehaviour
         Formatting = Formatting.Indented,
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
+
+    private static string saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Bootstrap()
     {
@@ -85,19 +88,7 @@ public class SaveManager : MonoBehaviour
             saveManagerSettings = JsonConvert.DeserializeObject<SaveManagerSettings>(SaveManagerSettingsTextAsset.text);
         }
 
-        var saveDataInfoPath = $"{Application.persistentDataPath}/save_data_info.json";
-        if (FileHelper.Exists(saveDataInfoPath))
-        {
-            //Debug.Log($"Loading SaveDataInfo");
-            var saveDataInfoJson = FileHelper.ReadAllText(saveDataInfoPath);
-            //Debug.Log(saveDataInfoJson);
-            saveDataInfo = JsonConvert.DeserializeObject<SaveDataStruct>(saveDataInfoJson, settings);
-        }
-        else
-        {
-            //Debug.Log($"Creating New SaveDataInfo");
-            saveDataInfo = new SaveDataStruct();
-        }
+        InitSaveDataInfo();
 
 #if UNITY_EDITOR
         //load save 0 by default in case we're testing
@@ -147,8 +138,41 @@ public class SaveManager : MonoBehaviour
             SceneController.GoToScene(loadedSave.SceneToLoadOnLoad);
         }
     }
+
+    private static void InitSaveDataInfo()
+    {
+        if (FileHelper.Exists(saveDataInfoPath))
+        {
+            var saveDataInfoJson = FileHelper.ReadAllText(saveDataInfoPath);
+            if (string.IsNullOrWhiteSpace(saveDataInfoJson))
+            {
+                Debug.Log($"Creating New SaveDataInfo");
+                saveDataInfo = new SaveDataStruct();
+                return;
+            }
+            saveDataInfo = JsonConvert.DeserializeObject<SaveDataStruct>(saveDataInfoJson, settings);
+
+            if (saveDataInfo == null)
+            {
+                Debug.Log($"Creating New SaveDataInfo");
+                saveDataInfo = new SaveDataStruct();
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log($"Creating New SaveDataInfo");
+            saveDataInfo = new SaveDataStruct();
+            return;
+        }
+    }
     public static SaveDataStruct GetSaveList()
     {
+        if (saveDataInfo == null)
+        {
+            InitSaveDataInfo();
+        }
+
         return saveDataInfo;
     }
     #region Load Game
