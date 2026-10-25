@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Snowdrama
 {
@@ -62,8 +62,7 @@ namespace Snowdrama
                     })
                     .Where(r => r.width > 0 && r.height > 0)
                     // remove duplicates (same width/height/refresh)
-                    .GroupBy(r => (r.width, r.height, r.refreshRate.numerator, r.refreshRate.denominator
-                    ))
+                    .GroupBy(r => (r.width, r.height, r.refreshRate.numerator, r.refreshRate.denominator))
                     .Select(g => g.First())
                     .OrderBy(r => r.width)
                     .ThenBy(r => r.height)
@@ -456,3 +455,64 @@ namespace Snowdrama
         #endregion
     }
 }
+
+
+
+
+
+
+
+// Gonna need this a lot for this one
+// https://docs.unity3d.com/2019.4/Documentation/Manual/PlatformDependentCompilation.html
+public class WindowSettingsManagerV2 : MonoBehaviour
+{
+    public static Action<Vector2Int> ScreenResolutionChanged;
+    public static Action<ScreenOrientation> ScreenOrientationChanged;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void Bootstrap()
+    {
+        var res = Screen.resolutions;
+        var ori = Screen.orientation;
+        var width = Screen.width;
+        var height = Screen.height;
+
+
+        ScreenResolutionChanged += (Vector2Int resolution) =>
+        {
+            Debug.Log($"Screen Resolution Changed! New Resolution: {resolution}");
+        };
+
+        ScreenOrientationChanged += (ScreenOrientation orientation) =>
+        {
+            Debug.Log($"Screen Oreientation Changed! New Orientation: {orientation}");
+        };
+
+
+#if UNITY_WEBGL
+
+#elif UNITY_ANDROID || UNITY_IOS
+
+#elif UNITY_STANDALONE
+
+#endif
+    }
+
+
+    public static void Thing()
+    {
+
+
+    }
+}
+
+
+/// <summary>
+/// A thing to update the screen resolution when the setting is changed
+/// </summary>
+public class SetResolutionOnChange : MonoBehaviour
+{
+    //private Dictionary<Type, IOptionsValue> containers = new Dictionary<Type, IOptionsValue>();
+}
+
+

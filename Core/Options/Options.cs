@@ -78,7 +78,7 @@ namespace Snowdrama
         public const string VOICE_MIXER_BUS_KEY = "Voice";
         public const string FOOTSTEP_MIXER_BUS_KEY = "Footstep";
         public const string AMBIENCE_MIXER_BUS_KEY = "Ambience"; //rain, burning fire etc
-
+        public static string OPTIONS_FILE_LOCATION = $"{Application.persistentDataPath}/options.json";
         private static OptionsData data;
         private static JsonSerializerSettings jsonSetting = new JsonSerializerSettings()
         {
@@ -434,4 +434,41 @@ namespace Snowdrama
         }
 #endif
     }
+
+
+    public class OptionsResetScriptableObect : ScriptableObject
+    {
+
+        /// <summary>
+        /// deletes the options file, effectively resetting the options
+        /// 
+        /// Should Consider ACTUALLY trying to reset values...
+        /// 
+        /// Maybe in Version 2 XD
+        /// </summary>
+        public void DeleteOptionsFile()
+        {
+            if (FileHelper.Exists(Options.OPTIONS_FILE_LOCATION))
+            {
+                FileHelper.Delete(Options.OPTIONS_FILE_LOCATION);
+            }
+        }
+    }
+
+    //public struct OptionsKey<T>
+    //{
+    //    public string Key { get; private set; }
+    //    public T DefaultValue { get; private set; }
+    //    public OptionsKey(string key, T defaultValue)
+    //    {
+    //        this.Key = key;
+    //        this.DefaultValue = defaultValue;
+    //    }
+    //}
+
+    //public class OptionsV2
+    //{
+    //    public Dictionary<OptionsKey, object> optionValues = new();
+    //}
 }
+
