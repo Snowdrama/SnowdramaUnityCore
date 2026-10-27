@@ -13,13 +13,13 @@ namespace Snowdrama
         {
             dropdown = this.GetComponent<TMP_Dropdown>();
             dropdown.onValueChanged.AddListener(this.OnDropdownChanged);
-            var value = Options.GetIntValue(dropdownName, defaultValue);
+            var value = Options.Get_int(dropdownName, defaultValue);
             Debug.Log($"Dropdown Value: {value}");
             dropdown.SetValueWithoutNotify(value);
         }
         private void OnDropdownChanged(int option)
         {
-            Options.SetIntValue(dropdownName, option);
+            Options.Set_int(dropdownName, option);
         }
 
     }

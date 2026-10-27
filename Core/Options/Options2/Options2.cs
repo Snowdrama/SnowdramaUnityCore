@@ -1,13 +1,17 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Snowdrama;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 #region Options
 
 [System.Serializable]
 public class Options2
 {
+    private Snowdrama.Options options;
+    public static string OPTIONS_FILE_LOCATION = $"{Application.persistentDataPath}/options.json";
     private static Dictionary<Type, IOptionsContainer> data = new Dictionary<Type, IOptionsContainer>();
 
     public static void Set<T>(string key, T value)
@@ -236,4 +240,5 @@ public class OptionsContainer<T> : IOptionsContainer
         values = token.ToObject<Dictionary<string, OptionsValue<T>>>() ?? new Dictionary<string, OptionsValue<T>>();
     }
 }
+
 #endregion

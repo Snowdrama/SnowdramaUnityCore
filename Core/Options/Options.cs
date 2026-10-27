@@ -55,7 +55,7 @@ namespace Snowdrama
             }
         }
     }
-    public class Options : MonoBehaviour
+    public class OptionsOld : MonoBehaviour
     {
         //these are shortcuts for the volume option keys
         //so Option.SetFloat(Options.MASTER_VOLUME_KEY, 0.5f);
@@ -155,7 +155,7 @@ namespace Snowdrama
                 intCallbacks[optionName] -= callback;
             }
         }
-        public static void RegisterFloatOptionCallback(string optionName, Action<string, float> callback)
+        public static void RegisterCallback_float(string optionName, Action<string, float> callback)
         {
             if (!floatCallbacks.ContainsKey(optionName))
             {
@@ -173,7 +173,7 @@ namespace Snowdrama
                 floatCallbacks[optionName] -= callback;
             }
         }
-        public static void RegisterBoolOptionCallback(string optionName, Action<string, bool> callback)
+        public static void RegisterCallback_bool(string optionName, Action<string, bool> callback)
         {
             if (!boolCallbacks.ContainsKey(optionName))
             {
@@ -184,7 +184,7 @@ namespace Snowdrama
                 boolCallbacks[optionName] += callback;
             }
         }
-        public static void UnregisterBoolOptionCallback(string optionName, Action<string, bool> callback)
+        public static void UnregisterCallback_bool(string optionName, Action<string, bool> callback)
         {
             if (boolCallbacks.ContainsKey(optionName))
             {
@@ -230,7 +230,7 @@ namespace Snowdrama
             }
             Save();
         }
-        public static string GetStringValue(string name, string defaultValue = "")
+        public static string Get_string(string name, string defaultValue = "")
         {
             if (data.stringValues.ContainsKey(name))
             {
@@ -242,7 +242,7 @@ namespace Snowdrama
             }
         }
 
-        public static void SetIntValue(string name, int value)
+        public static void Set_int(string name, int value)
         {
             if (intCallbacks.ContainsKey(name))
             {
@@ -260,8 +260,9 @@ namespace Snowdrama
             Save();
         }
 
-        public static int GetIntValue(string name, int defaultValue = 0)
+        public static int Get_int(string name, int defaultValue = 0)
         {
+
 
             if (data.intValues.ContainsKey(name))
             {
@@ -274,7 +275,7 @@ namespace Snowdrama
             }
         }
 
-        public static void SetBoolValue(string name, bool value)
+        public static void Set_bool(string name, bool value)
         {
             if (boolCallbacks.ContainsKey(name))
             {
@@ -292,7 +293,7 @@ namespace Snowdrama
             Save();
         }
 
-        public static bool GetBoolValue(string name, bool defaultValue = false)
+        public static bool Get_bool(string name, bool defaultValue = false)
         {
             if (data.boolValues.ContainsKey(name))
             {
@@ -304,7 +305,7 @@ namespace Snowdrama
             }
         }
 
-        public static void SetFloatValue(string name, float value)
+        public static void Set_float(string name, float value)
         {
             if (floatCallbacks.ContainsKey(name))
             {
@@ -322,7 +323,7 @@ namespace Snowdrama
             Save();
         }
 
-        public static float GetFloatValue(string name, float defaultValue = 0.0f)
+        public static float Get_float(string name, float defaultValue = 0.0f)
         {
             if (data.floatValues.ContainsKey(name))
             {

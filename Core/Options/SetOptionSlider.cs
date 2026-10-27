@@ -13,12 +13,12 @@ namespace Snowdrama
         {
             slider = this.GetComponent<Slider>();
             slider.onValueChanged.AddListener(this.OnValueChanged);
-            slider.SetValueWithoutNotify(Options.GetFloatValue(sliderName, defaultValue));
+            slider.SetValueWithoutNotify(Options.Get_float(sliderName, defaultValue));
         }
 
         public void OnValueChanged(float value)
         {
-            Options.SetFloatValue(sliderName, slider.value);
+            Options.Set_float(sliderName, slider.value);
         }
     }
 }

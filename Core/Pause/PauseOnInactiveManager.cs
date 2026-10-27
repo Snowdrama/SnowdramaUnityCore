@@ -5,21 +5,18 @@ namespace Snowdrama
     {
         private void OnEnable()
         {
-            Application.runInBackground = Options.GetBoolValue("run_in_background", true);
-            Options.RegisterBoolOptionCallback("run_in_background", this.RunInBackgroundChanged);
+            Application.runInBackground = Options.Get_bool("run_in_background", true);
+            Options.RegisterCallback_bool("run_in_background", this.RunInBackgroundChanged);
         }
 
         private void OnDisable()
         {
-            Options.UnregisterBoolOptionCallback("run_in_background", this.RunInBackgroundChanged);
+            Options.UnregisterCallback_bool("run_in_background", this.RunInBackgroundChanged);
         }
 
-        private void RunInBackgroundChanged(string option, bool changed)
+        private void RunInBackgroundChanged(bool changed)
         {
-            if (option == "run_in_background")
-            {
-                Application.runInBackground = changed;
-            }
+            Application.runInBackground = changed;
         }
     }
 }

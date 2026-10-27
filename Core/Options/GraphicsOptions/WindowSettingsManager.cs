@@ -217,7 +217,7 @@ namespace Snowdrama
             //UNITY_EDITOR code here is supposed to prevent saving/loading options file when testing
 #if !UNITY_EDITOR
 #endif
-            ResolutionIndex = Options.GetIntValue(RESOLUTION_SETTING_KEY, -1);
+            ResolutionIndex = Options.Get_int(RESOLUTION_SETTING_KEY, -1);
 
             DebugLog("Loading Window Settings!");
             if (!IsValidIndex(ResolutionIndex))
@@ -225,13 +225,13 @@ namespace Snowdrama
                 ResolutionIndex = GetLargestScreenSize();
 
 #if !UNITY_EDITOR
-                Options.SetIntValue(RESOLUTION_SETTING_KEY, ResolutionIndex);
+                Options.Set_int(RESOLUTION_SETTING_KEY, ResolutionIndex);
 #endif
             }
 
             //WebGL doesn't care about full sceen mode... 
 #if !UNITY_WEBGL
-            _fullscreenMode = (FullScreenMode)Options.GetIntValue(
+            _fullscreenMode = (FullScreenMode)Options.Get_int(
                 FULLSCREEN_SETTING_KEY,
                 (int)FullScreenMode.FullScreenWindow
             );
@@ -254,7 +254,7 @@ namespace Snowdrama
             ResolutionIndex = index;
 
 #if !UNITY_EDITOR
-            Options.SetIntValue(RESOLUTION_SETTING_KEY, index);
+            Options.Set_int(RESOLUTION_SETTING_KEY, index);
 #endif
 
             ApplyResolution();
@@ -266,7 +266,7 @@ namespace Snowdrama
 
 #if !UNITY_EDITOR
             // Save the fullscreen mode under its own setting key.
-            Options.SetIntValue(FULLSCREEN_SETTING_KEY, (int)mode);
+            Options.Set_int(FULLSCREEN_SETTING_KEY, (int)mode);
 #endif
 
             ApplyResolution();

@@ -11,12 +11,12 @@ namespace Snowdrama
         {
             toggle = this.GetComponent<Toggle>();
             toggle.onValueChanged.AddListener(this.OnValueChanged);
-            toggle.SetIsOnWithoutNotify(Options.GetBoolValue(toggleName, defaultToggle));
+            toggle.SetIsOnWithoutNotify(Options.Get_bool(toggleName, defaultToggle));
         }
 
         public void OnValueChanged(bool value)
         {
-            Options.SetBoolValue(toggleName, value);
+            Options.Set_bool(toggleName, value);
         }
     }
 }

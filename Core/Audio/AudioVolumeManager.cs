@@ -9,8 +9,6 @@ namespace Snowdrama
         public string mixerChannelName = "Music";
         public float defaultValue = 1.0f;
     }
-
-
     public class AudioVolumeManager : MonoBehaviour
     {
         public AudioMixer audioMixer;
@@ -24,7 +22,6 @@ namespace Snowdrama
                     defaultValue = 0.5f
                 }
             },
-
             {
                 Options.MUSIC_VOLUME_KEY,
                 new AudioChannelData()
@@ -65,22 +62,20 @@ namespace Snowdrama
             foreach (var data in audioChannels)
             {
                 //get the value and if not found use the default
-                var linearVolume = Options.GetFloatValue(data.Value.mixerChannelName, data.Value.defaultValue);
+                var linearVolume = Options.Get_float(data.Value.mixerChannelName, data.Value.defaultValue);
                 audioMixer.SetFloat(data.Key, linearVolume.LinearToDecibel());
             }
 
             foreach (var data in audioChannels)
             {
-                Options.RegisterFloatOptionCallback(data.Key, this.VolumeValueChanged);
-            }
-        }
-
-        private void VolumeValueChanged(string name, float volume)
-        {
-            if (audioChannels.ContainsKey(name))
-            {
-                var chanel = audioChannels[name];
-                audioMixer.SetFloat(chanel.mixerChannelName, volume.LinearToDecibel());
+                Options.RegisterCallback_float(data.Key, (float volume) =>
+                {
+                    if (audioChannels.ContainsKey(data.Key))
+                    {
+                        var chanel = audioChannels[data.Key];
+                        audioMixer.SetFloat(chanel.mixerChannelName, volume.LinearToDecibel());
+                    }
+                });
             }
         }
     }

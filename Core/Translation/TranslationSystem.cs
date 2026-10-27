@@ -29,7 +29,7 @@ namespace Snowdrama
         private static string _currentLanguage = "en-us";
         public static string CurrentLanguage
         {
-            get { return _currentLanguage; }
+            get => _currentLanguage;
             private set
             {
                 //only modify on change
@@ -59,7 +59,7 @@ namespace Snowdrama
             SupportedLanguages = JsonConvert.DeserializeObject<SupportedLanguages>(supportedLanguageJSON.text);
 
             //use the current lanuage if the Option doesn't exist for Language which should be english
-            _currentLanguage = Options.GetStringValue("Language", "en");
+            _currentLanguage = Options.Get_string("Language", "en");
 
             //check if the thing loaded from the options is supported if not default to english
             if (!SupportedLanguages.LanguageCodeSupported(_currentLanguage))
