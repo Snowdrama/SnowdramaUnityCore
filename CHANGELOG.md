@@ -2,8 +2,14 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-## [0.9.7] 2026-21-10
+
+
+## [0.9.8] 2026-28-10
+* Started on SaveManager2 It's still under construction. Needs testing tools and samples still.
+
+## [0.9.7] 2026-27-10
 * BIGGEST BREAKING CHANGE OF ALL TIME! Options is now using the new Code Generator for DataStorage this will eventually be comiung to SaveData as well but for now it's just options this is a MASSIVE breaking change, the names of all the options proxy functions are changed. There's going to be a whole wiki page for this soon so check for CodeGen section in the wiki. 
+* Added DebugEx. Proxies Debug.Log/LogWarning/LogError as well as adding color using DebugEx.Blue. Use it. You'll know why else quickly.
 
 ## [0.9.6] 2026-21-10
 * BREAKING CHANGE: PlayMusicRequestMessage now uses a Tuple this basically just means you need to wrap parameters with () but the up-side is the parameters are now named

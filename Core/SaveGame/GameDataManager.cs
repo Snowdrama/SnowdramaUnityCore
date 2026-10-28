@@ -4,444 +4,448 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-public class GameDataManager : MonoBehaviour
+
+namespace Snowdrama
 {
-    private static GameData data = new();
-    public static Action<GameData> saveGameLoaded;
-
-    //this is forced on us when the SaveManager pulls a save
-    public static void SetLoadedSave(GameData setData)
+    public class GameDataManager : MonoBehaviour
     {
-        //so set the data
-        data = setData;
-        //then dispatch the save loaded dispatch to listen for stuff
-        Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(data);
-    }
-    public static void RequestSave(int saveSlot = -1)
-    {
-        Messages.GetOnce<PreparingToSaveMessage>().Dispatch();
+        private static GameData data = new();
+        public static Action<GameData> saveGameLoaded;
 
-        if (saveSlot == -1)
+        //this is forced on us when the SaveManager pulls a save
+        public static void SetLoadedSave(GameData setData)
         {
-            SaveManager.AutoSave(data);
+            //so set the data
+            data = setData;
+            //then dispatch the save loaded dispatch to listen for stuff
+            Messages.GetOnce<SaveGameLoadedMessage>().Dispatch(data);
         }
-        else
+        public static void RequestSave(int saveSlot = -1)
         {
-            SaveManager.SaveGame(saveSlot, data, true);
+            Messages.GetOnce<PreparingToSaveMessage>().Dispatch();
+
+            if (saveSlot == -1)
+            {
+                SaveManager.AutoSave(data);
+            }
+            else
+            {
+                SaveManager.SaveGame(saveSlot, data, true);
+            }
         }
-    }
-    public static void SetSceneToLoadOnLoad(string sceneName)
-    {
-        data.SceneToLoadOnLoad = sceneName;
-    }
-    public static GameData GetGameData()
-    {
-        return data;
-    }
-
-    #region BoolData
-    public static void SetBool(string name, bool value)
-    {
-        data.SetBool(name, value);
-    }
-
-    public static bool GetBool(string name, bool defaultValue = default)
-    {
-        return data.GetBool(name, defaultValue);
-    }
-    #endregion
-
-    #region IntData
-    public static void SetInt(string name, int value)
-    {
-        data.SetInt(name, value);
-    }
-
-    public static int GetInt(string name, int defaultValue = default)
-    {
-        return data.GetInt(name, defaultValue);
-    }
-    #endregion
-
-    #region FloatData
-    public static void SetFloat(string name, float value)
-    {
-        data.SetFloat(name, value);
-    }
-
-    public static float GetFloat(string name, float defaultValue = default)
-    {
-        return data.GetFloat(name, defaultValue);
-    }
-    #endregion
-
-    #region DoubleData
-    public static void SetDouble(string name, double value)
-    {
-        data.SetDouble(name, value);
-    }
-
-    public static double GetDouble(string name, double defaultValue = default)
-    {
-        return data.GetDouble(name, defaultValue);
-    }
-    #endregion
-
-    #region StringData
-    public static void SetString(string name, string value)
-    {
-        data.SetString(name, value);
-    }
-
-    public static string GetString(string name, string defaultValue = default)
-    {
-        return data.GetString(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector2Data
-    public static void SetVector2(string name, Vector2 value)
-    {
-        data.SetVector2(name, value);
-    }
-
-    public static Vector2 GetVector2(string name, Vector2 defaultValue = default)
-    {
-        return data.GetVector2(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector2IntData
-
-    public static void SetVector2Int(string name, Vector2Int value)
-    {
-        data.SetVector2Int(name, value);
-    }
-
-    public static Vector2Int GetVector2Int(string name, Vector2Int defaultValue = default)
-    {
-        return data.GetVector2Int(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector3Data
-    public static void SetVector3(string name, Vector3 value)
-    {
-        data.SetVector3(name, value);
-    }
-
-    public static Vector3 GetVector3(string name, Vector3 defaultValue = default)
-    {
-        return data.GetVector3(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector3IntData
-    public static void SetVector3Int(string name, Vector3Int value)
-    {
-        data.SetVector3Int(name, value);
-    }
-
-    public static Vector3Int GetVector3Int(string name, Vector3Int defaultValue = default)
-    {
-        return data.GetVector3Int(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector4Data
-    public static void SetVector4(string name, Vector4 value)
-    {
-        data.SetVector4(name, value);
-    }
-
-    public static Vector4 GetVector4(string name, Vector4 defaultValue = default)
-    {
-        return data.GetVector4(name, defaultValue);
-    }
-    #endregion
-
-    #region BoolArrayData
-    public static void SetBoolArray(string name, bool[] value)
-    {
-        data.SetBoolArray(name, value);
-    }
-
-    public static bool[] GetBoolArray(string name, bool[] defaultValue = default)
-    {
-        return data.GetBoolArray(name, defaultValue);
-    }
-    #endregion
-
-    #region IntArrayData
-    public static void SetIntArray(string name, int[] value)
-    {
-        data.SetIntArray(name, value);
-    }
-
-    public static int[] GetIntArray(string name, int[] defaultValue = default)
-    {
-        return data.GetIntArray(name, defaultValue);
-    }
-    #endregion
-
-    #region FloatArrayData
-    public static void SetFloatArray(string name, float[] value)
-    {
-        data.SetFloatArray(name, value);
-    }
-
-    public static float[] GetFloatArray(string name, float[] defaultValue = default)
-    {
-        return data.GetFloatArray(name, defaultValue);
-    }
-    #endregion
-
-    #region DoubleArrayData
-    public static void SetDoubleArray(string name, double[] value)
-    {
-        data.SetDoubleArray(name, value);
-    }
-
-    public static double[] GetDoubleArray(string name, double[] defaultValue = default)
-    {
-        return data.GetDoubleArray(name, defaultValue);
-    }
-    #endregion
-
-    #region StringArrayData
-    public static void SetStringArray(string name, string[] value)
-    {
-        data.SetStringArray(name, value);
-    }
-
-    public static string[] GetStringArray(string name, string[] defaultValue = default)
-    {
-        return data.GetStringArray(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector2ArrayData
-    public static void SetVector2Array(string name, Vector2[] value)
-    {
-        data.SetVector2Array(name, value);
-    }
-
-    public static Vector2[] GetVector2Array(string name, Vector2[] defaultValue = default)
-    {
-        return data.GetVector2Array(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector2IntArrayData
-
-    public static void SetVector2IntArray(string name, Vector2Int[] value)
-    {
-        data.SetVector2IntArray(name, value);
-    }
-
-    public static Vector2Int[] GetVector2IntArray(string name, Vector2Int[] defaultValue = default)
-    {
-        return data.GetVector2IntArray(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector3ArrayData
-    public static void SetVector3Array(string name, Vector3[] value)
-    {
-        data.SetVector3Array(name, value);
-    }
-
-    public static Vector3[] GetVector3Array(string name, Vector3[] defaultValue = default)
-    {
-        return data.GetVector3Array(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector3IntArrayData
-    public static void SetVector3IntArray(string name, Vector3Int[] value)
-    {
-        data.SetVector3IntArray(name, value);
-    }
-
-    public static Vector3Int[] GetVector3IntArray(string name, Vector3Int[] defaultValue = default)
-    {
-        return data.GetVector3IntArray(name, defaultValue);
-    }
-    #endregion
-
-    #region Vector4ArrayData
-    public static void SetVector4Array(string name, Vector4[] value)
-    {
-        data.SetVector4Array(name, value);
-    }
-
-    public static Vector4[] GetVector4Array(string name, Vector4[] defaultValue = default)
-    {
-        return data.GetVector4Array(name, defaultValue);
-    }
-    #endregion
-
-    #region ColorData
-    public static void SetColor(string name, Color value)
-    {
-        data.SetColor(name, value);
-    }
-
-    public static Color GetColor(string name, Color defaultValue = default)
-    {
-        return data.GetColor(name, defaultValue);
-    }
-    #endregion
-
-    #region ColorArrayData
-    public static void SetColorArray(string name, Color[] value)
-    {
-        data.SetColorArray(name, value);
-    }
-
-    public static Color[] GetColorArray(string name, Color[] defaultValue = default)
-    {
-        return data.GetColorArray(name, defaultValue);
-    }
-    #endregion
-
-
-    #region Dictionary Data
-
-    #region Int Dictionary
-    public static void SetIntDictionary(string name, Dictionary<string, int> value)
-    {
-        data.SetIntDictionary(name, value);
-    }
-
-    public static Dictionary<string, int> GetIntDictionary(string name, Dictionary<string, int> defaultValue = default)
-    {
-        return data.GetIntDictionary(name, defaultValue);
-    }
-    #endregion
-
-    #region Float Dictionary
-    public static void SetFloatDictionary(string name, Dictionary<string, float> value)
-    {
-        data.SetFloatDictionary(name, value);
-    }
-
-    public static Dictionary<string, float> GetFloatDictionary(string name, Dictionary<string, float> defaultValue = default)
-    {
-        return data.GetFloatDictionary(name, defaultValue);
-    }
-    #endregion
-
-    #region String Dictionary
-    public static void SetStringDictionary(string name, Dictionary<string, string> value)
-    {
-        data.SetStringDictionary(name, value);
-    }
-
-    public static Dictionary<string, string> GetStringDictionary(string name, Dictionary<string, string> defaultValue = default)
-    {
-        return data.GetStringDictionary(name, defaultValue);
-    }
-    #endregion
-
-    #region Bool Dictionary
-    public static void SetBoolDictionary(string name, Dictionary<string, bool> value)
-    {
-        data.SetBoolDictionary(name, value);
-    }
-
-    public static Dictionary<string, bool> GetBoolDictionary(string name, Dictionary<string, bool> defaultValue = default)
-    {
-        return data.GetBoolDictionary(name, defaultValue);
-    }
-    #endregion
-
-    #endregion
-
-
-    //TODO: Make sure this works lol
-    #region Object/Struct Data
-    public static void SetData<T>(string name, System.Object dataToSet)
-    {
-        if (data.objectData == null)
+        public static void SetSceneToLoadOnLoad(string sceneName)
         {
-            data.objectData = new Dictionary<Type, Dictionary<string, System.Object>>();
+            data.SceneToLoadOnLoad = sceneName;
+        }
+        public static GameData GetGameData()
+        {
+            return data;
         }
 
-        if (!data.objectData.ContainsKey(typeof(T)))
+        #region BoolData
+        public static void SetBool(string name, bool value)
         {
-            //create the dictionary if it's not already created
-            data.objectData.Add(typeof(T), new Dictionary<string, System.Object>());
+            data.SetBool(name, value);
         }
 
-        data.objectData[typeof(T)].Add(name, dataToSet);
-    }
-
-    public static T GetData<T>(string name)
-    {
-        if (data.objectData == null)
+        public static bool GetBool(string name, bool defaultValue = default)
         {
-            data.objectData = new Dictionary<Type, Dictionary<string, System.Object>>();
+            return data.GetBool(name, defaultValue);
+        }
+        #endregion
+
+        #region IntData
+        public static void SetInt(string name, int value)
+        {
+            data.SetInt(name, value);
         }
 
-        if (data.objectData.ContainsKey(typeof(T)) && data.objectData[typeof(T)].ContainsKey(name))
+        public static int GetInt(string name, int defaultValue = default)
         {
-            return (T)data.objectData[typeof(T)][name];
+            return data.GetInt(name, defaultValue);
+        }
+        #endregion
+
+        #region FloatData
+        public static void SetFloat(string name, float value)
+        {
+            data.SetFloat(name, value);
         }
 
-        return (T)default;
-    }
-    #endregion
+        public static float GetFloat(string name, float defaultValue = default)
+        {
+            return data.GetFloat(name, defaultValue);
+        }
+        #endregion
 
-    //TODO: Add save/load images with B64 encoding? Save game screenshot images?
-    //TODO: Add save/load images using byte arrays? Save game screenshot images?
+        #region DoubleData
+        public static void SetDouble(string name, double value)
+        {
+            data.SetDouble(name, value);
+        }
+
+        public static double GetDouble(string name, double defaultValue = default)
+        {
+            return data.GetDouble(name, defaultValue);
+        }
+        #endregion
+
+        #region StringData
+        public static void SetString(string name, string value)
+        {
+            data.SetString(name, value);
+        }
+
+        public static string GetString(string name, string defaultValue = default)
+        {
+            return data.GetString(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector2Data
+        public static void SetVector2(string name, Vector2 value)
+        {
+            data.SetVector2(name, value);
+        }
+
+        public static Vector2 GetVector2(string name, Vector2 defaultValue = default)
+        {
+            return data.GetVector2(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector2IntData
+
+        public static void SetVector2Int(string name, Vector2Int value)
+        {
+            data.SetVector2Int(name, value);
+        }
+
+        public static Vector2Int GetVector2Int(string name, Vector2Int defaultValue = default)
+        {
+            return data.GetVector2Int(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector3Data
+        public static void SetVector3(string name, Vector3 value)
+        {
+            data.SetVector3(name, value);
+        }
+
+        public static Vector3 GetVector3(string name, Vector3 defaultValue = default)
+        {
+            return data.GetVector3(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector3IntData
+        public static void SetVector3Int(string name, Vector3Int value)
+        {
+            data.SetVector3Int(name, value);
+        }
+
+        public static Vector3Int GetVector3Int(string name, Vector3Int defaultValue = default)
+        {
+            return data.GetVector3Int(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector4Data
+        public static void SetVector4(string name, Vector4 value)
+        {
+            data.SetVector4(name, value);
+        }
+
+        public static Vector4 GetVector4(string name, Vector4 defaultValue = default)
+        {
+            return data.GetVector4(name, defaultValue);
+        }
+        #endregion
+
+        #region BoolArrayData
+        public static void SetBoolArray(string name, bool[] value)
+        {
+            data.SetBoolArray(name, value);
+        }
+
+        public static bool[] GetBoolArray(string name, bool[] defaultValue = default)
+        {
+            return data.GetBoolArray(name, defaultValue);
+        }
+        #endregion
+
+        #region IntArrayData
+        public static void SetIntArray(string name, int[] value)
+        {
+            data.SetIntArray(name, value);
+        }
+
+        public static int[] GetIntArray(string name, int[] defaultValue = default)
+        {
+            return data.GetIntArray(name, defaultValue);
+        }
+        #endregion
+
+        #region FloatArrayData
+        public static void SetFloatArray(string name, float[] value)
+        {
+            data.SetFloatArray(name, value);
+        }
+
+        public static float[] GetFloatArray(string name, float[] defaultValue = default)
+        {
+            return data.GetFloatArray(name, defaultValue);
+        }
+        #endregion
+
+        #region DoubleArrayData
+        public static void SetDoubleArray(string name, double[] value)
+        {
+            data.SetDoubleArray(name, value);
+        }
+
+        public static double[] GetDoubleArray(string name, double[] defaultValue = default)
+        {
+            return data.GetDoubleArray(name, defaultValue);
+        }
+        #endregion
+
+        #region StringArrayData
+        public static void SetStringArray(string name, string[] value)
+        {
+            data.SetStringArray(name, value);
+        }
+
+        public static string[] GetStringArray(string name, string[] defaultValue = default)
+        {
+            return data.GetStringArray(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector2ArrayData
+        public static void SetVector2Array(string name, Vector2[] value)
+        {
+            data.SetVector2Array(name, value);
+        }
+
+        public static Vector2[] GetVector2Array(string name, Vector2[] defaultValue = default)
+        {
+            return data.GetVector2Array(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector2IntArrayData
+
+        public static void SetVector2IntArray(string name, Vector2Int[] value)
+        {
+            data.SetVector2IntArray(name, value);
+        }
+
+        public static Vector2Int[] GetVector2IntArray(string name, Vector2Int[] defaultValue = default)
+        {
+            return data.GetVector2IntArray(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector3ArrayData
+        public static void SetVector3Array(string name, Vector3[] value)
+        {
+            data.SetVector3Array(name, value);
+        }
+
+        public static Vector3[] GetVector3Array(string name, Vector3[] defaultValue = default)
+        {
+            return data.GetVector3Array(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector3IntArrayData
+        public static void SetVector3IntArray(string name, Vector3Int[] value)
+        {
+            data.SetVector3IntArray(name, value);
+        }
+
+        public static Vector3Int[] GetVector3IntArray(string name, Vector3Int[] defaultValue = default)
+        {
+            return data.GetVector3IntArray(name, defaultValue);
+        }
+        #endregion
+
+        #region Vector4ArrayData
+        public static void SetVector4Array(string name, Vector4[] value)
+        {
+            data.SetVector4Array(name, value);
+        }
+
+        public static Vector4[] GetVector4Array(string name, Vector4[] defaultValue = default)
+        {
+            return data.GetVector4Array(name, defaultValue);
+        }
+        #endregion
+
+        #region ColorData
+        public static void SetColor(string name, Color value)
+        {
+            data.SetColor(name, value);
+        }
+
+        public static Color GetColor(string name, Color defaultValue = default)
+        {
+            return data.GetColor(name, defaultValue);
+        }
+        #endregion
+
+        #region ColorArrayData
+        public static void SetColorArray(string name, Color[] value)
+        {
+            data.SetColorArray(name, value);
+        }
+
+        public static Color[] GetColorArray(string name, Color[] defaultValue = default)
+        {
+            return data.GetColorArray(name, defaultValue);
+        }
+        #endregion
+
+
+        #region Dictionary Data
+
+        #region Int Dictionary
+        public static void SetIntDictionary(string name, Dictionary<string, int> value)
+        {
+            data.SetIntDictionary(name, value);
+        }
+
+        public static Dictionary<string, int> GetIntDictionary(string name, Dictionary<string, int> defaultValue = default)
+        {
+            return data.GetIntDictionary(name, defaultValue);
+        }
+        #endregion
+
+        #region Float Dictionary
+        public static void SetFloatDictionary(string name, Dictionary<string, float> value)
+        {
+            data.SetFloatDictionary(name, value);
+        }
+
+        public static Dictionary<string, float> GetFloatDictionary(string name, Dictionary<string, float> defaultValue = default)
+        {
+            return data.GetFloatDictionary(name, defaultValue);
+        }
+        #endregion
+
+        #region String Dictionary
+        public static void SetStringDictionary(string name, Dictionary<string, string> value)
+        {
+            data.SetStringDictionary(name, value);
+        }
+
+        public static Dictionary<string, string> GetStringDictionary(string name, Dictionary<string, string> defaultValue = default)
+        {
+            return data.GetStringDictionary(name, defaultValue);
+        }
+        #endregion
+
+        #region Bool Dictionary
+        public static void SetBoolDictionary(string name, Dictionary<string, bool> value)
+        {
+            data.SetBoolDictionary(name, value);
+        }
+
+        public static Dictionary<string, bool> GetBoolDictionary(string name, Dictionary<string, bool> defaultValue = default)
+        {
+            return data.GetBoolDictionary(name, defaultValue);
+        }
+        #endregion
+
+        #endregion
+
+
+        //TODO: Make sure this works lol
+        #region Object/Struct Data
+        public static void SetData<T>(string name, System.Object dataToSet)
+        {
+            if (data.objectData == null)
+            {
+                data.objectData = new Dictionary<Type, Dictionary<string, System.Object>>();
+            }
+
+            if (!data.objectData.ContainsKey(typeof(T)))
+            {
+                //create the dictionary if it's not already created
+                data.objectData.Add(typeof(T), new Dictionary<string, System.Object>());
+            }
+
+            data.objectData[typeof(T)].Add(name, dataToSet);
+        }
+
+        public static T GetData<T>(string name)
+        {
+            if (data.objectData == null)
+            {
+                data.objectData = new Dictionary<Type, Dictionary<string, System.Object>>();
+            }
+
+            if (data.objectData.ContainsKey(typeof(T)) && data.objectData[typeof(T)].ContainsKey(name))
+            {
+                return (T)data.objectData[typeof(T)][name];
+            }
+
+            return (T)default;
+        }
+        #endregion
+
+        //TODO: Add save/load images with B64 encoding? Save game screenshot images?
+        //TODO: Add save/load images using byte arrays? Save game screenshot images?
 
 #if UNITY_EDITOR
 
-    [MenuItem("Snowdrama/Required/Create Default Save JSON")]
-    public static void CreateSceneJSON()
-    {
-        GameData defaultGameDataStruct = new()
+        [MenuItem("Snowdrama/Required/Create Default Save JSON")]
+        public static void CreateSceneJSON()
         {
-            SceneToLoadOnLoad = "MainMenuScene",
-            floatData = new(),
-            boolData = new(),
-            doubleData = new(),
-            intData = new(),
-            stringData = new(),
-            Vector2Data = new(),
-            Vector2IntData = new(),
-            Vector3Data = new(),
-            Vector3IntData = new(),
-            Vector4Data = new(),
-            boolArrayData = new(),
-            intArrayData = new(),
-            floatArrayData = new(),
-            doubleArrayData = new(),
-            stringArrayData = new(),
-            Vector2ArrayData = new(),
-            Vector2IntArrayData = new(),
-            Vector3ArrayData = new(),
-            Vector3IntArrayData = new(),
-            Vector4ArrayData = new(),
-            ColorData = new(),
-            ColorArrayData = new(),
-            objectData = new(),
-        };
+            GameData defaultGameDataStruct = new()
+            {
+                SceneToLoadOnLoad = "MainMenuScene",
+                floatData = new(),
+                boolData = new(),
+                doubleData = new(),
+                intData = new(),
+                stringData = new(),
+                Vector2Data = new(),
+                Vector2IntData = new(),
+                Vector3Data = new(),
+                Vector3IntData = new(),
+                Vector4Data = new(),
+                boolArrayData = new(),
+                intArrayData = new(),
+                floatArrayData = new(),
+                doubleArrayData = new(),
+                stringArrayData = new(),
+                Vector2ArrayData = new(),
+                Vector2IntArrayData = new(),
+                Vector3ArrayData = new(),
+                Vector3IntArrayData = new(),
+                Vector4ArrayData = new(),
+                ColorData = new(),
+                ColorArrayData = new(),
+                objectData = new(),
+            };
 
-        var dataString = JsonConvert.SerializeObject(defaultGameDataStruct, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+            var dataString = JsonConvert.SerializeObject(defaultGameDataStruct, new JsonSerializerSettings() { Formatting = Formatting.Indented });
 
-        if (!File.Exists($"Assets/Resources/DefaultSave.jsonc"))
-        {
-            File.WriteAllText($"Assets/Resources/DefaultSave.jsonc", dataString);
-            AssetDatabase.Refresh();
+            if (!File.Exists($"Assets/Resources/DefaultSave.jsonc"))
+            {
+                File.WriteAllText($"Assets/Resources/DefaultSave.jsonc", dataString);
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
+                    $"Can't overwrite DefaultSave.jsonc because it already exists. " +
+                    $"If this intended please manually delete the DefaultSave.jsonc and run again");
+            }
         }
-        else
-        {
-            Debug.LogError($"DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!!" +
-                $"Can't overwrite DefaultSave.jsonc because it already exists. " +
-                $"If this intended please manually delete the DefaultSave.jsonc and run again");
-        }
-    }
 #endif
+    }
 }

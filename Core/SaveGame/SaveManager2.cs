@@ -2,9 +2,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using TMPro;
+using UnityEditor;
+
 
 //using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Save Manager 2 has one main change. 
@@ -19,6 +24,8 @@ using UnityEngine;
 
 namespace Snowdrama
 {
+
+    #region SaveDataManager2
     public class SaveDataManager2
     {
         public static readonly string SAVE_PATH = $"{Application.persistentDataPath}/Saves/";
@@ -27,7 +34,7 @@ namespace Snowdrama
 
         private static SaveInfoManifest saveManifest;
         private static SaveData currentSaveData;
-
+        #region Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Bootstrap()
         {
@@ -44,6 +51,8 @@ namespace Snowdrama
                 FileHelper.WriteAllText(SAVE_MANIFEST_PATH, JsonConvert.SerializeObject(saveManifest));
             }
         }
+        #endregion
+        #region Load
         public static void LoadSave(
             int saveSlotIndex = 0,
             int saveIndex = 0,
@@ -92,6 +101,8 @@ namespace Snowdrama
                 Debug.LogWarning($"Save loaded, but loading scene '{saveData.SceneToLoad}' was prevented.");
             }
         }
+        #endregion
+        #region NewGame
         public static void NewGame()
         {
             //Get default save data
@@ -103,7 +114,19 @@ namespace Snowdrama
             //now that the save is loaded into the GameDataManager load the scene
             SceneController.GoToScene(saveData.SceneToLoad);
         }
+        #endregion
+        #region  SaveGame
 
+        public static void SaveGame(
+            int saveSlotIndex = 0,
+            int saveIndex = 0,
+            bool isAutoSave = false,
+            string saveName = null,
+            string extraData = null,
+            string sceneToLoad = null)
+        {
+            SaveGame(GameDataManager2.GetGameData(), saveSlotIndex, saveIndex, isAutoSave, saveName, extraData, sceneToLoad);
+        }
         public static void SaveGame(
             DataStorage dataToStore,
             int saveSlotIndex = 0,
@@ -133,8 +156,8 @@ namespace Snowdrama
 
             var saveInfo = new SaveInfo
             {
-                Name = !string.IsNullOrWhiteSpace(saveName) ? saveName : $"{(isAutoSave ? "AutoSave" : "Save Game")} {saveIndex}",
-                Extra = !string.IsNullOrWhiteSpace(extraData) ? extraData : $"{(isAutoSave ? "AutoSave" : "Save Game")} {saveIndex}",
+                Name = !string.IsNullOrWhiteSpace(saveName) ? saveName : $"{(isAutoSave ? "Auto Save " : "Save Game ")} {saveIndex}",
+                Extra = !string.IsNullOrWhiteSpace(extraData) ? extraData : $"{(isAutoSave ? "Auto Save" : "Save Game ")} {saveIndex}",
                 SaveDate = DateTime.Now,
                 SavePath = savePath,
                 SaveIndex = saveIndex,
@@ -155,7 +178,8 @@ namespace Snowdrama
             slot.SetSave(saveIndex, saveInfo, isAutoSave);
             SaveManifest();
         }
-
+        #endregion
+        #region  DeleteSave
         public static bool DeleteSave(
             int saveSlotIndex,
             int saveIndex,
@@ -192,23 +216,58 @@ namespace Snowdrama
             SaveManifest();
             return true;
         }
+        #endregion
+        #region SaveManifest
         private static void SaveManifest()
         {
             DirectoryHelper.CreateDirectory(SAVE_PATH);
             FileHelper.WriteAllText(SAVE_MANIFEST_PATH, JsonConvert.SerializeObject(saveManifest));
         }
+        #endregion
+
+        #region Editor
+#if UNITY_EDITOR
+        [MenuItem("Snowdrama/Required/Create Save Manager Settings JSON")]
+        public static void CreateSaveManagerSettingsJSON()
+        {
+            SaveManagerSettings defaultData = new()
+            {
+                ShowConsoleMessages = true,
+                AutoSaveSlotCount = 4,
+                AutoSaveNameFormat = "Auto Save [VALUE]",
+            };
+
+            var dataString = JsonConvert.SerializeObject(defaultData, new JsonSerializerSettings() { Formatting = Formatting.Indented });
+            if (!FileHelper.Exists($"Assets/Resources/SaveManagerSettings.jsonc"))
+            {
+                FileHelper.WriteAllText($"Assets/Resources/SaveManagerSettings.jsonc", dataString);
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                Debug.LogError("DANGER! ENSURE YOU ACTUALLY WANT TO DO THIS!!! " +
+                    "Can't overwrite SaveManagerSettings.jsonc because it already exists! " +
+                    "Overwriting this would delete any scene configuration you have! " +
+                    "Check the SaveManagerSettings.jsonc file and ensure you actually want to delete it! " +
+                    "If this ACTUALLY intended please manually delete the SaveManagerSettings.jsonc and run again. ");
+            }
+        }
+#endif
+        #endregion
+
     }
+    #endregion
 
+    #region SaveManagerSettings
+    public class SaveManagerSettings
+    {
+        public bool ShowConsoleMessages = true;
+        public int AutoSaveSlotCount = 4;
+        public string AutoSaveNameFormat = "Auto Save [VALUE]";
+    }
+    #endregion
 
-
-
-
-
-
-
-
-
-
+    #region GameDataManager2
     public class GameDataManager2
     {
         private static DataStorage loadedGameData;
@@ -219,15 +278,9 @@ namespace Snowdrama
             SaveDataManager2.SaveGame(loadedGameData, saveSlotIndex, saveIndex, isAutoSave);
         }
     }
+    #endregion
 
-
-
-
-
-
-
-
-
+    #region SaveData
     public class SaveData
     {
         public SaveInfo SaveInfo { get; set; }
@@ -237,6 +290,9 @@ namespace Snowdrama
         /// </summary>
         public DataStorage DataStorage { get; set; }
     }
+    #endregion
+
+    #region SaveInfo
     public class SaveInfo
     {
         /// <summary>
@@ -279,7 +335,9 @@ namespace Snowdrama
         /// </summary>
         public string SavePath { get; set; } = "Save1.json";
     }
+    #endregion
 
+    #region SaveSlotInfo
     public class SaveSlotInfo
     {
         //The save slot has it's own info 
@@ -331,6 +389,9 @@ namespace Snowdrama
             saves[saveIndex] = saveInfo;
         }
     }
+    #endregion
+
+    #region SaveInfoManifest
     public class SaveInfoManifest
     {
         public Dictionary<int, SaveSlotInfo> SaveSlots = new Dictionary<int, SaveSlotInfo>();
@@ -351,6 +412,141 @@ namespace Snowdrama
         public void SetSaveSlot(int slotIndex, SaveSlotInfo saveInfo)
         {
             SaveSlots[slotIndex] = saveInfo;
+        }
+    }
+    #endregion
+
+
+    public class SaveGameMessage : AMessage<(int saveSlotIndex, int saveIndex, string saveName, bool isAutoSave)> { }
+
+    [RequireComponent(typeof(Button))]
+    public class SaveButton : MonoBehaviour
+    {
+        private Button button;
+        private int saveSlotIndex;
+        private int saveIndex;
+        private string saveName;
+        private void Start()
+        {
+            button = this.GetComponent<Button>();
+            button.onClick.AddListener(this.OnClick);
+        }
+        public void SetSaveInfo(int saveSlotIndex, int saveIndex, string saveName)
+        {
+            this.saveSlotIndex = saveSlotIndex;
+            this.saveIndex = saveIndex;
+            this.saveName = saveName;
+        }
+        private void OnClick()
+        {
+            Messages.Get<SaveGameMessage>().Dispatch((saveSlotIndex, saveIndex, saveName, false));
+        }
+
+        private void Save()
+        {
+        }
+    }
+
+
+    [RequireComponent(typeof(CanvasModal))]
+    public class SaveModal : MonoBehaviour
+    {
+        [SerializeField] private TMP_InputField saveNameInput;
+        [SerializeField] private Button saveButton;
+        [SerializeField] private Button cancelButton;
+        private CanvasModal canvasModal;
+        private SaveGameMessage SaveGameMessage;
+        private int saveSlotIndex;
+        private int saveIndex;
+        private string saveName;
+        private bool isAutoSave;
+        private void Start()
+        {
+            saveButton.onClick.AddListener(this.OnComplete);
+            cancelButton.onClick.AddListener(this.OnCancel);
+            canvasModal = this.GetComponent<CanvasModal>();
+        }
+        private void OnEnable()
+        {
+            SaveGameMessage = Messages.Get<SaveGameMessage>();
+            SaveGameMessage.AddListener(this.OnSaveGame);
+        }
+
+        private void OnDisable()
+        {
+            SaveGameMessage.RemoveListener(this.OnSaveGame);
+            Messages.Return<SaveGameMessage>();
+        }
+
+        public void OnSaveGame((int saveSlotIndex, int saveIndex, string saveName, bool isAutoSave) args)
+        {
+            saveSlotIndex = args.saveSlotIndex;
+            saveIndex = args.saveIndex;
+            saveName = args.saveName;
+            isAutoSave = args.isAutoSave;
+            saveNameInput.text = args.saveName;
+            canvasModal.ShowCanvasModal();
+        }
+
+        private void OnComplete()
+        {
+            saveName = saveNameInput.text;
+            SaveDataManager2.SaveGame(saveSlotIndex, saveIndex, isAutoSave, saveName);
+            canvasModal.HideCanvasModal();
+        }
+
+        private void OnCancel()
+        {
+            canvasModal.HideCanvasModal();
+        }
+    }
+
+    [RequireComponent(typeof(CanvasGroup))]
+    public class CanvasModal : MonoBehaviour
+    {
+        private CanvasGroup group;
+        [SerializeField] private float _fadeTime = 0.5f;
+        private float _fadeSpeed => 1.0f / _fadeTime.Clamp(0.01f, float.MaxValue);
+        private float _alpha = 0;
+        private float Alpha
+        {
+            get => _alpha;
+            set
+            {
+                if (_alpha != value)
+                {
+                    _alpha = value;
+                    _alpha = _alpha.Clamp(0, 1);
+                    group.alpha = _alpha;
+                    if (_alpha > 0)
+                    {
+                        group.blocksRaycasts = true;
+                        group.interactable = true;
+                        group.ignoreParentGroups = true;
+                    }
+                    else
+                    {
+                        group.blocksRaycasts = true;
+                        group.interactable = true;
+                        group.ignoreParentGroups = true;
+                    }
+                }
+            }
+        }
+        private float targetAlpha;
+
+        private void Update()
+        {
+            this.Alpha = Mathf.MoveTowards(this.Alpha, targetAlpha, Time.deltaTime * this._fadeSpeed);
+        }
+
+        public void ShowCanvasModal()
+        {
+            targetAlpha = 1.0f;
+        }
+        public void HideCanvasModal()
+        {
+            targetAlpha = 1.0f;
         }
     }
 }

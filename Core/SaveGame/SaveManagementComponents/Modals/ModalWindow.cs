@@ -3,112 +3,115 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(CanvasGroup))]
-public class ModalWindow : MonoBehaviour
+namespace Snowdrama
 {
-    [SerializeField] private GameObject[] _toggleWhenActive;
-    [SerializeField] private bool _startEnabled = false;
-
-    private CanvasGroup canvasGroup;
-    [SerializeField] private float showHideTime = 0.25f;
-
-    private bool _modalActive;
-    private bool _elementsActive;
-    private bool ModalActive
+    [RequireComponent(typeof(CanvasGroup))]
+    public class ModalWindow : MonoBehaviour
     {
-        get { return _modalActive; }
-        set
+        [SerializeField] private GameObject[] _toggleWhenActive;
+        [SerializeField] private bool _startEnabled = false;
+
+        private CanvasGroup canvasGroup;
+        [SerializeField] private float showHideTime = 0.25f;
+
+        private bool _modalActive;
+        private bool _elementsActive;
+        private bool ModalActive
         {
-            _modalActive = value;
-            if (_modalActive)
+            get { return _modalActive; }
+            set
             {
-                targetAlpha = 1f;
-                canvasGroup.interactable = true;
-                canvasGroup.blocksRaycasts = true;
-            }
-            else
-            {
-                targetAlpha = 0f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-            }
-        }
-    }
-    private bool ElementsActive
-    {
-        get { return _elementsActive; }
-        set
-        {
-            if (_elementsActive != value)
-            {
-                _elementsActive = value;
-                if (_elementsActive)
+                _modalActive = value;
+                if (_modalActive)
                 {
-                    foreach (var item in _toggleWhenActive)
-                    {
-                        item.gameObject.SetActive(true);
-                    }
+                    targetAlpha = 1f;
+                    canvasGroup.interactable = true;
+                    canvasGroup.blocksRaycasts = true;
                 }
                 else
                 {
-                    foreach (var item in _toggleWhenActive)
+                    targetAlpha = 0f;
+                    canvasGroup.interactable = false;
+                    canvasGroup.blocksRaycasts = false;
+                }
+            }
+        }
+        private bool ElementsActive
+        {
+            get { return _elementsActive; }
+            set
+            {
+                if (_elementsActive != value)
+                {
+                    _elementsActive = value;
+                    if (_elementsActive)
                     {
-                        item.gameObject.SetActive(false);
+                        foreach (var item in _toggleWhenActive)
+                        {
+                            item.gameObject.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in _toggleWhenActive)
+                        {
+                            item.gameObject.SetActive(false);
+                        }
                     }
                 }
             }
         }
-    }
-    [Header("Debug")]
-    [SerializeField] private float currentAlpha;
-    [SerializeField] private float targetAlpha;
-    [SerializeField] private float currentAlphaVelocity;
+        [Header("Debug")]
+        [SerializeField] private float currentAlpha;
+        [SerializeField] private float targetAlpha;
+        [SerializeField] private float currentAlphaVelocity;
 
-    private void Start()
-    {
-        canvasGroup = this.GetComponent<CanvasGroup>();
-
-        if (_startEnabled)
+        private void Start()
         {
-            this.ModalActive = true;
+            canvasGroup = this.GetComponent<CanvasGroup>();
+
+            if (_startEnabled)
+            {
+                this.ModalActive = true;
+            }
+            else
+            {
+                this.ModalActive = false;
+            }
         }
-        else
+
+        public void SetModalState(bool activeState)
         {
-            this.ModalActive = false;
+            this.ModalActive = activeState;
         }
-    }
 
-    public void SetModalState(bool activeState)
-    {
-        this.ModalActive = activeState;
-    }
-
-    public void CloseModal()
-    {
-        this.SetModalState(false);
-    }
-
-    public void OpenModal()
-    {
-        this.SetModalState(true);
-    }
-    public void ToggleModal()
-    {
-        this.SetModalState(!this.ModalActive);
-    }
-    private void Update()
-    {
-        currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
-        canvasGroup.alpha = currentAlpha;
-
-        if (currentAlpha <= 0.05f)
+        public void CloseModal()
         {
-            this.ElementsActive = false;
+            this.SetModalState(false);
         }
-        else
+
+        public void OpenModal()
         {
-            this.ElementsActive = true;
+            this.SetModalState(true);
         }
-        currentAlpha = currentAlpha.Clamp(0, 1);
+        public void ToggleModal()
+        {
+            this.SetModalState(!this.ModalActive);
+        }
+        private void Update()
+        {
+            currentAlpha = Mathf.SmoothDamp(currentAlpha, targetAlpha, ref currentAlphaVelocity, showHideTime, Mathf.Infinity, Time.unscaledDeltaTime);
+            canvasGroup.alpha = currentAlpha;
+
+            if (currentAlpha <= 0.05f)
+            {
+                this.ElementsActive = false;
+            }
+            else
+            {
+                this.ElementsActive = true;
+            }
+            currentAlpha = currentAlpha.Clamp(0, 1);
+        }
     }
 }

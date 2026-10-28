@@ -1,65 +1,67 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
+namespace Snowdrama
 {
-    private SaveGameInfo saveGameInfo;
-
-    [SerializeField] private Button LoadButton;
-    [SerializeField] private TMP_Text loadButtonText;
-
-    [SerializeField] private float LoadButton_DisableTime = 0.0f;
-    [SerializeField] private float LoadButtonCancel_DisableTime = 0.0f;
-
-    [SerializeField] private float Error_DisableTime = 0.0f;
-    private void Start()
+    public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
     {
-        LoadButton.onClick.AddListener(this.TryLoad);
-    }
+        private SaveGameInfo saveGameInfo;
 
-    public void TryLoad()
-    {
-        if (SaveManager.CanLoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave))
+        [SerializeField] private Button LoadButton;
+        [SerializeField] private TMP_Text loadButtonText;
+
+        [SerializeField] private float LoadButton_DisableTime = 0.0f;
+        [SerializeField] private float LoadButtonCancel_DisableTime = 0.0f;
+
+        [SerializeField] private float Error_DisableTime = 0.0f;
+        private void Start()
         {
-            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Would you like to load:\n{saveGameInfo.Name}",
-                new ModalButtonData()
-                {
-                    text = "Yes",
-                    pressCallback = this.LoadGame,
-                    disableTime = LoadButton_DisableTime,
-                },
-                new ModalButtonData()
-                {
-                    text = "No",
-                    pressCallback = null,
-                    disableTime = LoadButtonCancel_DisableTime,
-                }
-            );
+            LoadButton.onClick.AddListener(this.TryLoad);
         }
-        else
+
+        public void TryLoad()
         {
-            Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
-                $"Can't load, save doesn't exist",
-                new ModalButtonData()
-                {
-                    text = "Ok",
-                    pressCallback = null,
-                    disableTime = Error_DisableTime,
-                }
-            );
+            if (SaveManager.CanLoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave))
+            {
+                Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                    $"Would you like to load:\n{saveGameInfo.Name}",
+                    new ModalButtonData()
+                    {
+                        text = "Yes",
+                        pressCallback = this.LoadGame,
+                        disableTime = LoadButton_DisableTime,
+                    },
+                    new ModalButtonData()
+                    {
+                        text = "No",
+                        pressCallback = null,
+                        disableTime = LoadButtonCancel_DisableTime,
+                    }
+                );
+            }
+            else
+            {
+                Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
+                    $"Can't load, save doesn't exist",
+                    new ModalButtonData()
+                    {
+                        text = "Ok",
+                        pressCallback = null,
+                        disableTime = Error_DisableTime,
+                    }
+                );
+            }
         }
-    }
 
-    private void LoadGame()
-    {
-        SaveManager.LoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave);
-    }
+        private void LoadGame()
+        {
+            SaveManager.LoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave);
+        }
 
-    public void SetButtonInfo(SaveGameInfo saveGameInfo)
-    {
-        this.saveGameInfo = saveGameInfo;
-        loadButtonText.text = $"{saveGameInfo.Name} - {saveGameInfo.DateModified}";
+        public void SetButtonInfo(SaveGameInfo saveGameInfo)
+        {
+            this.saveGameInfo = saveGameInfo;
+            loadButtonText.text = $"{saveGameInfo.Name} - {saveGameInfo.DateModified}";
+        }
     }
 }

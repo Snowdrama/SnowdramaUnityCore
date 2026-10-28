@@ -2,209 +2,211 @@ using Snowdrama.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-public class LoadGameGrid : MonoBehaviour
+namespace Snowdrama
 {
-    private SaveGameListChangedMessage gameListChanged;
-
-    [Header("Prefab")]
-    [SerializeField] private LoadGameGridButton LoadGameButtonPrefab;
-
-    [Header("Settings")]
-    [SerializeField] private bool UseNormalSaves = true;
-    [SerializeField] private bool UseAutoSaves = false;
-    [SerializeField] private bool SortByDate = true;
-    [SerializeField] private bool MixAutoSaves = false;
-
-    [Header("Empty Save Settings")]
-    [SerializeField, Tooltip("Use this if you don't have a 'create new' option. for fixed count save games")]
-    private bool fillWithEmptyAutoSaves = false;
-    [SerializeField, Tooltip("Use this if you don't have a 'create new' option. for fixed count save games")]
-    private bool fillWithEmptySaves = true;
-    [SerializeField] private int autoSaveCount = 4;
-    [SerializeField] private int saveCount = 12;
-
-    [Header("UI")]
-    [SerializeField] private SnowUI grid;
-
-    [Header("Debug")]
-    [SerializeField] private List<LoadGameGridButton> buttons = new List<LoadGameGridButton>();
-
-    private void OnEnable()
+    public class LoadGameGrid : MonoBehaviour
     {
-        gameListChanged = Messages.Get<SaveGameListChangedMessage>();
-        gameListChanged.AddListener(this.GameListChanged);
-        this.GameListChanged();
-    }
-    private void OnDisable()
-    {
-        gameListChanged.RemoveListener(this.GameListChanged);
-        gameListChanged = null;
-        Messages.Return<SaveGameListChangedMessage>();
-    }
+        private SaveGameListChangedMessage gameListChanged;
 
-    private void GameListChanged()
-    {
-        if (buttons.Count > 0)
+        [Header("Prefab")]
+        [SerializeField] private LoadGameGridButton LoadGameButtonPrefab;
+
+        [Header("Settings")]
+        [SerializeField] private bool UseNormalSaves = true;
+        [SerializeField] private bool UseAutoSaves = false;
+        [SerializeField] private bool SortByDate = true;
+        [SerializeField] private bool MixAutoSaves = false;
+
+        [Header("Empty Save Settings")]
+        [SerializeField, Tooltip("Use this if you don't have a 'create new' option. for fixed count save games")]
+        private bool fillWithEmptyAutoSaves = false;
+        [SerializeField, Tooltip("Use this if you don't have a 'create new' option. for fixed count save games")]
+        private bool fillWithEmptySaves = true;
+        [SerializeField] private int autoSaveCount = 4;
+        [SerializeField] private int saveCount = 12;
+
+        [Header("UI")]
+        [SerializeField] private SnowUI grid;
+
+        [Header("Debug")]
+        [SerializeField] private List<LoadGameGridButton> buttons = new List<LoadGameGridButton>();
+
+        private void OnEnable()
         {
-            foreach (var button in buttons)
-            {
-                Destroy(button.gameObject);
-            }
+            gameListChanged = Messages.Get<SaveGameListChangedMessage>();
+            gameListChanged.AddListener(this.GameListChanged);
+            this.GameListChanged();
         }
-        buttons.Clear();
-
-        Debug.Log("Before GetSaveList");
-        var saves = SaveManager.GetSaveList();
-        Debug.Log($"After GetSaveList: saves null={saves == null}");
-
-        Debug.Log($"autoSaveLocations null={saves?.AutoSaveLocations == null}, " +
-                  $"count={saves?.AutoSaveLocations?.Count}");
-        Debug.Log($"saveLocations null={saves?.SaveLocations == null}, " +
-                  $"count={saves?.SaveLocations?.Count}");
-
-
-        //Sorry future me but this is complex
-        if (MixAutoSaves)
+        private void OnDisable()
         {
-            Debug.Log($"Mixing Auto Saves!");
-            var saveList = new List<SaveGameInfo>();
-            //merge into 1 list
-            //it doesn't matter the order yet
-            Debug.Log($"UseAutoSaves={UseAutoSaves}, UseNormalSaves={UseNormalSaves}");
-            if (UseAutoSaves)
-            {
-                saveList.AddRange(saves.AutoSaveLocations.Values);
-            }
-            if (UseNormalSaves)
-            {
-                saveList.AddRange(saves.SaveLocations.Values);
-            }
+            gameListChanged.RemoveListener(this.GameListChanged);
+            gameListChanged = null;
+            Messages.Return<SaveGameListChangedMessage>();
+        }
 
-            if (SortByDate)
+        private void GameListChanged()
+        {
+            if (buttons.Count > 0)
             {
-                //now sort the combined list
-                saveList = saveList.OrderByDescending(x => x.DateModified).ToList();
+                foreach (var button in buttons)
+                {
+                    Destroy(button.gameObject);
+                }
+            }
+            buttons.Clear();
+
+            Debug.Log("Before GetSaveList");
+            var saves = SaveManager.GetSaveList();
+            Debug.Log($"After GetSaveList: saves null={saves == null}");
+
+            Debug.Log($"autoSaveLocations null={saves?.AutoSaveLocations == null}, " +
+                    $"count={saves?.AutoSaveLocations?.Count}");
+            Debug.Log($"saveLocations null={saves?.SaveLocations == null}, " +
+                    $"count={saves?.SaveLocations?.Count}");
+
+
+            //Sorry future me but this is complex
+            if (MixAutoSaves)
+            {
+                Debug.Log($"Mixing Auto Saves!");
+                var saveList = new List<SaveGameInfo>();
+                //merge into 1 list
+                //it doesn't matter the order yet
+                Debug.Log($"UseAutoSaves={UseAutoSaves}, UseNormalSaves={UseNormalSaves}");
+                if (UseAutoSaves)
+                {
+                    saveList.AddRange(saves.AutoSaveLocations.Values);
+                }
+                if (UseNormalSaves)
+                {
+                    saveList.AddRange(saves.SaveLocations.Values);
+                }
+
+                if (SortByDate)
+                {
+                    //now sort the combined list
+                    saveList = saveList.OrderByDescending(x => x.DateModified).ToList();
+                }
+                else
+                {
+                    //sort by the index, weird but this would go AutoSave0 then Save0 then AutoSave1 etc.
+                    saveList = saveList.OrderByDescending(x => x.SaveSlot).ToList();
+                }
+                //we CANNOT fill empty auto saves so the fill with empty literally cannot work
+                if (fillWithEmptySaves || fillWithEmptyAutoSaves)
+                {
+                    Debug.LogError($"Because you are mixing the AutoSaves in with normal saves, " +
+                        $"we CANNOT fill with empty auto save buttons! so even though `fillWithEmpty` is true," +
+                        $"The creation of the save buttons is FORCED to be false, if this is understod disable the" +
+                        $"fillWithEmptySaves and fillWithEmptyAutoSaves flags when using 'MixAutoSaves' to stop this error");
+                }
+
+                this.CreateSaveButtons(saveList, false, SortByDate, autoSaveCount + saveCount, false);
             }
             else
             {
-                //sort by the index, weird but this would go AutoSave0 then Save0 then AutoSave1 etc.
-                saveList = saveList.OrderByDescending(x => x.SaveSlot).ToList();
-            }
-            //we CANNOT fill empty auto saves so the fill with empty literally cannot work
-            if (fillWithEmptySaves || fillWithEmptyAutoSaves)
-            {
-                Debug.LogError($"Because you are mixing the AutoSaves in with normal saves, " +
-                    $"we CANNOT fill with empty auto save buttons! so even though `fillWithEmpty` is true," +
-                    $"The creation of the save buttons is FORCED to be false, if this is understod disable the" +
-                    $"fillWithEmptySaves and fillWithEmptyAutoSaves flags when using 'MixAutoSaves' to stop this error");
-            }
-
-            this.CreateSaveButtons(saveList, false, SortByDate, autoSaveCount + saveCount, false);
-        }
-        else
-        {
-            Debug.Log($"Not Mixing Auto Saves!");
-            //we're keeping the lists separate so wait and merge them after sorting by date or not
-            if (UseAutoSaves)
-            {
-                Debug.Log($"Before auto Values; null={saves.AutoSaveLocations == null}, count={saves.AutoSaveLocations?.Count}");
-                var autoSaves = saves.AutoSaveLocations.Values.ToList();
-                Debug.Log("After auto Values");
-                Debug.Log($"Creating {autoSaves.Count} Auto Save Buttons! Max: {autoSaveCount}");
-                if (SortByDate)
+                Debug.Log($"Not Mixing Auto Saves!");
+                //we're keeping the lists separate so wait and merge them after sorting by date or not
+                if (UseAutoSaves)
                 {
-                    autoSaves = autoSaves.OrderByDescending(x => x.DateModified).ToList();
+                    Debug.Log($"Before auto Values; null={saves.AutoSaveLocations == null}, count={saves.AutoSaveLocations?.Count}");
+                    var autoSaves = saves.AutoSaveLocations.Values.ToList();
+                    Debug.Log("After auto Values");
+                    Debug.Log($"Creating {autoSaves.Count} Auto Save Buttons! Max: {autoSaveCount}");
+                    if (SortByDate)
+                    {
+                        autoSaves = autoSaves.OrderByDescending(x => x.DateModified).ToList();
+                    }
+                    else
+                    {
+                        autoSaves = autoSaves.OrderBy(x => x.SaveSlot).ToList();
+                    }
+                    Debug.Log($"Before CreateSaveButtons UseAutoSaves: count={autoSaves.Count}");
+                    this.CreateSaveButtons(autoSaves, fillWithEmptyAutoSaves, SortByDate, autoSaveCount, true);
+                    Debug.Log("After CreateSaveButtons");
                 }
-                else
+
+                if (UseNormalSaves)
                 {
-                    autoSaves = autoSaves.OrderBy(x => x.SaveSlot).ToList();
-                }
-                Debug.Log($"Before CreateSaveButtons UseAutoSaves: count={autoSaves.Count}");
-                this.CreateSaveButtons(autoSaves, fillWithEmptyAutoSaves, SortByDate, autoSaveCount, true);
-                Debug.Log("After CreateSaveButtons");
-            }
+                    var normalSaves = saves.SaveLocations.Values.ToList();
+                    Debug.Log($"Creating {normalSaves.Count} Auto Save Buttons! Max: {saveCount}");
+                    if (SortByDate)
+                    {
+                        normalSaves = normalSaves.OrderByDescending(x => x.DateModified).ToList();
+                    }
+                    else
+                    {
+                        normalSaves = normalSaves.OrderBy(x => x.SaveSlot).ToList();
+                    }
+                    Debug.Log($"Before CreateSaveButtons: count={normalSaves.Count}");
+                    this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
+                    Debug.Log("After CreateSaveButtons");
 
-            if (UseNormalSaves)
+                }
+            }
+            Debug.Log("Before MarkDirtyLayout");
+            grid.MarkDirtyLayout();
+            Debug.Log("After MarkDirtyLayout");
+        }
+
+
+        public void CreateSaveButtons(List<SaveGameInfo> saveList, bool fillEmpty, bool sortByDate, int buttonMaxCount, bool isAutoSave)
+        {
+            for (var i = 0; i < buttonMaxCount; i++)
             {
-                var normalSaves = saves.SaveLocations.Values.ToList();
-                Debug.Log($"Creating {normalSaves.Count} Auto Save Buttons! Max: {saveCount}");
-                if (SortByDate)
+                //make sure you don't index into the list
+
+                SaveGameInfo foundSave = null;
+
+                if (i < saveList.Count)
                 {
-                    normalSaves = normalSaves.OrderByDescending(x => x.DateModified).ToList();
+                    foundSave = saveList[i];
                 }
-                else
+
+                if (foundSave == null && fillEmpty)
                 {
-                    normalSaves = normalSaves.OrderBy(x => x.SaveSlot).ToList();
+                    //add an empty button if there isn't a save in the slot
+                    var newButton = this.MakeSaveButton(i, null, isAutoSave);
+                    buttons.Add(newButton);
                 }
-                Debug.Log($"Before CreateSaveButtons: count={normalSaves.Count}");
-                this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
-                Debug.Log("After CreateSaveButtons");
-
+                else if (foundSave != null)
+                {
+                    //add a button for the found save
+                    var newButton = this.MakeSaveButton(i, foundSave, isAutoSave);
+                    buttons.Add(newButton);
+                }
+                //if we're not filling with empty
+                //or we didn't find a save don't add a button. 
             }
         }
-        Debug.Log("Before MarkDirtyLayout");
-        grid.MarkDirtyLayout();
-        Debug.Log("After MarkDirtyLayout");
-    }
 
-
-    public void CreateSaveButtons(List<SaveGameInfo> saveList, bool fillEmpty, bool sortByDate, int buttonMaxCount, bool isAutoSave)
-    {
-        for (var i = 0; i < buttonMaxCount; i++)
+        private LoadGameGridButton MakeSaveButton(int index, SaveGameInfo foundSave, bool isAutoSave = false)
         {
-            //make sure you don't index into the list
+            //create a new button then parent it to us
+            var newButton = Instantiate(LoadGameButtonPrefab);
+            newButton.transform.SetParent(this.transform, false);
 
-            SaveGameInfo foundSave = null;
-
-            if (i < saveList.Count)
+            //set it to no_save if the data is null
+            if (foundSave == null)
             {
-                foundSave = saveList[i];
+                newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_EmptySave";
+                newButton.NoSave(index, isAutoSave);
             }
-
-            if (foundSave == null && fillEmpty)
+            else
             {
-                //add an empty button if there isn't a save in the slot
-                var newButton = this.MakeSaveButton(i, null, isAutoSave);
-                buttons.Add(newButton);
+                newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_{foundSave.Name}";
+                newButton.SetSaveData(foundSave);
             }
-            else if (foundSave != null)
-            {
-                //add a button for the found save
-                var newButton = this.MakeSaveButton(i, foundSave, isAutoSave);
-                buttons.Add(newButton);
-            }
-            //if we're not filling with empty
-            //or we didn't find a save don't add a button. 
+            return newButton;
         }
-    }
 
-    private LoadGameGridButton MakeSaveButton(int index, SaveGameInfo foundSave, bool isAutoSave = false)
-    {
-        //create a new button then parent it to us
-        var newButton = Instantiate(LoadGameButtonPrefab);
-        newButton.transform.SetParent(this.transform, false);
-
-        //set it to no_save if the data is null
-        if (foundSave == null)
+        private void Start()
         {
-            newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_EmptySave";
-            newButton.NoSave(index, isAutoSave);
         }
-        else
+
+        private void Update()
         {
-            newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_{foundSave.Name}";
-            newButton.SetSaveData(foundSave);
+
         }
-        return newButton;
-    }
-
-    private void Start()
-    {
-    }
-
-    private void Update()
-    {
-
     }
 }

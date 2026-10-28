@@ -6,178 +6,181 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoadGameGridButton : MonoBehaviour
+namespace Snowdrama
 {
-    private SaveGameInfo currentSaveData;
-
-    [SerializeField] private Sprite defaultSaveSprite;
-    [SerializeField] private Button button;
-
-    [Header("Save Info")]
-    [SerializeField] private Image saveImage;
-    [SerializeField] private Image noSaveImage;
-    [SerializeField] private TMP_Text saveNameTMP;
-    [SerializeField] private TMP_Text saveDateTMP;
-    [SerializeField] private TMP_Text noSaveTextTMP;
-
-    [Header("Save Toggles")]
-    [SerializeField] private GameObject SaveInfo;
-    [SerializeField] private GameObject NoSaveInfo;
-
-    [Header("Settings")]
-    [SerializeField] private bool promptConfirmation = true;
-
-    [Header("Router Stuff")]
-    //this is here so when loading we can force close the menu
-    public UIRouter containingMenu;
-
-    [Header("Modal Text")]
-    [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
-    private string loadConfirmationText = "Are you sure\nyou want to load\n[SAVE_NAME]";
-    [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
-    private string deleteConfirmationText = "Are you sure\nyou want to delete\n[SAVE_NAME]";
-    [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
-    private string autoSaveDeleteError = "Can't Delete Auto Saves!";
-
-
-    [Header("Confirmation Buttons")]
-    private string loadConfirmation_Yes = "Yes";
-    private string loadConfirmation_No = "No";
-    private string deleteConfirmation_Yes = "Yes";
-    private string deleteConfirmation_No = "No";
-    private string autoSaveDeleteError_Ok = "Okay";
-
-    [Header("Auto Save Text")]
-    [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
-    private string autoSaveText = "Auto Save [INDEX]";
-    [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
-    private string noAutoSaveText = "No Auto Save Data";
-    [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
-    private string noSaveText = "No Save Data";
-
-    private void Start()
+    public class LoadGameGridButton : MonoBehaviour
     {
-        this.GetComponent<Button>().onClick.AddListener(this.OnClick);
-    }
+        private SaveGameInfo currentSaveData;
 
-    private void OnClick()
-    {
-        if (promptConfirmation)
+        [SerializeField] private Sprite defaultSaveSprite;
+        [SerializeField] private Button button;
+
+        [Header("Save Info")]
+        [SerializeField] private Image saveImage;
+        [SerializeField] private Image noSaveImage;
+        [SerializeField] private TMP_Text saveNameTMP;
+        [SerializeField] private TMP_Text saveDateTMP;
+        [SerializeField] private TMP_Text noSaveTextTMP;
+
+        [Header("Save Toggles")]
+        [SerializeField] private GameObject SaveInfo;
+        [SerializeField] private GameObject NoSaveInfo;
+
+        [Header("Settings")]
+        [SerializeField] private bool promptConfirmation = true;
+
+        [Header("Router Stuff")]
+        //this is here so when loading we can force close the menu
+        public UIRouter containingMenu;
+
+        [Header("Modal Text")]
+        [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
+        private string loadConfirmationText = "Are you sure\nyou want to load\n[SAVE_NAME]";
+        [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
+        private string deleteConfirmationText = "Are you sure\nyou want to delete\n[SAVE_NAME]";
+        [SerializeField, TextArea, Tooltip("Use [SAVE_NAME] as the replacement for the name from the save file")]
+        private string autoSaveDeleteError = "Can't Delete Auto Saves!";
+
+
+        [Header("Confirmation Buttons")]
+        private string loadConfirmation_Yes = "Yes";
+        private string loadConfirmation_No = "No";
+        private string deleteConfirmation_Yes = "Yes";
+        private string deleteConfirmation_No = "No";
+        private string autoSaveDeleteError_Ok = "Okay";
+
+        [Header("Auto Save Text")]
+        [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
+        private string autoSaveText = "Auto Save [INDEX]";
+        [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
+        private string noAutoSaveText = "No Auto Save Data";
+        [SerializeField, TextArea, Tooltip("Use [INDEX] as the replacement so it will save 'Auto Save 0'")]
+        private string noSaveText = "No Save Data";
+
+        private void Start()
         {
-            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                loadConfirmationText.Replace("[SAVE_NAME]", currentSaveData.Name),
-                new ModalButtonData()
-                {
-                    text = loadConfirmation_Yes,
-                    disableTime = 0.0f,
-                    pressCallback = () =>
+            this.GetComponent<Button>().onClick.AddListener(this.OnClick);
+        }
+
+        private void OnClick()
+        {
+            if (promptConfirmation)
+            {
+                Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                    loadConfirmationText.Replace("[SAVE_NAME]", currentSaveData.Name),
+                    new ModalButtonData()
                     {
-                        SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
-                        //force close the menu if we load something
-                        containingMenu?.CloseAll();
-                    }
-                },
-                new ModalButtonData()
-                {
-                    text = loadConfirmation_No,
-                    disableTime = 0.0f,
-                    pressCallback = null
-                });
-        }
-        else
-        {
-            SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
-            //force close the menu if we load something
-            containingMenu?.CloseAll();
-        }
-    }
-    public void OnDeleteSave()
-    {
-        if (currentSaveData.IsAutoSave)
-        {
-            Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
-                autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.Name),
-                new ModalButtonData()
-                {
-                    text = autoSaveDeleteError_Ok,
-                    disableTime = 0.0f,
-                    pressCallback = () =>
+                        text = loadConfirmation_Yes,
+                        disableTime = 0.0f,
+                        pressCallback = () =>
+                        {
+                            SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
+                            //force close the menu if we load something
+                            containingMenu?.CloseAll();
+                        }
+                    },
+                    new ModalButtonData()
                     {
-                    }
-                });
+                        text = loadConfirmation_No,
+                        disableTime = 0.0f,
+                        pressCallback = null
+                    });
+            }
+            else
+            {
+                SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
+                //force close the menu if we load something
+                containingMenu?.CloseAll();
+            }
         }
-        else
+        public void OnDeleteSave()
         {
-            Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Are you sure you\nwant to Delete\n\"{currentSaveData.Name}\"?",
-                new ModalButtonData()
-                {
-                    text = deleteConfirmation_Yes,
-                    disableTime = 1.0f,
-                    pressCallback = () =>
+            if (currentSaveData.IsAutoSave)
+            {
+                Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
+                    autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.Name),
+                    new ModalButtonData()
                     {
-                        //force delete the save
-                        SaveManager.DeleteSaveGame(currentSaveData.SaveSlot, true);
-                    }
-                },
-                new ModalButtonData()
-                {
-                    text = deleteConfirmation_No,
-                    disableTime = 0.0f,
-                    pressCallback = null
-                });
+                        text = autoSaveDeleteError_Ok,
+                        disableTime = 0.0f,
+                        pressCallback = () =>
+                        {
+                        }
+                    });
+            }
+            else
+            {
+                Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
+                    $"Are you sure you\nwant to Delete\n\"{currentSaveData.Name}\"?",
+                    new ModalButtonData()
+                    {
+                        text = deleteConfirmation_Yes,
+                        disableTime = 1.0f,
+                        pressCallback = () =>
+                        {
+                            //force delete the save
+                            SaveManager.DeleteSaveGame(currentSaveData.SaveSlot, true);
+                        }
+                    },
+                    new ModalButtonData()
+                    {
+                        text = deleteConfirmation_No,
+                        disableTime = 0.0f,
+                        pressCallback = null
+                    });
+            }
         }
-    }
 
-    public void SetSaveData(SaveGameInfo saveData)
-    {
-        currentSaveData = saveData;
-        saveNameTMP.text = currentSaveData.Name;
-
-        //parse the date
-        var date = DateTime.ParseExact(currentSaveData.DateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
-        if (date != null)
+        public void SetSaveData(SaveGameInfo saveData)
         {
-            saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
-        }
+            currentSaveData = saveData;
+            saveNameTMP.text = currentSaveData.Name;
 
-        //load the image if the save image exists
-        if (!string.IsNullOrEmpty(currentSaveData.ImagePath) && File.Exists(currentSaveData.ImagePath))
-        {
-            var imageBytes = File.ReadAllBytes(currentSaveData.ImagePath);
-            var tex = new Texture2D(2, 2);
-            ImageConversion.LoadImage(tex, imageBytes);
-            saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-            noSaveImage.sprite = defaultSaveSprite;
+            //parse the date
+            var date = DateTime.ParseExact(currentSaveData.DateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            if (date != null)
+            {
+                saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
+            }
+
+            //load the image if the save image exists
+            if (!string.IsNullOrEmpty(currentSaveData.ImagePath) && File.Exists(currentSaveData.ImagePath))
+            {
+                var imageBytes = File.ReadAllBytes(currentSaveData.ImagePath);
+                var tex = new Texture2D(2, 2);
+                ImageConversion.LoadImage(tex, imageBytes);
+                saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                noSaveImage.sprite = defaultSaveSprite;
+            }
+            else
+            {
+                saveImage.sprite = defaultSaveSprite;
+                noSaveImage.sprite = defaultSaveSprite;
+            }
+            this.GetComponent<Button>().interactable = true;
         }
-        else
+        public void NoSave(int saveSlot, bool isAutoSave)
         {
             saveImage.sprite = defaultSaveSprite;
             noSaveImage.sprite = defaultSaveSprite;
-        }
-        this.GetComponent<Button>().interactable = true;
-    }
-    public void NoSave(int saveSlot, bool isAutoSave)
-    {
-        saveImage.sprite = defaultSaveSprite;
-        noSaveImage.sprite = defaultSaveSprite;
-        currentSaveData = new SaveGameInfo()
-        {
-            SaveSlot = saveSlot,
-            IsAutoSave = false,
-        };
-        SaveInfo.gameObject.SetActive(false);
-        NoSaveInfo.gameObject.SetActive(true);
+            currentSaveData = new SaveGameInfo()
+            {
+                SaveSlot = saveSlot,
+                IsAutoSave = false,
+            };
+            SaveInfo.gameObject.SetActive(false);
+            NoSaveInfo.gameObject.SetActive(true);
 
-        if (isAutoSave)
-        {
-            noSaveTextTMP.text = noAutoSaveText;
+            if (isAutoSave)
+            {
+                noSaveTextTMP.text = noAutoSaveText;
+            }
+            else
+            {
+                noSaveTextTMP.text = noSaveText;
+            }
+            this.GetComponent<Button>().interactable = false;
         }
-        else
-        {
-            noSaveTextTMP.text = noSaveText;
-        }
-        this.GetComponent<Button>().interactable = false;
-    }
 
+    }
 }

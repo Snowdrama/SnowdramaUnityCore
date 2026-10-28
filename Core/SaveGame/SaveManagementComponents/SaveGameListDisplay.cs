@@ -2,88 +2,90 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class SaveGameListDisplay : MonoBehaviour
+namespace Snowdrama
 {
-    [SerializeField] private bool AddSaves = true;
-    [SerializeField] private bool AddAutosaves = false;
-    [SerializeField] private GameObject saveButtonPrefab;
-    [SerializeField] private RectTransform buttonContainer;
-    [SerializeField] private float buttonHeight = 25.0f;
-    private SaveGameListChangedMessage savesChanged;
-    private void OnEnable()
+    public class SaveGameListDisplay : MonoBehaviour
     {
-        savesChanged = Messages.Get<SaveGameListChangedMessage>();
-        savesChanged.AddListener(this.LoadSaveList);
-    }
-    private void OnDisable()
-    {
-        savesChanged.RemoveListener(this.LoadSaveList);
-        savesChanged = null;
-        Messages.Return<SaveGameListChangedMessage>();
-    }
-
-    private List<GameObject> buttons = new List<GameObject>();
-
-    private void Start()
-    {
-        this.LoadSaveList();
-    }
-
-    private void Update()
-    {
-    }
-    private void LoadSaveList()
-    {
-
-        for (var i = 0; i < buttons.Count; i++)
+        [SerializeField] private bool AddSaves = true;
+        [SerializeField] private bool AddAutosaves = false;
+        [SerializeField] private GameObject saveButtonPrefab;
+        [SerializeField] private RectTransform buttonContainer;
+        [SerializeField] private float buttonHeight = 25.0f;
+        private SaveGameListChangedMessage savesChanged;
+        private void OnEnable()
         {
-            Destroy(buttons[i]);
+            savesChanged = Messages.Get<SaveGameListChangedMessage>();
+            savesChanged.AddListener(this.LoadSaveList);
         }
-        buttons.Clear();
-
-        var saveDataStruct = SaveManager.GetSaveList();
-        var saves = new List<KeyValuePair<int, SaveGameInfo>>();
-
-        if (AddSaves)
+        private void OnDisable()
         {
-            foreach (var sd in saveDataStruct.SaveLocations)
+            savesChanged.RemoveListener(this.LoadSaveList);
+            savesChanged = null;
+            Messages.Return<SaveGameListChangedMessage>();
+        }
+
+        private List<GameObject> buttons = new List<GameObject>();
+
+        private void Start()
+        {
+            this.LoadSaveList();
+        }
+
+        private void Update()
+        {
+        }
+        private void LoadSaveList()
+        {
+
+            for (var i = 0; i < buttons.Count; i++)
             {
-                saves.Add(sd);
+                Destroy(buttons[i]);
             }
-        }
+            buttons.Clear();
 
-        if (AddAutosaves)
-        {
-            foreach (var sd in saveDataStruct.AutoSaveLocations)
+            var saveDataStruct = SaveManager.GetSaveList();
+            var saves = new List<KeyValuePair<int, SaveGameInfo>>();
+
+            if (AddSaves)
             {
-                saves.Add(sd);
+                foreach (var sd in saveDataStruct.SaveLocations)
+                {
+                    saves.Add(sd);
+                }
             }
-        }
 
-        buttonContainer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonHeight * saves.Count);
-        //Debug.Log($"Setting Height to: {buttonHeight * saves.Count}");
-
-        saves = saves.OrderByDescending(x => x.Value.DateModified).ToList();
-
-
-        foreach (var kvp in saves)
-        {
-            var go = Instantiate(saveButtonPrefab, buttonContainer, false);
-            foreach (var item in go.GetComponents<ISaveButton>())
+            if (AddAutosaves)
             {
-                item.SetButtonInfo(kvp.Value);
+                foreach (var sd in saveDataStruct.AutoSaveLocations)
+                {
+                    saves.Add(sd);
+                }
             }
-            buttons.Add(go);
-        }
 
-        //scroll to the top
-        this.GetComponent<ScrollRect>().verticalNormalizedPosition = 1;
+            buttonContainer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonHeight * saves.Count);
+            //Debug.Log($"Setting Height to: {buttonHeight * saves.Count}");
+
+            saves = saves.OrderByDescending(x => x.Value.DateModified).ToList();
+
+
+            foreach (var kvp in saves)
+            {
+                var go = Instantiate(saveButtonPrefab, buttonContainer, false);
+                foreach (var item in go.GetComponents<ISaveButton>())
+                {
+                    item.SetButtonInfo(kvp.Value);
+                }
+                buttons.Add(go);
+            }
+
+            //scroll to the top
+            this.GetComponent<ScrollRect>().verticalNormalizedPosition = 1;
+        }
     }
-}
 
 
-public interface ISaveButton
-{
-    void SetButtonInfo(SaveGameInfo saveGameInfo);
+    public interface ISaveButton
+    {
+        void SetButtonInfo(SaveGameInfo saveGameInfo);
+    }
 }
