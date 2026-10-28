@@ -19,9 +19,9 @@ public class SaveGame_DeleteSaveButton : MonoBehaviour, ISaveButton
     }
     private void DeleteSave()
     {
-        Debug.Log($"<color=red>Prepping to delete {saveGameInfo.saveSlot} - {saveGameInfo.name}");
+        Debug.Log($"<color=red>Prepping to delete {saveGameInfo.SaveSlot} - {saveGameInfo.Name}");
         Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-            $"Are you sure you want to delete the save?\n {saveGameInfo.name}",
+            $"Are you sure you want to delete the save?\n {saveGameInfo.Name}",
             new ModalButtonData()
             {
                 text = "Yes",
@@ -38,8 +38,8 @@ public class SaveGame_DeleteSaveButton : MonoBehaviour, ISaveButton
     }
     private void ForceDelete()
     {
-        Debug.Log($"<color=red>Force Deleting Save {saveGameInfo.saveSlot} - {saveGameInfo.name}");
-        SaveManager.DeleteSaveGame(saveGameInfo.saveSlot, saveGameInfo.isAutoSave, true);
+        Debug.Log($"<color=red>Force Deleting Save {saveGameInfo.SaveSlot} - {saveGameInfo.Name}");
+        SaveManager.DeleteSaveGame(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave, true);
         Destroy(this.gameObject);
     }
 }

@@ -47,7 +47,7 @@ public class SaveGameListDisplay : MonoBehaviour
 
         if (AddSaves)
         {
-            foreach (var sd in saveDataStruct.saveLocations)
+            foreach (var sd in saveDataStruct.SaveLocations)
             {
                 saves.Add(sd);
             }
@@ -55,7 +55,7 @@ public class SaveGameListDisplay : MonoBehaviour
 
         if (AddAutosaves)
         {
-            foreach (var sd in saveDataStruct.autoSaveLocations)
+            foreach (var sd in saveDataStruct.AutoSaveLocations)
             {
                 saves.Add(sd);
             }
@@ -64,7 +64,7 @@ public class SaveGameListDisplay : MonoBehaviour
         buttonContainer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonHeight * saves.Count);
         //Debug.Log($"Setting Height to: {buttonHeight * saves.Count}");
 
-        saves = saves.OrderByDescending(x => x.Value.dateModified).ToList();
+        saves = saves.OrderByDescending(x => x.Value.DateModified).ToList();
 
 
         foreach (var kvp in saves)

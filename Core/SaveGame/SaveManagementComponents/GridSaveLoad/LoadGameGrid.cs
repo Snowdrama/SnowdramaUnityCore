@@ -58,10 +58,10 @@ public class LoadGameGrid : MonoBehaviour
         var saves = SaveManager.GetSaveList();
         Debug.Log($"After GetSaveList: saves null={saves == null}");
 
-        Debug.Log($"autoSaveLocations null={saves?.autoSaveLocations == null}, " +
-                  $"count={saves?.autoSaveLocations?.Count}");
-        Debug.Log($"saveLocations null={saves?.saveLocations == null}, " +
-                  $"count={saves?.saveLocations?.Count}");
+        Debug.Log($"autoSaveLocations null={saves?.AutoSaveLocations == null}, " +
+                  $"count={saves?.AutoSaveLocations?.Count}");
+        Debug.Log($"saveLocations null={saves?.SaveLocations == null}, " +
+                  $"count={saves?.SaveLocations?.Count}");
 
 
         //Sorry future me but this is complex
@@ -74,22 +74,22 @@ public class LoadGameGrid : MonoBehaviour
             Debug.Log($"UseAutoSaves={UseAutoSaves}, UseNormalSaves={UseNormalSaves}");
             if (UseAutoSaves)
             {
-                saveList.AddRange(saves.autoSaveLocations.Values);
+                saveList.AddRange(saves.AutoSaveLocations.Values);
             }
             if (UseNormalSaves)
             {
-                saveList.AddRange(saves.saveLocations.Values);
+                saveList.AddRange(saves.SaveLocations.Values);
             }
 
             if (SortByDate)
             {
                 //now sort the combined list
-                saveList = saveList.OrderByDescending(x => x.dateModified).ToList();
+                saveList = saveList.OrderByDescending(x => x.DateModified).ToList();
             }
             else
             {
                 //sort by the index, weird but this would go AutoSave0 then Save0 then AutoSave1 etc.
-                saveList = saveList.OrderByDescending(x => x.saveSlot).ToList();
+                saveList = saveList.OrderByDescending(x => x.SaveSlot).ToList();
             }
             //we CANNOT fill empty auto saves so the fill with empty literally cannot work
             if (fillWithEmptySaves || fillWithEmptyAutoSaves)
@@ -108,17 +108,17 @@ public class LoadGameGrid : MonoBehaviour
             //we're keeping the lists separate so wait and merge them after sorting by date or not
             if (UseAutoSaves)
             {
-                Debug.Log($"Before auto Values; null={saves.autoSaveLocations == null}, count={saves.autoSaveLocations?.Count}");
-                var autoSaves = saves.autoSaveLocations.Values.ToList();
+                Debug.Log($"Before auto Values; null={saves.AutoSaveLocations == null}, count={saves.AutoSaveLocations?.Count}");
+                var autoSaves = saves.AutoSaveLocations.Values.ToList();
                 Debug.Log("After auto Values");
                 Debug.Log($"Creating {autoSaves.Count} Auto Save Buttons! Max: {autoSaveCount}");
                 if (SortByDate)
                 {
-                    autoSaves = autoSaves.OrderByDescending(x => x.dateModified).ToList();
+                    autoSaves = autoSaves.OrderByDescending(x => x.DateModified).ToList();
                 }
                 else
                 {
-                    autoSaves = autoSaves.OrderBy(x => x.saveSlot).ToList();
+                    autoSaves = autoSaves.OrderBy(x => x.SaveSlot).ToList();
                 }
                 Debug.Log($"Before CreateSaveButtons UseAutoSaves: count={autoSaves.Count}");
                 this.CreateSaveButtons(autoSaves, fillWithEmptyAutoSaves, SortByDate, autoSaveCount, true);
@@ -127,15 +127,15 @@ public class LoadGameGrid : MonoBehaviour
 
             if (UseNormalSaves)
             {
-                var normalSaves = saves.saveLocations.Values.ToList();
+                var normalSaves = saves.SaveLocations.Values.ToList();
                 Debug.Log($"Creating {normalSaves.Count} Auto Save Buttons! Max: {saveCount}");
                 if (SortByDate)
                 {
-                    normalSaves = normalSaves.OrderByDescending(x => x.dateModified).ToList();
+                    normalSaves = normalSaves.OrderByDescending(x => x.DateModified).ToList();
                 }
                 else
                 {
-                    normalSaves = normalSaves.OrderBy(x => x.saveSlot).ToList();
+                    normalSaves = normalSaves.OrderBy(x => x.SaveSlot).ToList();
                 }
                 Debug.Log($"Before CreateSaveButtons: count={normalSaves.Count}");
                 this.CreateSaveButtons(normalSaves, fillWithEmptySaves, SortByDate, saveCount, false);
@@ -193,7 +193,7 @@ public class LoadGameGrid : MonoBehaviour
         }
         else
         {
-            newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_{foundSave.name}";
+            newButton.name = $"{((!isAutoSave) ? "LoadSaveButton" : "LoadAutoSaveButton")}_{index}_{foundSave.Name}";
             newButton.SetSaveData(foundSave);
         }
         return newButton;

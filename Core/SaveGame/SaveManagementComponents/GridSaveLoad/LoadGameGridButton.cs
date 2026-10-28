@@ -65,14 +65,14 @@ public class LoadGameGridButton : MonoBehaviour
         if (promptConfirmation)
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                loadConfirmationText.Replace("[SAVE_NAME]", currentSaveData.name),
+                loadConfirmationText.Replace("[SAVE_NAME]", currentSaveData.Name),
                 new ModalButtonData()
                 {
                     text = loadConfirmation_Yes,
                     disableTime = 0.0f,
                     pressCallback = () =>
                     {
-                        SaveManager.LoadSave(currentSaveData.saveSlot, currentSaveData.isAutoSave);
+                        SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
                         //force close the menu if we load something
                         containingMenu?.CloseAll();
                     }
@@ -86,17 +86,17 @@ public class LoadGameGridButton : MonoBehaviour
         }
         else
         {
-            SaveManager.LoadSave(currentSaveData.saveSlot, currentSaveData.isAutoSave);
+            SaveManager.LoadSave(currentSaveData.SaveSlot, currentSaveData.IsAutoSave);
             //force close the menu if we load something
             containingMenu?.CloseAll();
         }
     }
     public void OnDeleteSave()
     {
-        if (currentSaveData.isAutoSave)
+        if (currentSaveData.IsAutoSave)
         {
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
-                autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.name),
+                autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.Name),
                 new ModalButtonData()
                 {
                     text = autoSaveDeleteError_Ok,
@@ -109,7 +109,7 @@ public class LoadGameGridButton : MonoBehaviour
         else
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Are you sure you\nwant to Delete\n\"{currentSaveData.name}\"?",
+                $"Are you sure you\nwant to Delete\n\"{currentSaveData.Name}\"?",
                 new ModalButtonData()
                 {
                     text = deleteConfirmation_Yes,
@@ -117,7 +117,7 @@ public class LoadGameGridButton : MonoBehaviour
                     pressCallback = () =>
                     {
                         //force delete the save
-                        SaveManager.DeleteSaveGame(currentSaveData.saveSlot, true);
+                        SaveManager.DeleteSaveGame(currentSaveData.SaveSlot, true);
                     }
                 },
                 new ModalButtonData()
@@ -132,19 +132,19 @@ public class LoadGameGridButton : MonoBehaviour
     public void SetSaveData(SaveGameInfo saveData)
     {
         currentSaveData = saveData;
-        saveNameTMP.text = currentSaveData.name;
+        saveNameTMP.text = currentSaveData.Name;
 
         //parse the date
-        var date = DateTime.ParseExact(currentSaveData.dateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+        var date = DateTime.ParseExact(currentSaveData.DateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
         if (date != null)
         {
             saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
         //load the image if the save image exists
-        if (!string.IsNullOrEmpty(currentSaveData.imagePath) && File.Exists(currentSaveData.imagePath))
+        if (!string.IsNullOrEmpty(currentSaveData.ImagePath) && File.Exists(currentSaveData.ImagePath))
         {
-            var imageBytes = File.ReadAllBytes(currentSaveData.imagePath);
+            var imageBytes = File.ReadAllBytes(currentSaveData.ImagePath);
             var tex = new Texture2D(2, 2);
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
@@ -163,8 +163,8 @@ public class LoadGameGridButton : MonoBehaviour
         noSaveImage.sprite = defaultSaveSprite;
         currentSaveData = new SaveGameInfo()
         {
-            saveSlot = saveSlot,
-            isAutoSave = false,
+            SaveSlot = saveSlot,
+            IsAutoSave = false,
         };
         SaveInfo.gameObject.SetActive(false);
         NoSaveInfo.gameObject.SetActive(true);

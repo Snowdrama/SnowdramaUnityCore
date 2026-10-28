@@ -20,10 +20,10 @@ public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
 
     public void TryLoad()
     {
-        if (SaveManager.CanLoadSave(saveGameInfo.saveSlot, saveGameInfo.isAutoSave))
+        if (SaveManager.CanLoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave))
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Would you like to load:\n{saveGameInfo.name}",
+                $"Would you like to load:\n{saveGameInfo.Name}",
                 new ModalButtonData()
                 {
                     text = "Yes",
@@ -54,12 +54,12 @@ public class SaveGame_LoadGameButton : MonoBehaviour, ISaveButton
 
     private void LoadGame()
     {
-        SaveManager.LoadSave(saveGameInfo.saveSlot, saveGameInfo.isAutoSave);
+        SaveManager.LoadSave(saveGameInfo.SaveSlot, saveGameInfo.IsAutoSave);
     }
 
     public void SetButtonInfo(SaveGameInfo saveGameInfo)
     {
         this.saveGameInfo = saveGameInfo;
-        loadButtonText.text = $"{saveGameInfo.name} - {saveGameInfo.dateModified}";
+        loadButtonText.text = $"{saveGameInfo.Name} - {saveGameInfo.DateModified}";
     }
 }

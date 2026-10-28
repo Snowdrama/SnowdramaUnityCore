@@ -16,22 +16,22 @@ using UnityEditor;
 [System.Serializable]
 public class SaveDataStruct
 {
-    public int currentSaveIndex = 0;
-    public int currentAutoSaveIndex = 0;
-    public Dictionary<int, SaveGameInfo> saveLocations = new();
-    public Dictionary<int, SaveGameInfo> autoSaveLocations = new();
+    public int CurrentSaveIndex = 0;
+    public int CurrentAutoSaveIndex = 0;
+    public Dictionary<int, SaveGameInfo> SaveLocations = new();
+    public Dictionary<int, SaveGameInfo> AutoSaveLocations = new();
 }
 
 [System.Serializable]
 public class SaveGameInfo
 {
-    public int saveSlot;
-    public string name;
-    public string version;
-    public string dateModified;
-    public string filePath;
-    public string imagePath;
-    public bool isAutoSave;
+    public int SaveSlot;
+    public string Name;
+    public string Version;
+    public string DateModified;
+    public string FilePath;
+    public string ImagePath;
+    public bool IsAutoSave;
 }
 
 //This is used for updating the save list
@@ -92,7 +92,7 @@ public class SaveManager : MonoBehaviour
 #if UNITY_EDITOR
         //load save 0 by default in case we're testing
         //then we can load into any scene with the save 0 data
-        if (saveDataInfo.saveLocations.Count == 0)
+        if (saveDataInfo.SaveLocations.Count == 0)
         {
             //force saving a new game if there's no slot 0
             NewGame();
@@ -178,23 +178,23 @@ public class SaveManager : MonoBehaviour
     public static bool CanLoadSave(int saveSlot, bool autoSave)
     {
         //Debug.Log($"Loading an Auto Save: {autoSave}");
-        if ((!autoSave && saveDataInfo.saveLocations == null) ||
-            (autoSave && saveDataInfo.autoSaveLocations == null))
+        if ((!autoSave && saveDataInfo.SaveLocations == null) ||
+            (autoSave && saveDataInfo.AutoSaveLocations == null))
         {
             Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if ((!autoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
-            (autoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
+        if ((!autoSave && saveDataInfo.SaveLocations.Values.Count == 0) ||
+            (autoSave && saveDataInfo.AutoSaveLocations.Values.Count == 0))
         {
             Debug.LogError($"No saves found, " +
-                $"AutoSave.Count: {saveDataInfo.saveLocations.Values.Count} " +
-                $"SaveCount: {saveDataInfo.saveLocations.Values.Count}");
+                $"AutoSave.Count: {saveDataInfo.SaveLocations.Values.Count} " +
+                $"SaveCount: {saveDataInfo.SaveLocations.Values.Count}");
             return false;
         }
 
-        if ((!autoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
-            (autoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
+        if ((!autoSave && !saveDataInfo.SaveLocations.ContainsKey(saveSlot)) ||
+            (autoSave && !saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot)))
         {
             Debug.LogError($"Failed to load, IsAutoSave: {autoSave} SaveSlot: {saveSlot}");
             return false;
@@ -204,11 +204,11 @@ public class SaveManager : MonoBehaviour
         //can we find the save?
         if (autoSave)
         {
-            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.AutoSaveLocations[saveSlot].FilePath;
         }
         else
         {
-            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.SaveLocations[saveSlot].FilePath;
         }
 
         if (FileHelper.Exists(expectedPath))
@@ -221,21 +221,21 @@ public class SaveManager : MonoBehaviour
     {
         ValidateDirectories();
         //Debug.Log($"Loading an Save: {isAutoSave}");
-        if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
-            (isAutoSave && saveDataInfo.autoSaveLocations == null))
+        if ((!isAutoSave && saveDataInfo.SaveLocations == null) ||
+            (isAutoSave && saveDataInfo.AutoSaveLocations == null))
         {
             Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if ((!isAutoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
-            (isAutoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
+        if ((!isAutoSave && saveDataInfo.SaveLocations.Values.Count == 0) ||
+            (isAutoSave && saveDataInfo.AutoSaveLocations.Values.Count == 0))
         {
             Debug.LogError("No saves found");
             return false;
         }
 
-        if ((!isAutoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
-            (isAutoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
+        if ((!isAutoSave && !saveDataInfo.SaveLocations.ContainsKey(saveSlot)) ||
+            (isAutoSave && !saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot)))
         {
             Debug.LogError("Tried to load an save slot that doesn't exist");
             return false;
@@ -247,14 +247,14 @@ public class SaveManager : MonoBehaviour
         string expectedPath;
         if (isAutoSave)
         {
-            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.AutoSaveLocations[saveSlot].FilePath;
 
             //if we're loading an auto save, we do this so it
-            saveDataInfo.currentAutoSaveIndex = saveSlot;
+            saveDataInfo.CurrentAutoSaveIndex = saveSlot;
         }
         else
         {
-            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.SaveLocations[saveSlot].FilePath;
         }
         //Debug.Log($"Loading Save From: {expectedPath}");
 
@@ -304,7 +304,7 @@ public class SaveManager : MonoBehaviour
         //This assumes that there's no way the player
         //has int.MaxValue number of saves...
         //we will EVENTUALLY find one they don't use
-        while (saveDataInfo.saveLocations.ContainsKey(index))
+        while (saveDataInfo.SaveLocations.ContainsKey(index))
         {
             index++;
         }
@@ -317,7 +317,7 @@ public class SaveManager : MonoBehaviour
         //This assumes that there's no way the player
         //has int.MaxValue number of saves...
         //we will EVENTUALLY find one they don't use
-        while (saveDataInfo.autoSaveLocations.ContainsKey(index))
+        while (saveDataInfo.AutoSaveLocations.ContainsKey(index))
         {
             index++;
 
@@ -346,7 +346,7 @@ public class SaveManager : MonoBehaviour
             //we couldn't find a slot.
 
             //sort the list by the date modified so we always overwrite the oldest save.
-            var listOfAutoSaves = saveDataInfo.autoSaveLocations.OrderBy(x => x.Value.dateModified).ToArray();
+            var listOfAutoSaves = saveDataInfo.AutoSaveLocations.OrderBy(x => x.Value.DateModified).ToArray();
 
             //foreach (var item in listOfAutoSaves)
             //{
@@ -355,10 +355,10 @@ public class SaveManager : MonoBehaviour
             //Debug.Log($"Soooo.... >.> {listOfAutoSaves[0].Key}");
 
             //get the oldest key and use that auto save key, this can be out of order so you need to get the key
-            saveDataInfo.currentAutoSaveIndex = listOfAutoSaves[0].Key;
+            saveDataInfo.CurrentAutoSaveIndex = listOfAutoSaves[0].Key;
 
             //make sure we never go over the auto save count so if the auto save index == it should be 0
-            saveDataInfo.currentAutoSaveIndex %= saveManagerSettings.AutoSaveSlotCount;
+            saveDataInfo.CurrentAutoSaveIndex %= saveManagerSettings.AutoSaveSlotCount;
 
             //Debug.Log($"Couldn't find an empty Auto Save, Overwriting the Oldest: " +
             //$"{saveDataInfo.currentAutoSaveIndex} -> {listOfAutoSaves.First().Value.dateModified}");
@@ -366,19 +366,19 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            saveDataInfo.currentAutoSaveIndex = index;
+            saveDataInfo.CurrentAutoSaveIndex = index;
         }
 
         return index;
     }
     public static bool SaveGameToCurrentSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
-        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
+        return SaveGame(saveDataInfo.CurrentSaveIndex, gameData, force, saveName, version);
     }
     public static bool SaveGameToNewSlot(GameData gameData, bool force = false, string saveName = null, string version = null)
     {
-        saveDataInfo.currentSaveIndex = GetUnusedSaveSlot();
-        return SaveGame(saveDataInfo.currentSaveIndex, gameData, force, saveName, version);
+        saveDataInfo.CurrentSaveIndex = GetUnusedSaveSlot();
+        return SaveGame(saveDataInfo.CurrentSaveIndex, gameData, force, saveName, version);
     }
     public static bool CanOverwriteSave(int saveSlot, bool autoSave)
     {
@@ -431,23 +431,23 @@ public class SaveManager : MonoBehaviour
         //Debug.Log("Creating new save info");
         var newSaveInfo = new SaveGameInfo()
         {
-            saveSlot = saveSlot,
-            name = (!string.IsNullOrEmpty(saveName)) ? saveName : $"Save {saveSlot}",
-            dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
-            filePath = filePath,
-            imagePath = imagePath,
-            version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
-            isAutoSave = false,
+            SaveSlot = saveSlot,
+            Name = (!string.IsNullOrEmpty(saveName)) ? saveName : $"Save {saveSlot}",
+            DateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
+            FilePath = filePath,
+            ImagePath = imagePath,
+            Version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
+            IsAutoSave = false,
         };
         //Debug.Log(newSaveInfo);
 
-        if (!saveDataInfo.saveLocations.ContainsKey(saveSlot))
+        if (!saveDataInfo.SaveLocations.ContainsKey(saveSlot))
         {
-            saveDataInfo.saveLocations.Add(saveSlot, newSaveInfo);
+            saveDataInfo.SaveLocations.Add(saveSlot, newSaveInfo);
         }
         else
         {
-            saveDataInfo.saveLocations[saveSlot] = newSaveInfo;
+            saveDataInfo.SaveLocations[saveSlot] = newSaveInfo;
         }
 
         Messages.GetOnce<SaveGameStartingSaveMessage>().Dispatch();
@@ -476,28 +476,28 @@ public class SaveManager : MonoBehaviour
 
         //create the file contents
         var fileContents = JsonConvert.SerializeObject(gameData, settings);
-        var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.currentAutoSaveIndex}.json";
+        var filePath = $"{Application.persistentDataPath}/AutoSaves/AutoSave{saveDataInfo.CurrentAutoSaveIndex}.json";
         FileHelper.WriteAllText(filePath, fileContents);
 
         //update the save info
         var autoSaveInfo = new SaveGameInfo()
         {
-            saveSlot = saveSlot,
-            name = saveManagerSettings.AutoSaveNameFormat.Replace("[VALUE]", $"{saveSlot}"),
-            dateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
-            filePath = filePath,
-            version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
-            isAutoSave = true,
+            SaveSlot = saveSlot,
+            Name = saveManagerSettings.AutoSaveNameFormat.Replace("[VALUE]", $"{saveSlot}"),
+            DateModified = DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss"),
+            FilePath = filePath,
+            Version = (!string.IsNullOrEmpty(version)) ? version : $"0.0.1",
+            IsAutoSave = true,
         };
 
         //write to the save slot
-        if (!saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
+        if (!saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot))
         {
-            saveDataInfo.autoSaveLocations.Add(saveSlot, autoSaveInfo);
+            saveDataInfo.AutoSaveLocations.Add(saveSlot, autoSaveInfo);
         }
         else
         {
-            saveDataInfo.autoSaveLocations[saveSlot] = autoSaveInfo;
+            saveDataInfo.AutoSaveLocations[saveSlot] = autoSaveInfo;
         }
 
         SaveInfoFile();
@@ -505,21 +505,21 @@ public class SaveManager : MonoBehaviour
     }
     public static bool DeleteSaveGame(int saveSlot, bool isAutoSave, bool force = false)
     {
-        if ((!isAutoSave && saveDataInfo.saveLocations == null) ||
-            (isAutoSave && saveDataInfo.autoSaveLocations == null))
+        if ((!isAutoSave && saveDataInfo.SaveLocations == null) ||
+            (isAutoSave && saveDataInfo.AutoSaveLocations == null))
         {
             Debug.LogError("Somehow save locations is null");
             return false;
         }
-        if ((!isAutoSave && saveDataInfo.saveLocations.Values.Count == 0) ||
-            (isAutoSave && saveDataInfo.autoSaveLocations.Values.Count == 0))
+        if ((!isAutoSave && saveDataInfo.SaveLocations.Values.Count == 0) ||
+            (isAutoSave && saveDataInfo.AutoSaveLocations.Values.Count == 0))
         {
             Debug.LogError("No saves found");
             return false;
         }
 
-        if ((!isAutoSave && !saveDataInfo.saveLocations.ContainsKey(saveSlot)) ||
-            (isAutoSave && !saveDataInfo.autoSaveLocations.ContainsKey(saveSlot)))
+        if ((!isAutoSave && !saveDataInfo.SaveLocations.ContainsKey(saveSlot)) ||
+            (isAutoSave && !saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot)))
         {
             Debug.LogError("Tried to load an save slot that doesn't exist");
             return false;
@@ -533,11 +533,11 @@ public class SaveManager : MonoBehaviour
         string expectedPath;
         if (isAutoSave)
         {
-            expectedPath = saveDataInfo.autoSaveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.AutoSaveLocations[saveSlot].FilePath;
         }
         else
         {
-            expectedPath = saveDataInfo.saveLocations[saveSlot].filePath;
+            expectedPath = saveDataInfo.SaveLocations[saveSlot].FilePath;
         }
 
         //Debug.Log($"Deleting file:{expectedPath}");
@@ -547,11 +547,11 @@ public class SaveManager : MonoBehaviour
         }
         if (isAutoSave)
         {
-            saveDataInfo.autoSaveLocations.Remove(saveSlot);
+            saveDataInfo.AutoSaveLocations.Remove(saveSlot);
         }
         else
         {
-            saveDataInfo.saveLocations.Remove(saveSlot);
+            saveDataInfo.SaveLocations.Remove(saveSlot);
         }
         SaveInfoFile();
         Messages.GetOnce<SaveGameListChangedMessage>().Dispatch();
@@ -576,14 +576,14 @@ public class SaveManager : MonoBehaviour
     {
         if (!isAutoSave)
         {
-            if (saveDataInfo.saveLocations.ContainsKey(saveSlot))
+            if (saveDataInfo.SaveLocations.ContainsKey(saveSlot))
             {
                 return true;
             }
         }
         else if (isAutoSave)
         {
-            if (saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
+            if (saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot))
             {
                 return true;
             }
@@ -594,16 +594,16 @@ public class SaveManager : MonoBehaviour
     {
         if (!isAutoSave)
         {
-            if (saveDataInfo.saveLocations.ContainsKey(saveSlot))
+            if (saveDataInfo.SaveLocations.ContainsKey(saveSlot))
             {
-                return saveDataInfo.saveLocations[saveSlot];
+                return saveDataInfo.SaveLocations[saveSlot];
             }
         }
         else if (isAutoSave)
         {
-            if (saveDataInfo.autoSaveLocations.ContainsKey(saveSlot))
+            if (saveDataInfo.AutoSaveLocations.ContainsKey(saveSlot))
             {
-                return saveDataInfo.autoSaveLocations[saveSlot];
+                return saveDataInfo.AutoSaveLocations[saveSlot];
             }
         }
         return null;
@@ -678,95 +678,3 @@ public class SaveManager : MonoBehaviour
 #endif
 
 }
-
-
-/*
-
-//BLEH I'm still trying to figure this out to make the above a bit less messy XD
-
-/// <summary>
-/// Save Manager 2 has one main change. 
-/// 
-/// The big thing I wanted to do is also support save slots with multiple saves
-/// 
-/// Example: KOTOR Allows you to select a character and see all the saves for that character. 
-/// So a character is a save slot and a save slot contains multiple saves.
-/// 
-/// This also includes autosaves, so autosaves for a save slot don't overwrite autosaves from other save slots.
-/// </summary>
-public class SaveManager2
-{
-    //this contains the save data itself.
-    public class SaveData
-    {
-        public SaveInfo SaveInfo { get; set; }
-        /// <summary>
-        /// The storage container that has the game data in it
-        /// </summary>
-        public GameData GameData { get; set; }
-    }
-
-    /// <summary>
-    /// The info about a set of save data
-    /// </summary>
-    public class SaveInfo
-    {
-        /// <summary>
-        /// The name ofthe save
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// The date/time the game was saved
-        /// </summary>
-        public DateTime SaveDate { get; set; }
-
-        /// <summary>
-        /// Used for things like a save description or some other per-game identifier
-        /// </summary>
-        public string Extra { get; set; }
-
-        /// <summary>
-        /// This is the relative path to the thing that contains the SaveData
-        /// 
-        /// Example:
-        /// Save1.json
-        /// 
-        /// when combined with a save slot this gets a full path
-        /// Application.persistentDataPath/Saves/Slot1/ + Save1.json
-        /// 
-        /// When used not with a save slot this can be a full path like:
-        /// Application.persistentDataPath/Saves/Save1.json
-        /// </summary>
-        public string SavePath { get; set; }
-    }
-
-    public class SaveSlotInfo
-    {
-        //The save slot has it's own info 
-        public SaveInfo SaveInfo { get; set; }
-
-        /// <summary>
-        /// This is the list of the save info for each save slot
-        /// </summary>
-        public List<SaveInfo> saves;
-
-        /// <summary>
-        /// This is the relative path of all the save slots
-        /// 
-        /// Example:
-        /// Application.persistentDataPath/Saves/Slot1/
-        /// Application.persistentDataPath/Saves/Slot2/
-        /// Application.persistentDataPath/Saves/Slot3/
-        /// </summary>
-        public string SaveSlotPath { get; set; }
-    }
-
-
-    public class SaveInfoManifest
-    {
-        public List<SaveInfo> Saves = new List<SaveInfo>();
-        public List<SaveInfo> AutoSaves = new List<SaveInfo>();
-    }
-}
-
-*/

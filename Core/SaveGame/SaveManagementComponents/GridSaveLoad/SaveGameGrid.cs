@@ -56,26 +56,26 @@ public class SaveGameGrid : MonoBehaviour
         var saveList = new List<SaveGameInfo>();
         if (UseNormalSaves)
         {
-            saveList.AddRange(saves.saveLocations.Values);
+            saveList.AddRange(saves.SaveLocations.Values);
         }
 
         if (UseAutoSaves)
         {
-            saveList.AddRange(saves.autoSaveLocations.Values);
+            saveList.AddRange(saves.AutoSaveLocations.Values);
         }
 
         if (SortByDate)
         {
-            saveList = saveList.OrderByDescending(x => x.dateModified).ToList();
+            saveList = saveList.OrderByDescending(x => x.DateModified).ToList();
         }
         else
         {
-            saveList = saveList.OrderBy(x => x.saveSlot).ToList();
+            saveList = saveList.OrderBy(x => x.SaveSlot).ToList();
         }
 
         for (var i = 0; i < saveCount; i++)
         {
-            var foundSave = saveList.Find(x => x.saveSlot == i);
+            var foundSave = saveList.Find(x => x.SaveSlot == i);
 
             if (fillWithEmptySaves)
             {
@@ -84,7 +84,7 @@ public class SaveGameGrid : MonoBehaviour
                 newButton.transform.SetParent(this.transform, false);
                 if (foundSave != null)
                 {
-                    newButton.name = $"SaveGameButton_{i}_{foundSave.name}";
+                    newButton.name = $"SaveGameButton_{i}_{foundSave.Name}";
                     newButton.SetSaveData(foundSave);
                 }
                 else

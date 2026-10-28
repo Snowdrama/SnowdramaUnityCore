@@ -45,15 +45,15 @@ public class SaveGameGridButton : MonoBehaviour
     {
         //trigger save game
         Debug.Log($"Trying to open the save modal!");
-        Messages.GetOnce<Modal_SaveGameMessage>().Dispatch(currentSaveData.saveSlot, currentSaveData.name);
+        Messages.GetOnce<Modal_SaveGameMessage>().Dispatch(currentSaveData.SaveSlot, currentSaveData.Name);
     }
 
     public void OnDeleteSave()
     {
-        if (currentSaveData.isAutoSave)
+        if (currentSaveData.IsAutoSave)
         {
             Messages.GetOnce<OpenNoticeModalMessage>().Dispatch(
-                autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.name),
+                autoSaveDeleteError.Replace("[SAVE_NAME]", currentSaveData.Name),
                 new ModalButtonData()
                 {
                     text = autoSaveDeleteError_Ok,
@@ -66,7 +66,7 @@ public class SaveGameGridButton : MonoBehaviour
         else
         {
             Messages.GetOnce<OpenConfirmationModalMessage>().Dispatch(
-                $"Are you sure you\nwant to Delete\n\"{currentSaveData.name}\"?",
+                $"Are you sure you\nwant to Delete\n\"{currentSaveData.Name}\"?",
                 new ModalButtonData()
                 {
                     text = deleteConfirmation_Yes,
@@ -74,7 +74,7 @@ public class SaveGameGridButton : MonoBehaviour
                     pressCallback = () =>
                     {
                         //force delete the save
-                        SaveManager.DeleteSaveGame(currentSaveData.saveSlot, true);
+                        SaveManager.DeleteSaveGame(currentSaveData.SaveSlot, true);
                     }
                 },
                 new ModalButtonData()
@@ -93,18 +93,18 @@ public class SaveGameGridButton : MonoBehaviour
 
         currentSaveData = saveData;
 
-        saveNameTMP.text = saveData.name;
+        saveNameTMP.text = saveData.Name;
 
         //parse the date
-        var date = DateTime.ParseExact(saveData.dateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+        var date = DateTime.ParseExact(saveData.DateModified, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
         if (date != null)
         {
             saveDateTMP.text = date.ToString("MM/dd/yyyy hh:mm:ss tt");
         }
 
-        if (File.Exists(saveData.imagePath))
+        if (File.Exists(saveData.ImagePath))
         {
-            var imageBytes = File.ReadAllBytes(saveData.imagePath);
+            var imageBytes = File.ReadAllBytes(saveData.ImagePath);
             var tex = new Texture2D(2, 2);
             ImageConversion.LoadImage(tex, imageBytes);
             saveImage.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
@@ -122,8 +122,8 @@ public class SaveGameGridButton : MonoBehaviour
         noSaveImage.sprite = defaultSaveSprite;
         currentSaveData = new SaveGameInfo()
         {
-            saveSlot = saveSlot,
-            isAutoSave = false,
+            SaveSlot = saveSlot,
+            IsAutoSave = false,
         };
         SaveInfo.gameObject.SetActive(false);
         NoSaveInfo.gameObject.SetActive(true);
